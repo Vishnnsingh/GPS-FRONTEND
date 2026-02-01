@@ -5,6 +5,7 @@ import ResultView from '../../Components/ResultView/ResultView'
 import Student from './Student'
 import Subject from './Subject'
 import UploadMarks from './UploadMarks'
+import UploadPhoto from '../../Components/UploadPhoto/UploadPhoto'
 import { getUser, getLoginType } from '../../Api/auth'
 import { getAllStudents } from '../../Api/students'
 import { getAllSubjects } from '../../Api/subjects'
@@ -343,6 +344,8 @@ function Dashboard() {
             {activeView === 'subject' && <Subject />}
             
             {activeView === 'uploadMarks' && <UploadMarks />}
+
+            {activeView === 'uploadPhoto' && <UploadPhoto />}
           </div>
         </main>
     </>

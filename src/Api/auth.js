@@ -1,13 +1,12 @@
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:5000/api'
+// Prefer a relative base URL so Vite dev proxy can avoid CORS issues.
+// Override via .env: VITE_API_BASE_URL=http://localhost:5000/api (if you want absolute)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 })
 
 // Flag to prevent multiple refresh attempts

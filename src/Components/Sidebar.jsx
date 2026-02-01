@@ -40,6 +40,11 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
       if (user?.role === 'admin' || user?.role === 'teacher') {
         items.push({ id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' })
       }
+
+      // Add "Upload Photo" button for admin and teacher
+      if (user?.role === 'admin' || user?.role === 'teacher') {
+        items.push({ id: 'uploadPhoto', label: 'Upload Photo', icon: 'photo_camera' })
+      }
       
       return items
     }

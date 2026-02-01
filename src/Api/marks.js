@@ -1,4 +1,5 @@
 import api from './auth'
+import publicApi from './publicApi'
 
 // Submit marks
 export const submitMarks = async (marksData) => {
@@ -28,6 +29,25 @@ export const getMarks = async (classValue, section, terminal) => {
   }
 }
 
+// Public: Get student result by class, roll, terminal (and optional section)
+// Endpoint example: GET /marks/result?class=1&roll=1&terminal=First&section=A
+export const getStudentResultPublic = async ({ classValue, roll, terminal, section }) => {
+  try {
+    const params = {
+      class: classValue,
+      roll: roll,
+      terminal: terminal,
+    }
+
+    if (section) params.section = section
+
+    const response = await publicApi.get('/marks/result', { params })
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
 // Publish results for a class
 export const publishResults = async (classValue, section, terminal) => {
   try {
@@ -42,5 +62,5 @@ export const publishResults = async (classValue, section, terminal) => {
   }
 }
 
-export default { submitMarks, getMarks, publishResults }
+export default { submitMarks, getMarks, getStudentResultPublic, publishResults }
 
