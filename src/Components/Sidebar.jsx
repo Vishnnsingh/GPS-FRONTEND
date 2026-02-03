@@ -35,6 +35,11 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
       if (user?.role === 'admin') {
         items.push({ id: 'subject', label: 'Subject', icon: 'book' })
       }
+
+      // Add "Fees" management for admin
+      if (user?.role === 'admin') {
+        items.push({ id: 'fees', label: 'Fees', icon: 'payments' })
+      }
       
       // Add "Marks Upload" button for admin and teacher
       if (user?.role === 'admin' || user?.role === 'teacher') {

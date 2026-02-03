@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
 function WebsiteHeader() {
-  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'GJ Public School'
+  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
   const location = useLocation()
   const [open, setOpen] = useState(false)
 

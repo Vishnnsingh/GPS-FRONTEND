@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 
 function Home() {
-  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'GJ Public School'
+  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
 
   return (
     <WebsiteLayout>
@@ -318,6 +318,29 @@ function Home() {
                 View Gallery
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Results Portal CTA */}
+      <section className="max-w-6xl mx-auto px-4 pb-12">
+        <div className="rounded-2xl bg-linear-to-r from-green-500 to-emerald-600 text-white p-6 md:p-8 shadow-lg">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <p className="text-xs opacity-90 flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm">verified_user</span>
+                For Students & Parents
+              </p>
+              <p className="text-2xl font-black mt-1">Check Your Results Instantly</p>
+              <p className="text-sm opacity-90 mt-1">Access your academic performance, marks, and division anytime.</p>
+            </div>
+            <Link
+              to="/results-portal"
+              className="inline-flex items-center justify-center gap-2 font-black px-5 py-3 rounded-xl bg-white text-green-600 hover:bg-white/90 whitespace-nowrap"
+            >
+              <span className="material-symbols-outlined">trending_up</span>
+              View Results
+            </Link>
           </div>
         </div>
       </section>
