@@ -23,7 +23,6 @@ function Home() {
               A modern learning environment focused on academics, discipline and holistic development.
               Explore our campus, facilities and student achievements.
             </p>
-
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link
                 to="/about"
