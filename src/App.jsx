@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import './App.css'
 import Layout from './Components/Layout'
 import StudentRegister from './Pages/Register/StudentRegister'
 import StudentLogin from './Pages/Auth/StudentLogin'
