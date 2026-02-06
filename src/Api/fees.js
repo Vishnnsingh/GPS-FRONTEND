@@ -1,120 +1,219 @@
 import api from './auth'
-import publicApi from './publicApi'
 
-// Get fee invoice by id
-export const getInvoice = async (id) => {
+// ============ Fee Structure Management ============
+
+// Create Fee Structure
+export const createFeeStructure = async (feeData) => {
   try {
-    const response = await publicApi.get(`/invoice/${id}`)
+    const response = await api.post('/fee-structure', feeData)
     return response.data
   } catch (error) {
-    const status = error?.response?.status
-    const data = error?.response?.data
-    const message = error?.message || 'Request failed'
-    throw { status, data, message, response: error?.response }
+    throw error.response?.data || error.message
   }
 }
 
-// Get all fees for a student (public)
-export const getFeesForStudent = async (studentId, month) => {
+// Get Fee Structures
+export const getFeeStructures = async (classFilter = '', sectionFilter = '') => {
   try {
     const params = {}
-    if (month) params.month = month
-    const response = await publicApi.get(`/fees/${studentId}`, { params })
+    if (classFilter) params.class = classFilter
+    if (sectionFilter) params.section = sectionFilter
+    
+    const response = await api.get('/fee-structure', { params })
     return response.data
   } catch (error) {
-    const status = error?.response?.status
-    const data = error?.response?.data
-    const message = error?.message || 'Request failed'
-    throw { status, data, message, response: error?.response }
+    throw error.response?.data || error.message
   }
 }
 
-// Public: Get student fee summary
-export const getStudentFeeSummary = async (studentId) => {
+// Update Fee Structure
+export const updateFeeStructure = async (id, feeData) => {
   try {
-    const response = await publicApi.get(`/fees/student/${studentId}/summary`)
+    const response = await api.put(`/fee-structure/${id}`, feeData)
     return response.data
   } catch (error) {
-    const status = error?.response?.status
-    const data = error?.response?.data
-    const message = error?.message || 'Request failed'
-    throw { status, data, message, response: error?.response }
+    throw error.response?.data || error.message
   }
 }
 
-// Generate invoices for a class/month (admin)
-export const generateInvoices = async ({ className, month, amount, section }) => {
+// Delete Fee Structure
+export const deleteFeeStructure = async (id) => {
   try {
-    const payload = { class: className, month, amount, section }
-    const response = await api.post('/fees/generate', payload)
+    const response = await api.delete(`/fee-structure/${id}`)
     return response.data
   } catch (error) {
-    const status = error?.response?.status
-    const data = error?.response?.data
-    const message = error?.message || 'Request failed'
-    throw { status, data, message, response: error?.response }
+    throw error.response?.data || error.message
   }
 }
 
-// Get invoices list (admin)
-export const getInvoices = async ({ className, month, status, page }) => {
+// ============ Bulk Bill Generation ============
+
+// Generate Bulk Bills
+export const generateBulkBills = async (billData) => {
+  try {
+    const response = await api.post('/billing/generate-bulk', billData)
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
+// Get Bill by ID
+export const getBillById = async (billId) => {
+  try {
+    const response = await api.get(`/billing/bill/${billId}`)
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
+// Download Bills PDF
+export const downloadBillsPDF = async (classFilter, month, sectionFilter = '') => {
+  try {
+    const params = { class: classFilter, month }
+    if (sectionFilter) params.section = sectionFilter
+    
+    const response = await api.get('/billing/download', {
+      params,
+      responseType: 'blob'
+    })
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
+// ============ Fees Management ============
+
+// Get Fee List (Dashboard)
+export const getFeeList = async (classFilter = '', sectionFilter = '', month = '') => {
   try {
     const params = {}
-    if (className) params.class = className
+    if (classFilter) params.class = classFilter
+    if (sectionFilter) params.section = sectionFilter
     if (month) params.month = month
-    if (status) params.status = status
-    if (page) params.page = page
-    const response = await api.get('/invoices', { params })
+    
+    const response = await api.get('/fees/list', { params })
     return response.data
   } catch (error) {
-    const status = error?.response?.status
-    const data = error?.response?.data
-    const message = error?.message || 'Request failed'
-    throw { status, data, message, response: error?.response }
+    throw error.response?.data || error.message
   }
 }
 
-// Get fee list by class/month (admin) - returns array of student fee objects
-export const getFeesByClass = async ({ className, month, section }) => {
-  try {
-    const params = {}
-    if (className) params.class = className
-    if (month) params.month = month
-    if (section) params.section = section
-    const response = await api.get('/fees', { params })
-    return response.data
-  } catch (error) {
-    const status = error?.response?.status
-    const data = error?.response?.data
-    const message = error?.message || 'Request failed'
-    throw { status, data, message, response: error?.response }
-  }
-}
-
-// Mark invoice as paid (admin)
-export const markInvoicePaid = async (invoiceId, payload = {}) => {
-  try {
-    const response = await api.post(`/invoices/${invoiceId}/pay`, payload)
-    return response.data
-  } catch (error) {
-    const status = error?.response?.status
-    const data = error?.response?.data
-    const message = error?.message || 'Request failed'
-    throw { status, data, message, response: error?.response }
-  }
-}
-
-// Pay fees (requires auth - use api client)
-export const payFees = async (paymentData) => {
+// Record Fee Payment
+export const recordFeePayment = async (paymentData) => {
   try {
     const response = await api.post('/fees/pay', paymentData)
     return response.data
   } catch (error) {
-    const status = error?.response?.status
-    const data = error?.response?.data
-    const message = error?.message || 'Request failed'
-    throw { status, data, message, response: error?.response }
+    throw error.response?.data || error.message
   }
 }
 
-export default { getInvoice, getFeesForStudent, getStudentFeeSummary, generateInvoices, getInvoices, markInvoicePaid, payFees }
+// Get Invoice Details
+export const getInvoiceDetails = async (billId) => {
+  try {
+    const response = await api.get(`/fees/invoice/${billId}`)
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
+// Close Month
+export const closeMonth = async (month) => {
+  try {
+    const response = await api.post('/fees/close-month', { month })
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
+// Get Student Dues
+export const getStudentDues = async (studentId) => {
+  try {
+    const response = await api.get(`/fees/dues/${studentId}`)
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
+// ============ Invoice ============
+
+// Download Invoice PDF
+export const downloadInvoicePDF = async (billId) => {
+  try {
+    const response = await api.get(`/invoice/download/${billId}`, {
+      responseType: 'blob'
+    })
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
+// ============ Bills ============
+
+// Generate Bills PDF
+export const generateBillsPDF = async (month) => {
+  try {
+    const response = await api.get('/bills/pdf', {
+      params: { month },
+      responseType: 'blob'
+    })
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
+// Generate Bills for Class
+export const generateBillsForClass = async (classFilter, month) => {
+  try {
+    const response = await api.post('/bills/generate', {
+      class: classFilter,
+      month
+    })
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
+// Generate Bills for All Classes
+export const generateBillsForAllClasses = async (month) => {
+  try {
+    const response = await api.post('/bills/generate-all', { month })
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
+export default {
+  // Fee Structure
+  createFeeStructure,
+  getFeeStructures,
+  updateFeeStructure,
+  deleteFeeStructure,
+  // Bulk Bills
+  generateBulkBills,
+  getBillById,
+  downloadBillsPDF,
+  // Fees Management
+  getFeeList,
+  recordFeePayment,
+  getInvoiceDetails,
+  closeMonth,
+  getStudentDues,
+  // Invoice
+  downloadInvoicePDF,
+  // Bills
+  generateBillsPDF,
+  generateBillsForClass,
+  generateBillsForAllClasses
+}
+

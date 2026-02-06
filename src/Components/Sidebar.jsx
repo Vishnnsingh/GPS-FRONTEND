@@ -13,49 +13,39 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
     setUser(getUser())
   }, [])
 
-  // Dynamic menu items based on login type and user role
-  const getMenuItems = () => {
-    if (loginType === 'student') {
-      // Student login: only Result View
-      return [
-        { id: 'result', label: 'Result View', icon: 'assessment' }
-      ]
-    } else {
-      // All login (admin/teacher): Dashboard
-      const items = [
-        { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' }
-      ]
-      
-      // Add "Student" button only for admin
-      if (user?.role === 'admin') {
-        items.push({ id: 'student', label: 'Student', icon: 'person_add' })
-      }
-      
-      // Add "Subject" button only for admin
-      if (user?.role === 'admin') {
-        items.push({ id: 'subject', label: 'Subject', icon: 'book' })
-      }
-
-      // Add "Fees" management for admin
-      if (user?.role === 'admin') {
-        items.push({ id: 'fees', label: 'Fees', icon: 'payments' })
-      }
-      
-      // Add "Marks Upload" button for admin and teacher
-      if (user?.role === 'admin' || user?.role === 'teacher') {
-        items.push({ id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' })
-      }
-
-      // Add "Upload Photo" button for admin and teacher
-      if (user?.role === 'admin' || user?.role === 'teacher') {
-        items.push({ id: 'uploadPhoto', label: 'Upload Photo', icon: 'photo_camera' })
-      }
-      
-      return items
-    }
+  // Role-based menu items
+  const menuConfig = {
+    admin: [
+      { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { id: 'student', label: 'Student', icon: 'person_add' },
+      { id: 'subject', label: 'Subject', icon: 'book' },
+      { id: 'fees', label: 'Fees', icon: 'payments' },
+      { id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' },
+      { id: 'uploadPhoto', label: 'Upload Photo', icon: 'photo_camera' }
+    ],
+    teacher: [
+      { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' },
+      { id: 'uploadPhoto', label: 'Upload Photo', icon: 'photo_camera' }
+    ],
+    student: [
+      { id: 'result', label: 'Result View', icon: 'assessment' },
+      { id: 'profile', label: 'Profile', icon: 'person' }
+    ],
+    public: [
+      { id: 'home', label: 'Home', icon: 'home' },
+      { id: 'about', label: 'About', icon: 'info' },
+      { id: 'contact', label: 'Contact', icon: 'call' }
+    ]
   }
 
-  const menuItems = getMenuItems()
+  // Determine role
+  let role = 'public'
+  if (loginType === 'student') role = 'student'
+  else if (user?.role === 'admin') role = 'admin'
+  else if (user?.role === 'teacher') role = 'teacher'
+
+  const menuItems = menuConfig[role]
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
@@ -97,6 +87,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
         <div 
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setIsOpen(false)}
+          style={{ touchAction: 'manipulation' }}
         ></div>
       )}
 
@@ -104,12 +95,12 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
       <aside 
         className={`fixed lg:static top-0 left-0 h-screen lg:h-full bg-white dark:bg-[#101922] border-r border-slate-200 dark:border-slate-700 shadow-lg lg:shadow-none z-50 transition-all duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        } ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'}`}
+        } ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'} w-4/5 max-w-xs lg:max-w-none`}
         style={{ fontFamily: "'Lexend', sans-serif" }}
       >
         <div className="flex flex-col h-full bg-white dark:bg-slate-800 rounded-r-lg lg:rounded-none shadow-xl lg:shadow-none overflow-hidden">
           {/* Sidebar Header */}
-          <div className="flex items-center justify-end p-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+          <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
             <div className="flex items-center gap-2">
               {/* Desktop Toggle Button */}
               <button
@@ -125,6 +116,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
               <button
                 onClick={() => setIsOpen(false)}
                 className="lg:hidden p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                aria-label="Close sidebar"
               >
                 <span className="material-symbols-outlined text-slate-600 dark:text-slate-400">close</span>
               </button>
@@ -132,7 +124,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
           </div>
 
           {/* Menu Items */}
-          <nav className="flex-1 p-4 space-y-2 overflow-y-auto min-h-0">
+          <nav className="flex-1 p-2 space-y-2 overflow-y-auto min-h-0">
             {menuItems.map((item) => (
               <button
                 key={item.id}
@@ -140,7 +132,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
                   setActiveView(item.id)
                   setIsOpen(false) // Close sidebar on mobile after selection
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-sm ${
                   sidebarCollapsed ? 'justify-center' : ''
                 } ${
                   activeView === item.id
@@ -148,19 +140,20 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                 }`}
                 title={sidebarCollapsed ? item.label : ''}
+                style={{ fontSize: '15px' }}
               >
                 <span className="material-symbols-outlined text-xl">
                   {item.icon}
                 </span>
                 {!sidebarCollapsed && (
-                  <span className="font-medium text-sm">{item.label}</span>
+                  <span className="font-medium">{item.label}</span>
                 )}
               </button>
             ))}
           </nav>
 
           {/* Logout Button at Bottom */}
-          <div className="p-4 border-t border-slate-200 dark:border-slate-700 flex-shrink-0">
+          <div className="p-2 border-t border-slate-200 dark:border-slate-700 flex-shrink-0">
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
