@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 
 function Contact() {
-  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'GJ Public School'
+  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
   const [form, setForm] = useState({ name: '', phone: '', message: '' })
   const [sent, setSent] = useState(false)
 

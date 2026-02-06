@@ -6,6 +6,8 @@ import {
   PieChart, Pie, Cell, AreaChart, Area, LineChart, Line, ScatterChart, Scatter
 } from 'recharts'
 
+// Enhanced View Marks Component - Fully responsive and modern UI
+
 function ViewMarks() {
   const [filters, setFilters] = useState({
     class: '',

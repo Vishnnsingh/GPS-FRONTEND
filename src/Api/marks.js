@@ -31,6 +31,7 @@ export const getMarks = async (classValue, section, terminal) => {
 
 // Public: Get student result by class, roll, terminal (and optional section)
 // Endpoint example: GET /marks/result?class=1&roll=1&terminal=First&section=A
+// Expected response includes: student, marks[], summary (total_max_marks, total_obtained, percentage, division, rank, published_date)
 export const getStudentResultPublic = async ({ classValue, roll, terminal, section }) => {
   try {
     const params = {
@@ -44,7 +45,11 @@ export const getStudentResultPublic = async ({ classValue, roll, terminal, secti
     const response = await publicApi.get('/marks/result', { params })
     return response.data
   } catch (error) {
-    throw error.response?.data || error.message
+    // Preserve status and response data so callers can handle 404/403 more precisely
+    const status = error?.response?.status
+    const data = error?.response?.data
+    const message = error?.message || 'Request failed'
+    throw { status, data, message, response: error?.response }
   }
 }
 
