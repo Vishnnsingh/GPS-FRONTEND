@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { createFeeStructure, getFeeStructures, updateFeeStructure, deleteFeeStructure } from '../../Api/fees'
 
+const FEE_TYPES = [
+  { name: 'Tuition Fee', defaultPeriod: 'monthly' },
+  { name: 'Exam Fee', defaultPeriod: 'monthly' },
+  { name: 'Annual Fee', defaultPeriod: 'yearly' },
+  { name: 'Computer Fee', defaultPeriod: 'monthly' }
+]
+
 function FeeStructure() {
   const [feeStructures, setFeeStructures] = useState([])
   const [loading, setLoading] = useState(false)
@@ -11,13 +18,26 @@ function FeeStructure() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
+  const [mode, setMode] = useState('single') // 'single' or 'bulk'
   const [formData, setFormData] = useState({
     class: '',
-    section: '',
     fee_name: '',
     fee_amount: '',
+    period: 'monthly',
+    late_fine_enabled: false,
     is_optional: false
   })
+  const [bulkData, setBulkData] = useState([
+    {
+      class: '',
+      fees: [
+        { fee_name: 'Tuition Fee', fee_amount: '', period: 'monthly', late_fine_enabled: false, is_optional: false },
+        { fee_name: 'Exam Fee', fee_amount: '', period: 'monthly', late_fine_enabled: false, is_optional: false },
+        { fee_name: 'Annual Fee', fee_amount: '', period: 'yearly', late_fine_enabled: false, is_optional: false },
+        { fee_name: 'Computer Fee', fee_amount: '', period: 'monthly', late_fine_enabled: false, is_optional: false }
+      ]
+    }
+  ])
 
   useEffect(() => {
     fetchFeeStructures()
@@ -71,31 +91,67 @@ function FeeStructure() {
     setLoading(true)
 
     try {
-      const payload = {
-        class: formData.class,
-        section: formData.section,
-        fee_name: formData.fee_name,
-        fee_amount: parseFloat(formData.fee_amount),
-        is_optional: formData.is_optional
-      }
+      if (mode === 'bulk' && !editingId) {
+        // Bulk creation - flatten fees array
+        const payload = []
+        bulkData.forEach(item => {
+          if (item.class) {
+            item.fees.forEach(fee => {
+              if (fee.fee_amount && fee.fee_amount > 0) {
+                payload.push({
+                  class: item.class,
+                  fee_name: fee.fee_name,
+                  fee_amount: parseFloat(fee.fee_amount),
+                  period: fee.period,
+                  late_fine_enabled: fee.late_fine_enabled,
+                  is_optional: fee.is_optional
+                })
+              }
+            })
+          }
+        })
 
-      let response
-      if (editingId) {
-        response = await updateFeeStructure(editingId, payload)
-      } else {
-        response = await createFeeStructure(payload)
-      }
+        if (payload.length === 0) {
+          setError('Please add at least one fee amount for the selected class')
+          setLoading(false)
+          return
+        }
 
-      // Handle different response structures
-      if (response.success || response.message) {
-        setSuccess(editingId ? 'Fee structure updated successfully' : 'Fee structure created successfully')
-        // Close modal and reset form immediately
-        setIsModalOpen(false)
-        resetForm()
-        // Refresh the list
-        await fetchFeeStructures()
+        const response = await createFeeStructure(payload)
+        if (response.success || response.message) {
+          setSuccess(`Successfully created ${payload.length} fee structure(s)!`)
+          setIsModalOpen(false)
+          resetForm()
+          await fetchFeeStructures()
+        } else {
+          setError(response.message || 'Failed to create fee structures')
+        }
       } else {
-        setError(response.message || 'Failed to save fee structure')
+        // Single creation/update
+        const payload = {
+          class: formData.class,
+          fee_name: formData.fee_name,
+          fee_amount: parseFloat(formData.fee_amount),
+          period: formData.period,
+          late_fine_enabled: formData.late_fine_enabled,
+          is_optional: formData.is_optional
+        }
+
+        let response
+        if (editingId) {
+          response = await updateFeeStructure(editingId, payload)
+        } else {
+          response = await createFeeStructure(payload)
+        }
+
+        if (response.success || response.message) {
+          setSuccess(editingId ? 'Fee structure updated successfully' : 'Fee structure created successfully')
+          setIsModalOpen(false)
+          resetForm()
+          await fetchFeeStructures()
+        } else {
+          setError(response.message || 'Failed to save fee structure')
+        }
       }
     } catch (err) {
       setError(err?.message || err?.data?.message || 'Failed to save fee structure')
@@ -106,11 +162,13 @@ function FeeStructure() {
 
   const handleEdit = (fee) => {
     setEditingId(fee.id)
+    setMode('single')
     setFormData({
       class: fee.class || '',
-      section: fee.section || '',
       fee_name: fee.fee_name || '',
       fee_amount: fee.fee_amount || '',
+      period: fee.period || 'monthly',
+      late_fine_enabled: fee.late_fine_enabled || false,
       is_optional: fee.is_optional || false
     })
     setIsModalOpen(true)
@@ -151,28 +209,83 @@ function FeeStructure() {
   const resetForm = () => {
     setFormData({
       class: '',
-      section: '',
       fee_name: '',
       fee_amount: '',
+      period: 'monthly',
+      late_fine_enabled: false,
       is_optional: false
     })
+    setBulkData([{
+      class: '',
+      fees: FEE_TYPES.map(fee => ({
+        fee_name: fee.name,
+        fee_amount: '',
+        period: fee.defaultPeriod,
+        late_fine_enabled: false,
+        is_optional: false
+      }))
+    }])
     setEditingId(null)
+    setMode('single')
+  }
+
+  const addBulkRow = () => {
+    setBulkData([...bulkData, {
+      class: bulkData[0]?.class || '',
+      fees: FEE_TYPES.map(fee => ({
+        fee_name: fee.name,
+        fee_amount: '',
+        period: fee.defaultPeriod,
+        late_fine_enabled: false,
+        is_optional: false
+      }))
+    }])
+  }
+
+  const removeBulkRow = (index) => {
+    if (bulkData.length > 1) {
+      setBulkData(bulkData.filter((_, i) => i !== index))
+    }
+  }
+
+  const updateBulkFee = (rowIndex, feeIndex, field, value) => {
+    const updated = [...bulkData]
+    updated[rowIndex].fees[feeIndex] = { ...updated[rowIndex].fees[feeIndex], [field]: value }
+    setBulkData(updated)
+  }
+
+  const updateBulkClassForAll = (value) => {
+    setBulkData(bulkData.map(item => ({ ...item, class: value })))
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white">Fee Structure Management</h3>
-        <button
-          onClick={() => {
-            resetForm()
-            setIsModalOpen(true)
-          }}
-          className="px-4 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#137fec]/90 transition-colors flex items-center gap-2"
-        >
-          <span className="material-symbols-outlined text-sm">add</span>
-          Add Fee Structure
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              resetForm()
+              setMode('single')
+              setIsModalOpen(true)
+            }}
+            className="px-4 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#137fec]/90 transition-colors flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-sm">add</span>
+            Add Single
+          </button>
+          <button
+            onClick={() => {
+              resetForm()
+              setMode('bulk')
+              setIsModalOpen(true)
+            }}
+            className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors flex items-center gap-2 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-sm">add_circle</span>
+            Add Bulk
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -184,16 +297,6 @@ function FeeStructure() {
             value={classFilter}
             onChange={(e) => setClassFilter(e.target.value)}
             placeholder="Filter by class"
-            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-          />
-        </div>
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Section</label>
-          <input
-            type="text"
-            value={sectionFilter}
-            onChange={(e) => setSectionFilter(e.target.value)}
-            placeholder="Filter by section"
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
           />
         </div>
@@ -226,68 +329,236 @@ function FeeStructure() {
         </div>
       )}
 
-      {/* Table */}
+      {/* Summary Stats */}
+      {feeStructures.length > 0 && !loading && (() => {
+        const totalClasses = new Set(feeStructures.map(f => f.class)).size
+        const totalFees = feeStructures.length
+        const totalAmount = feeStructures.reduce((sum, f) => sum + (f.fee_amount || 0), 0)
+        const requiredCount = feeStructures.filter(f => !f.is_optional).length
+        const optionalCount = feeStructures.filter(f => f.is_optional).length
+
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-4 border border-blue-200 dark:border-blue-700/50 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-blue-600 dark:text-blue-300 font-medium">Total Classes</p>
+                  <p className="text-2xl font-black mt-1 text-blue-700 dark:text-blue-200">{totalClasses}</p>
+                </div>
+                <span className="material-symbols-outlined text-3xl text-blue-400 dark:text-blue-500">class</span>
+              </div>
+            </div>
+            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-xl p-4 border border-emerald-200 dark:border-emerald-700/50 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-emerald-600 dark:text-emerald-300 font-medium">Total Fees</p>
+                  <p className="text-2xl font-black mt-1 text-emerald-700 dark:text-emerald-200">{totalFees}</p>
+                </div>
+                <span className="material-symbols-outlined text-3xl text-emerald-400 dark:text-emerald-500">receipt_long</span>
+              </div>
+            </div>
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-xl p-4 border border-indigo-200 dark:border-indigo-700/50 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-indigo-600 dark:text-indigo-300 font-medium">Total Amount</p>
+                  <p className="text-xl font-black mt-1 text-indigo-700 dark:text-indigo-200">₹{totalAmount.toLocaleString('en-IN')}</p>
+                </div>
+                <span className="material-symbols-outlined text-3xl text-indigo-400 dark:text-indigo-500">payments</span>
+              </div>
+            </div>
+            <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-xl p-4 border border-amber-200 dark:border-amber-700/50 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600 dark:text-amber-300 font-medium">Required / Optional</p>
+                  <p className="text-xl font-black mt-1 text-amber-700 dark:text-amber-200">{requiredCount} / {optionalCount}</p>
+                </div>
+                <span className="material-symbols-outlined text-3xl text-amber-400 dark:text-amber-500">check_circle</span>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
+      {/* Grouped by Class */}
       {loading ? (
         <div className="flex items-center justify-center py-8">
           <span className="material-symbols-outlined animate-spin text-3xl text-[#137fec]">sync</span>
         </div>
       ) : feeStructures.length === 0 ? (
         <p className="text-center text-slate-500 dark:text-slate-400 py-8">No fee structures found</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-                <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Class</th>
-                <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Section</th>
-                <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Fee Name</th>
-                <th className="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">Amount</th>
-                <th className="px-4 py-3 text-center font-bold text-slate-900 dark:text-white">Optional</th>
-                <th className="px-4 py-3 text-center font-bold text-slate-900 dark:text-white">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {feeStructures.map((fee) => (
-                <tr key={fee.id} className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/50">
-                  <td className="px-4 py-3 text-slate-900 dark:text-white">{fee.class}</td>
-                  <td className="px-4 py-3 text-slate-900 dark:text-white">{fee.section || '--'}</td>
-                  <td className="px-4 py-3 text-slate-900 dark:text-white font-medium">{fee.fee_name}</td>
-                  <td className="px-4 py-3 text-right text-slate-900 dark:text-white">₹{fee.fee_amount}</td>
-                  <td className="px-4 py-3 text-center">
-                    {fee.is_optional ? (
-                      <span className="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-full text-xs">Optional</span>
-                    ) : (
-                      <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full text-xs">Required</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <button
-                        onClick={() => handleEdit(fee)}
-                        disabled={deletingId === fee.id}
-                        className="p-1.5 text-[#137fec] hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <span className="material-symbols-outlined text-sm">edit</span>
-                      </button>
-                      <button
-                        onClick={() => handleDelete(fee.id)}
-                        disabled={deletingId === fee.id || deletingId !== null}
-                        className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {deletingId === fee.id ? (
-                          <span className="material-symbols-outlined text-sm animate-spin">sync</span>
-                        ) : (
-                          <span className="material-symbols-outlined text-sm">delete</span>
-                        )}
-                      </button>
+      ) : (() => {
+        // Group fees by class
+        const groupedByClass = feeStructures.reduce((acc, fee) => {
+          const classKey = fee.class || 'Unknown'
+          if (!acc[classKey]) {
+            acc[classKey] = []
+          }
+          acc[classKey].push(fee)
+          return acc
+        }, {})
+
+        // Calculate totals for each class
+        const classTotals = Object.keys(groupedByClass).reduce((acc, classKey) => {
+          acc[classKey] = groupedByClass[classKey].reduce((sum, fee) => sum + (fee.fee_amount || 0), 0)
+          return acc
+        }, {})
+
+        return (
+          <div className="space-y-6">
+            {Object.keys(groupedByClass).sort().map((classKey) => {
+              const classFees = groupedByClass[classKey]
+              const totalAmount = classTotals[classKey]
+              const requiredFees = classFees.filter(f => !f.is_optional)
+              const optionalFees = classFees.filter(f => f.is_optional)
+
+              return (
+                <div 
+                  key={classKey} 
+                  className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all overflow-hidden"
+                >
+                  {/* Class Header */}
+                  <div className="bg-gradient-to-r from-blue-50 to-[#137fec]/10 dark:from-blue-900/30 dark:to-blue-800/20 px-6 py-4 border-b border-blue-200 dark:border-blue-700/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="bg-[#137fec]/10 dark:bg-blue-500/20 rounded-lg p-2">
+                          <span className="material-symbols-outlined text-[#137fec] dark:text-blue-400 text-2xl">class</span>
+                        </div>
+                        <div>
+                          <h4 className="text-xl font-bold text-slate-900 dark:text-white">Class {classKey}</h4>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">
+                            {classFees.length} {classFees.length === 1 ? 'fee structure' : 'fee structures'}
+                            {requiredFees.length > 0 && (
+                              <span className="ml-2">• {requiredFees.length} Required</span>
+                            )}
+                            {optionalFees.length > 0 && (
+                              <span className="ml-2">• {optionalFees.length} Optional</span>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold">Total Amount</p>
+                        <p className="text-2xl font-bold text-[#137fec] dark:text-blue-400">₹{totalAmount.toLocaleString('en-IN')}</p>
+                      </div>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                  </div>
+
+                  {/* Fees Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-slate-50 dark:bg-slate-900/30 border-b border-slate-200 dark:border-slate-700">
+                          <th className="px-4 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Fee Name</th>
+                          <th className="px-4 py-3 text-right font-semibold text-slate-700 dark:text-slate-300">Amount</th>
+                          <th className="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">Period</th>
+                          <th className="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">Late Fine</th>
+                          <th className="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">Type</th>
+                          <th className="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {classFees.map((fee, index) => (
+                          <tr 
+                            key={fee.id} 
+                            className={`border-b border-slate-100 dark:border-slate-700/50 hover:bg-blue-50/50 dark:hover:bg-slate-900/30 transition-colors ${
+                              index === classFees.length - 1 ? 'border-b-0' : ''
+                            }`}
+                          >
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-slate-900 dark:text-white">{fee.fee_name}</span>
+                                {fee.is_optional && (
+                                  <span className="px-1.5 py-0.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded text-xs font-medium border border-amber-200 dark:border-amber-700/50">
+                                    Optional
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <span className="font-bold text-slate-900 dark:text-white text-base">
+                                ₹{fee.fee_amount?.toLocaleString('en-IN') || 0}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                fee.period === 'yearly' 
+                                  ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700/50' 
+                                  : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50'
+                              }`}>
+                                {fee.period === 'yearly' ? '📅 Yearly' : '📆 Monthly'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              {fee.late_fine_enabled ? (
+                                <span className="px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-full text-xs font-medium flex items-center justify-center gap-1 w-fit mx-auto border border-amber-200 dark:border-amber-700/50">
+                                  <span className="material-symbols-outlined text-xs">warning</span>
+                                  Enabled
+                                </span>
+                              ) : (
+                                <span className="px-3 py-1 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 rounded-full text-xs font-medium border border-slate-200 dark:border-slate-700/50">
+                                  Disabled
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              {fee.is_optional ? (
+                                <span className="px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-full text-xs font-medium border border-amber-200 dark:border-amber-700/50">
+                                  Optional
+                                </span>
+                              ) : (
+                                <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-full text-xs font-medium border border-emerald-200 dark:border-emerald-700/50">
+                                  Required
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center justify-center gap-2">
+                                <button
+                                  onClick={() => handleEdit(fee)}
+                                  disabled={deletingId === fee.id || deletingId !== null}
+                                  className="p-2 text-[#137fec] hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  title="Edit fee structure"
+                                >
+                                  <span className="material-symbols-outlined text-lg">edit</span>
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(fee.id)}
+                                  disabled={deletingId === fee.id || deletingId !== null}
+                                  className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  title="Delete fee structure"
+                                >
+                                  {deletingId === fee.id ? (
+                                    <span className="material-symbols-outlined text-lg animate-spin">sync</span>
+                                  ) : (
+                                    <span className="material-symbols-outlined text-lg">delete</span>
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      {/* Class Summary Footer */}
+                      <tfoot>
+                        <tr className="bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700">
+                          <td colSpan={2} className="px-4 py-3 text-right font-semibold text-slate-700 dark:text-slate-300">
+                            Class Total:
+                          </td>
+                          <td colSpan={4} className="px-4 py-3 text-right">
+                            <span className="text-xl font-bold text-[#137fec] dark:text-blue-400">
+                              ₹{totalAmount.toLocaleString('en-IN')}
+                            </span>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )
+      })()}
 
       {/* Modal */}
       {isModalOpen && (
@@ -301,82 +572,252 @@ function FeeStructure() {
           }}
         >
           <div 
-            className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6"
+            className={`bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full p-6 ${
+              mode === 'bulk' ? 'max-w-5xl' : 'max-w-2xl'
+            } max-h-[90vh] overflow-y-auto`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                {editingId ? 'Edit Fee Structure' : 'Add Fee Structure'}
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200 dark:border-slate-700">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                {editingId ? 'Edit Fee Structure' : mode === 'bulk' ? 'Add Bulk Fee Structures' : 'Add Fee Structure'}
               </h3>
               <button
                 onClick={() => {
                   setIsModalOpen(false)
                   resetForm()
                 }}
-                className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                className="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
 
+            {!editingId && (
+              <div className="mb-6 flex gap-3 bg-slate-100 dark:bg-slate-900/50 p-1 rounded-lg">
+                <button
+                  type="button"
+                  onClick={() => setMode('single')}
+                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                    mode === 'single'
+                      ? 'bg-[#137fec] text-white shadow-md'
+                      : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  Single Entry
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode('bulk')}
+                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                    mode === 'bulk'
+                      ? 'bg-[#137fec] text-white shadow-md'
+                      : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  Bulk Entry
+                </button>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.class}
-                  onChange={(e) => setFormData({ ...formData, class: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                />
-              </div>
+              {mode === 'bulk' && !editingId ? (
+                <>
+                  {/* Bulk Mode */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class (for all) *</label>
+                    <input
+                      type="text"
+                      required
+                      value={bulkData[0]?.class || ''}
+                      onChange={(e) => updateBulkClassForAll(e.target.value)}
+                      placeholder="e.g., LKG, 1, 2"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                    />
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">This class will be applied to all fee structures below</p>
+                  </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Section *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.section}
-                  onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                />
-              </div>
+                  <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Classes & Fees:</p>
+                      <button
+                        type="button"
+                        onClick={addBulkRow}
+                        className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 shadow-sm"
+                      >
+                        <span className="material-symbols-outlined text-base">add</span>
+                        Add Another Class
+                      </button>
+                    </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fee Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.fee_name}
-                  onChange={(e) => setFormData({ ...formData, fee_name: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                />
-              </div>
+                    <div className="space-y-4">
+                      {bulkData.map((item, rowIndex) => (
+                        <div key={rowIndex} className="border-2 border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900/50 hover:border-[#137fec] dark:hover:border-[#137fec] transition-all shadow-sm">
+                          <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-slate-200 dark:border-slate-700">
+                            <div className="flex items-center gap-3">
+                              <span className="text-base font-black text-slate-900 dark:text-white">Class: {item.class || 'Not Set'}</span>
+                            </div>
+                            {bulkData.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeBulkRow(rowIndex)}
+                                className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                title="Remove this class"
+                              >
+                                <span className="material-symbols-outlined text-lg">delete</span>
+                              </button>
+                            )}
+                          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fee Amount *</label>
-                <input
-                  type="number"
-                  required
-                  step="0.01"
-                  value={formData.fee_amount}
-                  onChange={(e) => setFormData({ ...formData, fee_amount: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                />
-              </div>
+                          {/* All fees in one table/card */}
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+                                  <th className="px-3 py-2 text-left font-bold text-slate-900 dark:text-white">Fee Name</th>
+                                  <th className="px-3 py-2 text-right font-bold text-slate-900 dark:text-white">Amount</th>
+                                  <th className="px-3 py-2 text-center font-bold text-slate-900 dark:text-white">Period</th>
+                                  <th className="px-3 py-2 text-center font-bold text-slate-900 dark:text-white">Late Fine</th>
+                                  <th className="px-3 py-2 text-center font-bold text-slate-900 dark:text-white">Optional</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {item.fees.map((fee, feeIndex) => (
+                                  <tr key={feeIndex} className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/30">
+                                    <td className="px-3 py-3 font-medium text-slate-900 dark:text-white">
+                                      {fee.fee_name}
+                                    </td>
+                                    <td className="px-3 py-3">
+                                      <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        value={fee.fee_amount}
+                                        onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'fee_amount', e.target.value)}
+                                        placeholder="0.00"
+                                        className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent text-right"
+                                      />
+                                    </td>
+                                    <td className="px-3 py-3">
+                                      <select
+                                        value={fee.period}
+                                        onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'period', e.target.value)}
+                                        className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                                      >
+                                        <option value="monthly">Monthly</option>
+                                        <option value="yearly">Yearly</option>
+                                      </select>
+                                    </td>
+                                    <td className="px-3 py-3 text-center">
+                                      <label className="flex items-center justify-center cursor-pointer">
+                                        <input
+                                          type="checkbox"
+                                          checked={fee.late_fine_enabled}
+                                          onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'late_fine_enabled', e.target.checked)}
+                                          className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+                                        />
+                                      </label>
+                                    </td>
+                                    <td className="px-3 py-3 text-center">
+                                      <label className="flex items-center justify-center cursor-pointer">
+                                        <input
+                                          type="checkbox"
+                                          checked={fee.is_optional}
+                                          onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'is_optional', e.target.checked)}
+                                          className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+                                        />
+                                      </label>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Single Mode */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Class *</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.class}
+                        onChange={(e) => setFormData({ ...formData, class: e.target.value })}
+                        placeholder="e.g., LKG, 1, 2"
+                        className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                      />
+                    </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="is_optional"
-                  checked={formData.is_optional}
-                  onChange={(e) => setFormData({ ...formData, is_optional: e.target.checked })}
-                  className="w-4 h-4 text-[#137fec] rounded"
-                />
-                <label htmlFor="is_optional" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Optional Fee
-                </label>
-              </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Fee Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.fee_name}
+                        onChange={(e) => setFormData({ ...formData, fee_name: e.target.value })}
+                        placeholder="e.g., Tuition Fee"
+                        className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Fee Amount *</label>
+                      <input
+                        type="number"
+                        required
+                        step="0.01"
+                        min="0"
+                        value={formData.fee_amount}
+                        onChange={(e) => setFormData({ ...formData, fee_amount: e.target.value })}
+                        placeholder="0.00"
+                        className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Period *</label>
+                      <select
+                        required
+                        value={formData.period}
+                        onChange={(e) => setFormData({ ...formData, period: e.target.value })}
+                        className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                      >
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                      <input
+                        type="checkbox"
+                        id="late_fine_enabled"
+                        checked={formData.late_fine_enabled}
+                        onChange={(e) => setFormData({ ...formData, late_fine_enabled: e.target.checked })}
+                        className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+                      />
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Enable Late Fine</span>
+                    </label>
+
+                    <label className="flex items-center gap-3 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                      <input
+                        type="checkbox"
+                        id="is_optional"
+                        checked={formData.is_optional}
+                        onChange={(e) => setFormData({ ...formData, is_optional: e.target.checked })}
+                        className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+                      />
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Optional Fee</span>
+                    </label>
+                  </div>
+                </>
+              )}
 
               <div className="flex gap-3 pt-4">
                 <button

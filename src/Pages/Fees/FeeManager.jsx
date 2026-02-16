@@ -8,6 +8,7 @@ import Bills from './Bills'
 
 function FeeManager() {
   const [activeTab, setActiveTab] = useState('structure')
+  const [invoiceBillId, setInvoiceBillId] = useState('')
 
   const tabs = [
     { id: 'structure', label: 'Fee Structure', icon: 'settings' },
@@ -46,9 +47,12 @@ function FeeManager() {
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         {activeTab === 'structure' && <FeeStructure />}
         {activeTab === 'bulk' && <BulkBillGeneration />}
-        {activeTab === 'list' && <FeeList />}
+        {activeTab === 'list' && <FeeList onViewInvoice={(billId) => {
+          setInvoiceBillId(billId)
+          setActiveTab('invoice')
+        }} />}
         {activeTab === 'pay' && <PayFees />}
-        {activeTab === 'invoice' && <Invoice />}
+        {activeTab === 'invoice' && <Invoice billId={invoiceBillId} onBillIdChange={setInvoiceBillId} />}
         {activeTab === 'bills' && <Bills />}
       </div>
     </div>

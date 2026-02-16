@@ -5,9 +5,11 @@ function PayFees() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [paymentDetails, setPaymentDetails] = useState(null)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [paymentResponse, setPaymentResponse] = useState(null)
   const [formData, setFormData] = useState({
     class: '',
+    section: '',
     roll_number: '',
     amount_paid: '',
     payment_mode: 'cash',
@@ -26,12 +28,14 @@ function PayFees() {
     e.preventDefault()
     setError('')
     setSuccess('')
-    setPaymentDetails(null)
+    setPaymentResponse(null)
+    setShowPaymentModal(false)
     setLoading(true)
 
     try {
       const payload = {
         class: formData.class,
+        section: formData.section,
         roll_number: parseInt(formData.roll_number),
         amount_paid: parseFloat(formData.amount_paid),
         payment_mode: formData.payment_mode,
@@ -40,13 +44,17 @@ function PayFees() {
       }
 
       const response = await recordFeePayment(payload)
-      // Handle different response structures
-      if (response.message || response.bill_id) {
-        setSuccess(response.message || 'Payment recorded successfully!')
-        setPaymentDetails(response)
+      
+      // Handle successful response
+      if (response.message || response.payment || response.bill_id) {
+        setSuccess(response.message || 'Payment processed successfully!')
+        setPaymentResponse(response)
+        setShowPaymentModal(true)
+        
         // Reset form
         setFormData({
           class: '',
+          section: '',
           roll_number: '',
           amount_paid: '',
           payment_mode: 'cash',
@@ -57,7 +65,7 @@ function PayFees() {
         setError(response.message || 'Failed to record payment')
       }
     } catch (err) {
-      setError(err?.message || err?.data?.message || 'Failed to record payment')
+      setError(err?.message || err?.data?.message || err?.response?.data?.message || 'Failed to record payment')
     } finally {
       setLoading(false)
     }
@@ -102,6 +110,18 @@ function PayFees() {
               value={formData.roll_number}
               onChange={(e) => setFormData({ ...formData, roll_number: e.target.value })}
               placeholder="Enter roll number"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Section *</label>
+            <input
+              type="text"
+              required
+              value={formData.section}
+              onChange={(e) => setFormData({ ...formData, section: e.target.value.toUpperCase() })}
+              placeholder="e.g., A, B, C"
               className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
             />
           </div>
@@ -181,93 +201,118 @@ function PayFees() {
         </div>
       </form>
 
-      {/* Payment Details */}
-      {paymentDetails && (
-        <div className="mt-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 space-y-4">
-          <h4 className="text-md font-bold text-slate-900 dark:text-white">Payment Details</h4>
-          
-          {/* Student Info */}
-          {paymentDetails.student && (
-            <div>
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Student Information</p>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <span className="text-slate-600 dark:text-slate-400">Name:</span>
-                  <span className="ml-2 font-medium text-slate-900 dark:text-white">{paymentDetails.student.name}</span>
+      {/* Payment Success Modal */}
+      {showPaymentModal && paymentResponse && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowPaymentModal(false)
+            }
+          }}
+        >
+          <div 
+            className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-3">
+                <div className="bg-green-100 dark:bg-green-900/30 rounded-lg p-2">
+                  <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">check_circle</span>
                 </div>
                 <div>
-                  <span className="text-slate-600 dark:text-slate-400">Father Name:</span>
-                  <span className="ml-2 font-medium text-slate-900 dark:text-white">{paymentDetails.student.father_name || '--'}</span>
-                </div>
-                <div>
-                  <span className="text-slate-600 dark:text-slate-400">Class:</span>
-                  <span className="ml-2 font-medium text-slate-900 dark:text-white">{paymentDetails.student.class}</span>
-                </div>
-                <div>
-                  <span className="text-slate-600 dark:text-slate-400">Section:</span>
-                  <span className="ml-2 font-medium text-slate-900 dark:text-white">{paymentDetails.student.section || '--'}</span>
-                </div>
-                <div>
-                  <span className="text-slate-600 dark:text-slate-400">Roll No:</span>
-                  <span className="ml-2 font-medium text-slate-900 dark:text-white">{paymentDetails.student.roll_no}</span>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">Payment Successful</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">{paymentResponse.message || 'Payment processed successfully'}</p>
                 </div>
               </div>
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
             </div>
-          )}
 
-          {/* Bill Info */}
-          {paymentDetails.bill && (
-            <div>
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Bill Information</p>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <span className="text-slate-600 dark:text-slate-400">Bill ID:</span>
-                  <span className="ml-2 font-medium text-slate-900 dark:text-white text-xs">{paymentDetails.bill_id || paymentDetails.bill.id}</span>
+            {/* Payment Details */}
+            <div className="space-y-4">
+              {/* Receipt Number - Highlighted */}
+              {paymentResponse.payment?.receipt_no && (
+                <div className="bg-gradient-to-r from-blue-50 to-[#137fec]/10 dark:from-blue-900/30 dark:to-blue-800/20 rounded-xl p-5 border border-blue-200 dark:border-blue-700/50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mb-1">Receipt Number</p>
+                      <p className="text-2xl font-bold text-[#137fec] dark:text-blue-400">{paymentResponse.payment.receipt_no}</p>
+                    </div>
+                    <span className="material-symbols-outlined text-4xl text-blue-400 dark:text-blue-500">receipt</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-slate-600 dark:text-slate-400">Month:</span>
-                  <span className="ml-2 font-medium text-slate-900 dark:text-white">{paymentDetails.bill.month}</span>
-                </div>
-                <div>
-                  <span className="text-slate-600 dark:text-slate-400">Total Amount:</span>
-                  <span className="ml-2 font-medium text-slate-900 dark:text-white">₹{paymentDetails.bill.total_amount || 0}</span>
-                </div>
-                <div>
-                  <span className="text-slate-600 dark:text-slate-400">Status:</span>
-                  <span className={`ml-2 font-medium px-2 py-1 rounded-full text-xs ${
-                    paymentDetails.bill.bill_status === 'paid' 
-                      ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                      : paymentDetails.bill.bill_status === 'partial'
-                      ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
-                      : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
-                  }`}>
-                    {paymentDetails.bill.bill_status || 'pending'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
+              )}
 
-          {/* Payment Summary */}
-          {paymentDetails.payment_summary && (
-            <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Payment Summary</p>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-600 dark:text-slate-400">Amount Paid:</span>
-                  <span className="font-bold text-green-600 dark:text-green-400">₹{paymentDetails.payment_summary.amount_paid || paymentDetails.amount_paid || 0}</span>
+              {/* Payment Information Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold mb-1">Amount Paid</p>
+                  <p className="text-xl font-bold text-green-600 dark:text-green-400">
+                    ₹{paymentResponse.payment?.amount_paid?.toLocaleString('en-IN') || paymentResponse.amount_paid?.toLocaleString('en-IN') || '0'}
+                  </p>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-600 dark:text-slate-400">Total Paid:</span>
-                  <span className="font-bold text-green-600 dark:text-green-400">₹{paymentDetails.payment_summary.total_paid || 0}</span>
+
+                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold mb-1">Advance Created</p>
+                  <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                    ₹{paymentResponse.payment?.advance_created?.toLocaleString('en-IN') || '0'}
+                  </p>
                 </div>
-                <div className="flex justify-between border-t border-slate-200 dark:border-slate-700 pt-2">
-                  <span className="text-slate-600 dark:text-slate-400">Remaining Balance:</span>
-                  <span className="font-bold text-red-600 dark:text-red-400">₹{paymentDetails.payment_summary.balance || paymentDetails.payment_summary.remaining || 0}</span>
+
+                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold mb-1">Remaining</p>
+                  <p className={`text-xl font-bold ${(paymentResponse.payment?.remaining || 0) > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                    ₹{paymentResponse.payment?.remaining?.toLocaleString('en-IN') || '0'}
+                  </p>
+                </div>
+
+                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold mb-1">Bill ID</p>
+                  <p className="text-sm font-medium text-slate-900 dark:text-white break-all">
+                    {paymentResponse.payment?.bill_id || paymentResponse.bill_id || '--'}
+                  </p>
                 </div>
               </div>
+
+              {/* Additional Info */}
+              {(paymentResponse.payment?.payment_id || paymentResponse.student_id) && (
+                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold mb-2">Transaction Details</p>
+                  <div className="space-y-1 text-sm">
+                    {paymentResponse.payment?.payment_id && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-600 dark:text-slate-400">Payment ID:</span>
+                        <span className="font-medium text-slate-900 dark:text-white text-xs break-all">{paymentResponse.payment.payment_id}</span>
+                      </div>
+                    )}
+                    {paymentResponse.student_id && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-600 dark:text-slate-400">Student ID:</span>
+                        <span className="font-medium text-slate-900 dark:text-white text-xs break-all">{paymentResponse.student_id}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Footer */}
+            <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className="px-6 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#137fec]/90 transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">check</span>
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

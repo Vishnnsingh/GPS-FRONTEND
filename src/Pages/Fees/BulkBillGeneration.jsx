@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { generateBulkBills, downloadBillsPDF } from '../../Api/fees'
+import { generateBulkBills, generateBillsForAllClasses, downloadBillsPDF } from '../../Api/fees'
 
 function BulkBillGeneration() {
   const [loading, setLoading] = useState(false)
@@ -7,13 +7,12 @@ function BulkBillGeneration() {
   const [success, setSuccess] = useState('')
   const [formData, setFormData] = useState({
     class: '',
-    section: '',
     month: '',
-    includeAnnualFee: false,
-    includeExamFee: false,
-    includeComputerFee: false,
-    includeOptionalFees: false
+    include_annual_fee: false,
+    include_exam_fee: false,
+    include_computer_fee: false
   })
+  const [generateForAll, setGenerateForAll] = useState(false)
 
   // Auto-hide success message after 5 seconds
   useEffect(() => {
@@ -42,10 +41,9 @@ function BulkBillGeneration() {
 
     // Frontend validation: Check if at least one fee is selected
     const hasAnyFeeSelected = 
-      formData.includeAnnualFee || 
-      formData.includeExamFee || 
-      formData.includeComputerFee || 
-      formData.includeOptionalFees
+      formData.include_annual_fee || 
+      formData.include_exam_fee || 
+      formData.include_computer_fee
 
     if (!hasAnyFeeSelected) {
       setError('No fees selected. Please select at least one fee type.')
@@ -55,36 +53,55 @@ function BulkBillGeneration() {
     setLoading(true)
 
     try {
-      const payload = {
-        class: formData.class,
-        section: formData.section,
-        month: formData.month,
-        includeAnnualFee: formData.includeAnnualFee,
-        includeExamFee: formData.includeExamFee,
-        includeComputerFee: formData.includeComputerFee,
-        includeOptionalFees: formData.includeOptionalFees
+      let response
+      
+      if (generateForAll) {
+        // Generate for all classes
+        const payload = {
+          month: formData.month,
+          include_annual_fee: formData.include_annual_fee,
+          include_exam_fee: formData.include_exam_fee,
+          include_computer_fee: formData.include_computer_fee
+        }
+        response = await generateBillsForAllClasses(payload)
+      } else {
+        // Generate for specific class
+        if (!formData.class) {
+          setError('Please enter Class')
+          setLoading(false)
+          return
+        }
+        const payload = {
+          class: formData.class,
+          month: formData.month,
+          include_annual_fee: formData.include_annual_fee,
+          include_exam_fee: formData.include_exam_fee,
+          include_computer_fee: formData.include_computer_fee
+        }
+        response = await generateBulkBills(payload)
       }
-
-      const response = await generateBulkBills(payload)
       // Handle different response structures
-      if (response.success || (response.message && response.message.toLowerCase().includes('success'))) {
-        setSuccess(`Bills generated successfully! ${response.message || ''}`)
+      if (response.message || response.successCount !== undefined) {
+        const successMsg = response.message || 'Bills generated successfully!'
+        const countInfo = response.successCount !== undefined 
+          ? ` (${response.successCount} students${response.errorCount > 0 ? `, ${response.errorCount} errors` : ''})`
+          : ''
+        setSuccess(`${successMsg}${countInfo}`)
         // Reset form
         setFormData({
           class: '',
-          section: '',
           month: '',
-          includeAnnualFee: false,
-          includeExamFee: false,
-          includeComputerFee: false,
-          includeOptionalFees: false
+          include_annual_fee: false,
+          include_exam_fee: false,
+          include_computer_fee: false
         })
+        setGenerateForAll(false)
       } else {
         // Check if it's an error message
-        const errorMsg = response.message || 'Failed to generate bulk bills'
+        const errorMsg = response.message || 'Failed to generate bills'
         // Add helpful context if it's about fees not being selected
         if (errorMsg.toLowerCase().includes('no fees') || errorMsg.toLowerCase().includes('fee')) {
-          setError(`${errorMsg}. Note: Make sure the selected fee types are defined in Fee Structure for this class and section.`)
+          setError(`${errorMsg}. Note: Make sure the selected fee types are defined in Fee Structure for this class.`)
         } else {
           setError(errorMsg)
         }
@@ -113,7 +130,7 @@ function BulkBillGeneration() {
     setLoading(true)
 
     try {
-      const blob = await downloadBillsPDF(formData.class, formData.month, formData.section)
+      const blob = await downloadBillsPDF(formData.class, formData.month, '')
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -154,8 +171,15 @@ function BulkBillGeneration() {
         </div>
       )}
       {success && (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 flex items-start justify-between gap-3">
-          <p className="text-sm text-green-700 dark:text-green-300 flex-1">{success}</p>
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-start justify-between gap-3">
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-green-700 dark:text-green-300">{success}</p>
+            {success.includes('students') && (
+              <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                ✅ Bills have been generated and are ready for download.
+              </p>
+            )}
+          </div>
           <button
             onClick={() => setSuccess('')}
             className="text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100 flex-shrink-0"
@@ -166,89 +190,92 @@ function BulkBillGeneration() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Generate For All Classes Toggle */}
+        <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={generateForAll}
+              onChange={(e) => {
+                setGenerateForAll(e.target.checked)
+                if (e.target.checked) {
+                  setFormData({ ...formData, class: '' })
+                }
+              }}
+              className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+            />
+            <div>
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Generate for All Classes</span>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">If checked, bills will be generated for all classes</p>
+            </div>
+          </label>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class *</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              Class {!generateForAll && <span className="text-red-500">*</span>}
+            </label>
             <input
               type="text"
-              required
+              required={!generateForAll}
+              disabled={generateForAll}
               value={formData.class}
               onChange={(e) => setFormData({ ...formData, class: e.target.value })}
-              placeholder="e.g., 1, 2, 3"
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              placeholder={generateForAll ? "Not required for all classes" : "e.g., LKG, 1, 2, 3"}
+              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:cursor-not-allowed"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Section</label>
-            <input
-              type="text"
-              value={formData.section}
-              onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-              placeholder="e.g., A, B (optional)"
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-            />
-          </div>
-
-          <div className="md:col-span-2">
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Month *</label>
             <input
               type="month"
               required
               value={formData.month}
               onChange={(e) => setFormData({ ...formData, month: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
             />
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Format: YYYY-MM (e.g., 2024-01)</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Format: YYYY-MM (e.g., 2026-03)</p>
           </div>
         </div>
 
         {/* Checkboxes */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Include Fees: <span className="text-red-500">*</span></p>
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Include Fees: <span className="text-red-500">*</span></p>
             <span className="text-xs text-slate-500 dark:text-slate-400">(Must be defined in Fee Structure)</span>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <label className="flex items-center gap-2 cursor-pointer">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <label className="flex items-center gap-3 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
               <input
                 type="checkbox"
-                checked={formData.includeAnnualFee}
-                onChange={(e) => setFormData({ ...formData, includeAnnualFee: e.target.checked })}
-                className="w-4 h-4 text-[#137fec] rounded"
+                checked={formData.include_annual_fee}
+                onChange={(e) => setFormData({ ...formData, include_annual_fee: e.target.checked })}
+                className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
               />
-              <span className="text-sm text-slate-700 dark:text-slate-300">Annual Fee</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Annual Fee</span>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-3 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
               <input
                 type="checkbox"
-                checked={formData.includeExamFee}
-                onChange={(e) => setFormData({ ...formData, includeExamFee: e.target.checked })}
-                className="w-4 h-4 text-[#137fec] rounded"
+                checked={formData.include_exam_fee}
+                onChange={(e) => setFormData({ ...formData, include_exam_fee: e.target.checked })}
+                className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
               />
-              <span className="text-sm text-slate-700 dark:text-slate-300">Exam Fee</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Exam Fee</span>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-3 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
               <input
                 type="checkbox"
-                checked={formData.includeComputerFee}
-                onChange={(e) => setFormData({ ...formData, includeComputerFee: e.target.checked })}
-                className="w-4 h-4 text-[#137fec] rounded"
+                checked={formData.include_computer_fee}
+                onChange={(e) => setFormData({ ...formData, include_computer_fee: e.target.checked })}
+                className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
               />
-              <span className="text-sm text-slate-700 dark:text-slate-300">Computer Fee</span>
-            </label>
-
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.includeOptionalFees}
-                onChange={(e) => setFormData({ ...formData, includeOptionalFees: e.target.checked })}
-                className="w-4 h-4 text-[#137fec] rounded"
-              />
-              <span className="text-sm text-slate-700 dark:text-slate-300">Optional Fees</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Computer Fee</span>
             </label>
           </div>
         </div>

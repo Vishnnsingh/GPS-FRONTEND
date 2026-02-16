@@ -48,10 +48,10 @@ export const deleteFeeStructure = async (id) => {
 
 // ============ Bulk Bill Generation ============
 
-// Generate Bulk Bills
+// Generate Bills for Class (uses /bills/generate endpoint)
 export const generateBulkBills = async (billData) => {
   try {
-    const response = await api.post('/billing/generate-bulk', billData)
+    const response = await api.post('/bills/generate', billData)
     return response.data
   } catch (error) {
     throw error.response?.data || error.message
@@ -170,13 +170,15 @@ export const generateBillsPDF = async (month) => {
   }
 }
 
-// Generate Bills for Class
-export const generateBillsForClass = async (classFilter, month) => {
+// Generate Bills for Class (wrapper function)
+export const generateBillsForClass = async (classFilter, month, feeOptions = {}) => {
   try {
-    const response = await api.post('/bills/generate', {
+    const payload = {
       class: classFilter,
-      month
-    })
+      month,
+      ...feeOptions
+    }
+    const response = await api.post('/bills/generate', payload)
     return response.data
   } catch (error) {
     throw error.response?.data || error.message
@@ -184,9 +186,22 @@ export const generateBillsForClass = async (classFilter, month) => {
 }
 
 // Generate Bills for All Classes
-export const generateBillsForAllClasses = async (month) => {
+export const generateBillsForAllClasses = async (billData) => {
   try {
-    const response = await api.post('/bills/generate-all', { month })
+    const response = await api.post('/bills/generate-all', billData)
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
+// Download Bills Data
+export const downloadBillsData = async (month, classFilter = '') => {
+  try {
+    const params = { month }
+    if (classFilter) params.class = classFilter
+    
+    const response = await api.get('/bills/download-data', { params })
     return response.data
   } catch (error) {
     throw error.response?.data || error.message
@@ -214,6 +229,7 @@ export default {
   // Bills
   generateBillsPDF,
   generateBillsForClass,
-  generateBillsForAllClasses
+  generateBillsForAllClasses,
+  downloadBillsData
 }
 
