@@ -7,21 +7,30 @@ function FeeStructure() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [classFilter, setClassFilter] = useState('')
-  const [sectionFilter, setSectionFilter] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
+  
+  const classes = ['Mother Care', 'LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8']
+  const feeTypes = [
+    { key: 'tuition_fee', label: 'Tuition Fee' },
+    { key: 'exam_fee', label: 'Exam Fee' },
+    { key: 'annual_fee', label: 'Annual Fee' },
+    { key: 'computer_fee', label: 'Computer Fee' }
+  ]
+
   const [formData, setFormData] = useState({
     class: '',
-    section: '',
-    fee_name: '',
-    fee_amount: '',
-    is_optional: false
+    tuition_fee: '',
+    exam_fee: '',
+    annual_fee: '',
+    computer_fee: ''
   })
 
   useEffect(() => {
     fetchFeeStructures()
-  }, [classFilter, sectionFilter])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [classFilter])
 
   // Auto-hide success message after 3 seconds
   useEffect(() => {
@@ -37,27 +46,23 @@ function FeeStructure() {
     setLoading(true)
     setError('')
     try {
-      const response = await getFeeStructures(classFilter, sectionFilter)
-      // Handle different response structures
+      const response = await getFeeStructures(classFilter)
       if (response.success) {
         setFeeStructures(response.fee_structures || response.data || [])
       } else if (response.data && Array.isArray(response.data)) {
-        // API returns { message, count, data: [...] }
         setFeeStructures(response.data)
       } else if (Array.isArray(response)) {
-        // API returns array directly
         setFeeStructures(response)
       } else {
         setFeeStructures([])
         if (response.message) {
-          // Show message but don't treat as error if data exists
           if (!response.data || response.data.length === 0) {
             setError(response.message)
           }
         }
       }
     } catch (err) {
-      setError(err?.message || err?.data?.message || 'Failed to fetch fee structures')
+      setError(err?.message || 'Failed to fetch fee structures')
       setFeeStructures([])
     } finally {
       setLoading(false)
@@ -73,10 +78,10 @@ function FeeStructure() {
     try {
       const payload = {
         class: formData.class,
-        section: formData.section,
-        fee_name: formData.fee_name,
-        fee_amount: parseFloat(formData.fee_amount),
-        is_optional: formData.is_optional
+        tuition_fee: parseFloat(formData.tuition_fee) || 0,
+        exam_fee: parseFloat(formData.exam_fee) || 0,
+        annual_fee: parseFloat(formData.annual_fee) || 0,
+        computer_fee: parseFloat(formData.computer_fee) || 0
       }
 
       let response
@@ -86,19 +91,16 @@ function FeeStructure() {
         response = await createFeeStructure(payload)
       }
 
-      // Handle different response structures
       if (response.success || response.message) {
         setSuccess(editingId ? 'Fee structure updated successfully' : 'Fee structure created successfully')
-        // Close modal and reset form immediately
         setIsModalOpen(false)
         resetForm()
-        // Refresh the list
         await fetchFeeStructures()
       } else {
         setError(response.message || 'Failed to save fee structure')
       }
     } catch (err) {
-      setError(err?.message || err?.data?.message || 'Failed to save fee structure')
+      setError(err?.message || 'Failed to save fee structure')
     } finally {
       setLoading(false)
     }
@@ -108,10 +110,10 @@ function FeeStructure() {
     setEditingId(fee.id)
     setFormData({
       class: fee.class || '',
-      section: fee.section || '',
-      fee_name: fee.fee_name || '',
-      fee_amount: fee.fee_amount || '',
-      is_optional: fee.is_optional || false
+      tuition_fee: fee.tuition_fee || '',
+      exam_fee: fee.exam_fee || '',
+      annual_fee: fee.annual_fee || '',
+      computer_fee: fee.computer_fee || ''
     })
     setIsModalOpen(true)
   }
@@ -127,21 +129,16 @@ function FeeStructure() {
 
     try {
       const response = await deleteFeeStructure(id)
-      // Handle different response structures
       if (response.success || response.message) {
         setSuccess('Fee structure deleted successfully')
-        // Optimistically remove from UI immediately
         setFeeStructures(prev => prev.filter(fee => fee.id !== id))
-        // Also refresh to ensure sync
         await fetchFeeStructures()
       } else {
         setError(response.message || 'Failed to delete fee structure')
-        // Refresh to get correct state
         await fetchFeeStructures()
       }
     } catch (err) {
-      setError(err?.message || err?.data?.message || 'Failed to delete fee structure')
-      // Refresh to get correct state in case of error
+      setError(err?.message || 'Failed to delete fee structure')
       await fetchFeeStructures()
     } finally {
       setDeletingId(null)
@@ -151,141 +148,163 @@ function FeeStructure() {
   const resetForm = () => {
     setFormData({
       class: '',
-      section: '',
-      fee_name: '',
-      fee_amount: '',
-      is_optional: false
+      tuition_fee: '',
+      exam_fee: '',
+      annual_fee: '',
+      computer_fee: ''
     })
     setEditingId(null)
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Fee Structure Management</h3>
+    <div className="space-y-6" style={{ fontFamily: "'Lexend', sans-serif" }}>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-2">Fee Structure Management</h1>
+          <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
+            <span className="material-symbols-outlined text-base">settings</span>
+            Manage fee structure for each class
+          </p>
+        </div>
         <button
           onClick={() => {
             resetForm()
             setIsModalOpen(true)
           }}
-          className="px-4 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#137fec]/90 transition-colors flex items-center gap-2"
+          className="px-6 py-3 bg-linear-to-r from-[#137fec] to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold whitespace-nowrap"
         >
-          <span className="material-symbols-outlined text-sm">add</span>
+          <span className="material-symbols-outlined">add</span>
           Add Fee Structure
         </button>
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4 items-end">
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class</label>
-          <input
-            type="text"
+      <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+        <label className="flex text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 items-center gap-2">
+          <span className="material-symbols-outlined">filter_list</span>
+          Filter by Class
+        </label>
+        <div className="flex gap-3">
+          <select
             value={classFilter}
             onChange={(e) => setClassFilter(e.target.value)}
-            placeholder="Filter by class"
-            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-          />
+            className="flex-1 px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+          >
+            <option value="">-- All Classes --</option>
+            {classes.map((cls) => (
+              <option key={cls} value={cls}>
+                {cls}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => setClassFilter('')}
+            className="px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 font-semibold transition-colors duration-300"
+          >
+            Reset
+          </button>
         </div>
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Section</label>
-          <input
-            type="text"
-            value={sectionFilter}
-            onChange={(e) => setSectionFilter(e.target.value)}
-            placeholder="Filter by section"
-            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-          />
-        </div>
-        <button
-          onClick={() => {
-            setClassFilter('')
-            setSectionFilter('')
-          }}
-          className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
-        >
-          Reset
-        </button>
       </div>
 
       {/* Messages */}
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-          <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-red-600 dark:text-red-400">error</span>
+            <p className="text-sm text-red-700 dark:text-red-300 font-medium">{error}</p>
+          </div>
+          <button onClick={() => setError('')} className="text-red-700 dark:text-red-300">
+            <span className="material-symbols-outlined">close</span>
+          </button>
         </div>
       )}
       {success && (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 flex items-center justify-between">
-          <p className="text-sm text-green-700 dark:text-green-300">{success}</p>
-          <button
-            onClick={() => setSuccess('')}
-            className="text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100"
-          >
-            <span className="material-symbols-outlined text-sm">close</span>
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-green-600 dark:text-green-400">check_circle</span>
+            <p className="text-sm text-green-700 dark:text-green-300 font-medium">{success}</p>
+          </div>
+          <button onClick={() => setSuccess('')} className="text-green-700 dark:text-green-300">
+            <span className="material-symbols-outlined">close</span>
           </button>
         </div>
       )}
 
       {/* Table */}
       {loading ? (
-        <div className="flex items-center justify-center py-8">
-          <span className="material-symbols-outlined animate-spin text-3xl text-[#137fec]">sync</span>
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <span className="material-symbols-outlined animate-spin text-4xl text-[#137fec]">sync</span>
+            <p className="text-slate-600 dark:text-slate-400 font-medium">Loading fee structures...</p>
+          </div>
         </div>
       ) : feeStructures.length === 0 ? (
-        <p className="text-center text-slate-500 dark:text-slate-400 py-8">No fee structures found</p>
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 border border-slate-200 dark:border-slate-700 text-center">
+          <span className="material-symbols-outlined text-6xl text-slate-400 dark:text-slate-600 mx-auto mb-4 flex justify-center">receipt_long</span>
+          <p className="text-slate-600 dark:text-slate-400 text-lg font-medium">No fee structures found</p>
+        </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-                <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Class</th>
-                <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Section</th>
-                <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Fee Name</th>
-                <th className="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">Amount</th>
-                <th className="px-4 py-3 text-center font-bold text-slate-900 dark:text-white">Optional</th>
-                <th className="px-4 py-3 text-center font-bold text-slate-900 dark:text-white">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {feeStructures.map((fee) => (
-                <tr key={fee.id} className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/50">
-                  <td className="px-4 py-3 text-slate-900 dark:text-white">{fee.class}</td>
-                  <td className="px-4 py-3 text-slate-900 dark:text-white">{fee.section || '--'}</td>
-                  <td className="px-4 py-3 text-slate-900 dark:text-white font-medium">{fee.fee_name}</td>
-                  <td className="px-4 py-3 text-right text-slate-900 dark:text-white">₹{fee.fee_amount}</td>
-                  <td className="px-4 py-3 text-center">
-                    {fee.is_optional ? (
-                      <span className="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-full text-xs">Optional</span>
-                    ) : (
-                      <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full text-xs">Required</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <button
-                        onClick={() => handleEdit(fee)}
-                        disabled={deletingId === fee.id}
-                        className="p-1.5 text-[#137fec] hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <span className="material-symbols-outlined text-sm">edit</span>
-                      </button>
-                      <button
-                        onClick={() => handleDelete(fee.id)}
-                        disabled={deletingId === fee.id || deletingId !== null}
-                        className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {deletingId === fee.id ? (
-                          <span className="material-symbols-outlined text-sm animate-spin">sync</span>
-                        ) : (
-                          <span className="material-symbols-outlined text-sm">delete</span>
-                        )}
-                      </button>
-                    </div>
-                  </td>
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-linear-to-r from-slate-100 to-slate-50 dark:from-slate-700 dark:to-slate-600 border-b border-slate-200 dark:border-slate-700">
+                <tr>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-slate-900 dark:text-white">Class</th>
+                  <th className="px-6 py-4 text-right text-sm font-bold text-slate-900 dark:text-white">Tuition Fee</th>
+                  <th className="px-6 py-4 text-right text-sm font-bold text-slate-900 dark:text-white">Exam Fee</th>
+                  <th className="px-6 py-4 text-right text-sm font-bold text-slate-900 dark:text-white">Annual Fee</th>
+                  <th className="px-6 py-4 text-right text-sm font-bold text-slate-900 dark:text-white">Computer Fee</th>
+                  <th className="px-6 py-4 text-right text-sm font-bold text-slate-900 dark:text-white">Total</th>
+                  <th className="px-6 py-4 text-center text-sm font-bold text-slate-900 dark:text-white">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                {feeStructures.map((fee) => {
+                  const total = (parseFloat(fee.tuition_fee) || 0) + (parseFloat(fee.exam_fee) || 0) + (parseFloat(fee.annual_fee) || 0) + (parseFloat(fee.computer_fee) || 0)
+                  return (
+                    <tr key={fee.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200">
+                      <td className="px-6 py-4">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 bg-[#137fec]/10 text-[#137fec] dark:text-blue-400 rounded-lg font-bold text-sm">
+                          <span className="material-symbols-outlined text-base">class</span>
+                          {fee.class}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right text-slate-900 dark:text-white font-semibold">₹{fee.tuition_fee || 0}</td>
+                      <td className="px-6 py-4 text-right text-slate-900 dark:text-white font-semibold">₹{fee.exam_fee || 0}</td>
+                      <td className="px-6 py-4 text-right text-slate-900 dark:text-white font-semibold">₹{fee.annual_fee || 0}</td>
+                      <td className="px-6 py-4 text-right text-slate-900 dark:text-white font-semibold">₹{fee.computer_fee || 0}</td>
+                      <td className="px-6 py-4 text-right text-slate-900 dark:text-white font-bold text-lg">₹{total}</td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleEdit(fee)}
+                            disabled={deletingId === fee.id}
+                            className="p-2 text-[#137fec] hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Edit"
+                          >
+                            <span className="material-symbols-outlined">edit</span>
+                          </button>
+                          <button
+                            onClick={() => handleDelete(fee.id)}
+                            disabled={deletingId === fee.id || deletingId !== null}
+                            className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Delete"
+                          >
+                            {deletingId === fee.id ? (
+                              <span className="material-symbols-outlined animate-spin">sync</span>
+                            ) : (
+                              <span className="material-symbols-outlined">delete</span>
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -301,96 +320,90 @@ function FeeStructure() {
           }}
         >
           <div 
-            className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6"
+            className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full p-8"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                {editingId ? 'Edit Fee Structure' : 'Add Fee Structure'}
-              </h3>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#137fec]">settings</span>
+                  {editingId ? 'Edit Fee Structure' : 'Add Fee Structure'}
+                </h3>
               <button
                 onClick={() => {
                   setIsModalOpen(false)
                   resetForm()
                 }}
-                className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                className="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class *</label>
-                <input
-                  type="text"
+                <label className="flex text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 items-center gap-2">
+                  <span className="material-symbols-outlined text-base">class</span>
+                  Class *
+                </label>
+                <select
                   required
                   value={formData.class}
                   onChange={(e) => setFormData({ ...formData, class: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                />
+                  className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                >
+                  <option value="">-- Select Class --</option>
+                  {classes.map((cls) => (
+                    <option key={cls} value={cls}>
+                      {cls}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Section *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.section}
-                  onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {feeTypes.map((fee) => (
+                  <div key={fee.key}>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                      {fee.label}
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-3 text-slate-600 dark:text-slate-400 font-semibold">₹</span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData[fee.key]}
+                        onChange={(e) => setFormData({ ...formData, [fee.key]: e.target.value })}
+                        className="w-full pl-8 pr-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fee Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.fee_name}
-                  onChange={(e) => setFormData({ ...formData, fee_name: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fee Amount *</label>
-                <input
-                  type="number"
-                  required
-                  step="0.01"
-                  value={formData.fee_amount}
-                  onChange={(e) => setFormData({ ...formData, fee_amount: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="is_optional"
-                  checked={formData.is_optional}
-                  onChange={(e) => setFormData({ ...formData, is_optional: e.target.checked })}
-                  className="w-4 h-4 text-[#137fec] rounded"
-                />
-                <label htmlFor="is_optional" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Optional Fee
-                </label>
+              <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4 border border-slate-200 dark:border-slate-600">
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Total Fee</p>
+                <p className="text-3xl font-black text-[#137fec]">
+                  ₹{((parseFloat(formData.tuition_fee) || 0) + (parseFloat(formData.exam_fee) || 0) + (parseFloat(formData.annual_fee) || 0) + (parseFloat(formData.computer_fee) || 0)).toFixed(2)}
+                </p>
               </div>
 
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 px-4 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#137fec]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-3 bg-linear-to-r from-[#137fec] to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-bold flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
-                      <span className="material-symbols-outlined animate-spin text-sm">sync</span>
+                      <span className="material-symbols-outlined animate-spin">sync</span>
                       {editingId ? 'Updating...' : 'Creating...'}
                     </>
                   ) : (
-                    editingId ? 'Update' : 'Create'
+                    <>
+                      <span className="material-symbols-outlined">check</span>
+                      {editingId ? 'Update' : 'Create'}
+                    </>
                   )}
                 </button>
                 <button
@@ -400,7 +413,7 @@ function FeeStructure() {
                     resetForm()
                   }}
                   disabled={loading}
-                  className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-6 py-3 border border-slate-300 dark:border-slate-600 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed font-bold transition-colors duration-300"
                 >
                   Cancel
                 </button>

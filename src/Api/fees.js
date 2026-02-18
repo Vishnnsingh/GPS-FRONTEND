@@ -51,7 +51,7 @@ export const deleteFeeStructure = async (id) => {
 // Generate Bulk Bills
 export const generateBulkBills = async (billData) => {
   try {
-    const response = await api.post('/billing/generate-bulk', billData)
+    const response = await api.post('/bills/generate', billData)
     return response.data
   } catch (error) {
     throw error.response?.data || error.message
@@ -74,7 +74,7 @@ export const downloadBillsPDF = async (classFilter, month, sectionFilter = '') =
     const params = { class: classFilter, month }
     if (sectionFilter) params.section = sectionFilter
     
-    const response = await api.get('/billing/download', {
+    const response = await api.get('/bills/download-data', {
       params,
       responseType: 'blob'
     })
@@ -94,9 +94,19 @@ export const getFeeList = async (classFilter = '', sectionFilter = '', month = '
     if (sectionFilter) params.section = sectionFilter
     if (month) params.month = month
     
+    console.log('[getFeeList] API Call:', { url: '/fees/list', params })
     const response = await api.get('/fees/list', { params })
+    console.log('[getFeeList] Full Response:', response.data)
+    
+    // Log first record to see all available fields
+    if (Array.isArray(response.data) && response.data.length > 0) {
+      console.log('[getFeeList] First Record Fields:', Object.keys(response.data[0]))
+      console.log('[getFeeList] First Record Data:', response.data[0])
+    }
+    
     return response.data
   } catch (error) {
+    console.error('[getFeeList] Error:', error.response?.status, error.response?.data || error.message)
     throw error.response?.data || error.message
   }
 }
