@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
+import logo from '../Assets/logo.jpeg';
 
 function WebsiteHeader() {
-  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'GJ Public School'
+  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
   const location = useLocation()
   const [open, setOpen] = useState(false)
 
@@ -61,9 +62,12 @@ function WebsiteHeader() {
       <div className="bg-white/85 dark:bg-[#101922]/85 backdrop-blur border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2 min-w-0">
-            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-[#137fec] to-[#0d5bb8] text-white flex items-center justify-center shadow-sm">
-              <span className="material-symbols-outlined">school</span>
-            </div>
+            <img
+  src={logo}
+  alt="School Logo"
+  className="h-10 w-10 object-contain rounded-xl bg-white p-1 shadow-sm"
+/>
+
             <div className="min-w-0">
               <p className="text-sm font-black leading-tight truncate">{SCHOOL_NAME}</p>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-tight truncate">

@@ -6,10 +6,11 @@ import Student from './Student'
 import Subject from './Subject'
 import UploadMarks from './UploadMarks'
 import UploadPhoto from '../../Components/UploadPhoto/UploadPhoto'
+import FeeManager from '../Fees/FeeManager'
 import { getUser, getLoginType } from '../../Api/auth'
 import { getAllStudents } from '../../Api/students'
 import { getAllSubjects } from '../../Api/subjects'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts'
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -28,30 +29,16 @@ function Dashboard() {
     loading: true
   })
 
-  useEffect(() => {
-    const currentUser = getUser()
-    const loginTypeFromStorage = getLoginType()
-    
-    if (!currentUser) {
-      navigate('/login')
-    } else {
-      setUser(currentUser)
-      setLoginType(loginTypeFromStorage)
-      
-      // Set initial view based on login type
-      if (loginTypeFromStorage === 'student') {
-        setActiveView('result')
-      } else {
-        setActiveView('dashboard')
-      }
-    }
-  }, [navigate])
-
-  useEffect(() => {
-    if (loginType !== 'student' && activeView === 'dashboard') {
-      fetchDashboardData()
-    }
-  }, [loginType, activeView])
+  // Skeleton loading component
+  const SkeletonCard = () => (
+    <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 animate-pulse">
+      <div className="flex items-center justify-between mb-3">
+        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-32"></div>
+        <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+      </div>
+      <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-20"></div>
+    </div>
+  )
 
   const fetchDashboardData = async () => {
     setDashboardData(prev => ({ ...prev, loading: true }))
@@ -125,6 +112,31 @@ function Dashboard() {
     }
   }
 
+  useEffect(() => {
+    const currentUser = getUser()
+    const loginTypeFromStorage = getLoginType()
+    
+    if (!currentUser) {
+      navigate('/login')
+    } else {
+      setUser(currentUser)
+      setLoginType(loginTypeFromStorage)
+      
+      // Set initial view based on login type
+      if (loginTypeFromStorage === 'student') {
+        setActiveView('result')
+      } else {
+        setActiveView('dashboard')
+      }
+    }
+  }, [navigate])
+
+  useEffect(() => {
+    if (loginType !== 'student' && activeView === 'dashboard') {
+      fetchDashboardData()
+    }
+  }, [loginType, activeView])
+
   return (
     <>
       <Sidebar 
@@ -137,198 +149,267 @@ function Dashboard() {
       />
       
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
           {/* Mobile Menu Button */}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden fixed top-4 left-4 z-30 bg-[#137fec] text-white p-2 rounded-lg shadow-lg hover:bg-[#137fec]/90 transition-colors"
+            className="lg:hidden fixed top-4 left-4 z-30 bg-linear-to-r from-[#137fec] to-blue-600 text-white p-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
           >
             <span className="material-symbols-outlined">menu</span>
           </button>
 
-          <div className="p-4 lg:p-6">
+          <div className="p-4 lg:p-8">
             {loginType !== 'student' && activeView === 'dashboard' && (
-              <div className="space-y-4" style={{ fontFamily: "'Lexend', sans-serif" }}>
-                <h2 className="text-2xl font-black text-[#0d141b] dark:text-white">Dashboard</h2>
+              <div className="space-y-6" style={{ fontFamily: "'Lexend', sans-serif" }}>
+                {/* Header Section */}
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-2">Dashboard</h1>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Welcome back! Here's your school overview</p>
+                  </div>
+                  {user && (
+                    <div className="hidden md:flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl px-4 py-3 shadow-sm border border-slate-200 dark:border-slate-700">
+                      <div className="w-10 h-10 rounded-lg bg-linear-to-r from-[#137fec] to-blue-600 flex items-center justify-center text-white font-bold">
+                        {user.name?.charAt(0).toUpperCase() || 'U'}
+                      </div>
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{user.name || 'User'}</span>
+                    </div>
+                  )}
+                </div>
                 
                 {/* Dashboard Cards */}
                 {dashboardData.loading ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700">
-                        <div className="flex items-center justify-center py-8">
-                          <span className="material-symbols-outlined animate-spin text-3xl text-[#137fec]">sync</span>
-                        </div>
-                      </div>
+                      <SkeletonCard key={i} />
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {/* Total Students */}
-                    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Total Students</span>
-                        <div className="w-10 h-10 rounded-lg bg-[#137fec]/10 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-[#137fec] text-lg">people</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Total Students Card */}
+                    <div className="group bg-linear-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300 transform hover:-translate-y-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Total Students</p>
+                          <p className="text-4xl font-black text-slate-900 dark:text-white">{dashboardData.totalStudents}</p>
+                        </div>
+                        <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-[#137fec]/20 to-blue-600/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <span className="material-symbols-outlined text-3xl text-[#137fec]">people</span>
                         </div>
                       </div>
-                      <p className="text-3xl font-black text-slate-900 dark:text-white">{dashboardData.totalStudents}</p>
+                      <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
+                        <span className="material-symbols-outlined text-sm">trending_up</span>
+                        <span>Active in system</span>
+                      </div>
                     </div>
 
-                    {/* Total Classes */}
-                    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Total Classes</span>
-                        <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-green-500 text-lg">class</span>
+                    {/* Total Classes Card */}
+                    <div className="group bg-linear-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:border-green-300 dark:hover:border-green-600 transition-all duration-300 transform hover:-translate-y-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Total Classes</p>
+                          <p className="text-4xl font-black text-slate-900 dark:text-white">{dashboardData.totalClasses}</p>
+                        </div>
+                        <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-green-500/20 to-emerald-600/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <span className="material-symbols-outlined text-3xl text-green-500">class</span>
                         </div>
                       </div>
-                      <p className="text-3xl font-black text-slate-900 dark:text-white">{dashboardData.totalClasses}</p>
+                      <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
+                        <span className="material-symbols-outlined text-sm">check_circle</span>
+                        <span>Organized structure</span>
+                      </div>
                     </div>
 
-                    {/* Total Subjects */}
-                    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Total Subjects</span>
-                        <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-purple-500 text-lg">book</span>
+                    {/* Total Subjects Card */}
+                    <div className="group bg-linear-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-300 transform hover:-translate-y-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Total Subjects</p>
+                          <p className="text-4xl font-black text-slate-900 dark:text-white">{dashboardData.totalSubjects}</p>
+                        </div>
+                        <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-purple-500/20 to-violet-600/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <span className="material-symbols-outlined text-3xl text-purple-500">book</span>
                         </div>
                       </div>
-                      <p className="text-3xl font-black text-slate-900 dark:text-white">{dashboardData.totalSubjects}</p>
+                      <div className="flex items-center gap-2 text-xs text-purple-600 dark:text-purple-400">
+                        <span className="material-symbols-outlined text-sm">library_books</span>
+                        <span>Comprehensive curriculum</span>
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* Analytics Section */}
                 {!dashboardData.loading && (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {/* Students Distribution by Class */}
-                    {dashboardData.studentsByClass.length > 0 && (
-                      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Students Distribution by Class</h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                          <BarChart data={dashboardData.studentsByClass}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis 
-                              dataKey="name" 
-                              angle={-45} 
-                              textAnchor="end" 
-                              height={80}
-                              style={{ fontSize: 11 }}
-                            />
-                            <YAxis style={{ fontSize: 11 }} />
-                            <Tooltip />
-                            <Bar dataKey="value" fill="#137fec" name="Students" />
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    )}
+                  <div className="space-y-6">
+                    {/* Charts Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Students Distribution by Class */}
+                      {dashboardData.studentsByClass.length > 0 && (
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300">
+                          <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                              <span className="material-symbols-outlined text-blue-500">people_group</span>
+                              Students by Class
+                            </h3>
+                          </div>
+                          <ResponsiveContainer width="100%" height={320}>
+                            <BarChart data={dashboardData.studentsByClass} margin={{ top: 20, right: 30, left: 0, bottom: 60 }}>
+                              <defs>
+                                <linearGradient id="colorBar" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#137fec" stopOpacity={0.8}/>
+                                  <stop offset="95%" stopColor="#137fec" stopOpacity={0.3}/>
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                              <XAxis 
+                                dataKey="name" 
+                                angle={-45} 
+                                textAnchor="end" 
+                                height={80}
+                                style={{ fontSize: 12 }}
+                              />
+                              <YAxis style={{ fontSize: 12 }} />
+                              <Tooltip 
+                                contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', color: '#fff' }}
+                                cursor={{ fill: 'rgba(19, 127, 236, 0.1)' }}
+                              />
+                              <Bar dataKey="value" fill="url(#colorBar)" name="Students" radius={[8, 8, 0, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      )}
 
-                    {/* Students Distribution by Section */}
-                    {dashboardData.studentsBySection.length > 0 && (
-                      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Students Distribution by Section</h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                          <PieChart>
-                            <Pie
-                              data={dashboardData.studentsBySection}
-                              cx="50%"
-                              cy="50%"
-                              labelLine={false}
-                              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                              outerRadius={80}
-                              fill="#8884d8"
-                              dataKey="value"
-                            >
-                              {dashboardData.studentsBySection.map((entry, index) => {
-                                const colors = ['#137fec', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
-                                return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                              })}
-                            </Pie>
-                            <Tooltip />
-                            <Legend wrapperStyle={{ fontSize: 11 }} />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
-                    )}
+                      {/* Students Distribution by Section */}
+                      {dashboardData.studentsBySection.length > 0 && (
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300">
+                          <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                              <span className="material-symbols-outlined text-amber-500">pie_chart</span>
+                              Distribution by Section
+                            </h3>
+                          </div>
+                          <ResponsiveContainer width="100%" height={320}>
+                            <PieChart>
+                              <Pie
+                                data={dashboardData.studentsBySection}
+                                cx="50%"
+                                cy="50%"
+                                labelLine={false}
+                                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                outerRadius={100}
+                                fill="#8884d8"
+                                dataKey="value"
+                              >
+                                {dashboardData.studentsBySection.map((entry, index) => {
+                                  const colors = ['#137fec', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+                                  return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                                })}
+                              </Pie>
+                              <Tooltip 
+                                contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', color: '#fff' }}
+                              />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
+                      )}
+                    </div>
 
-                    {/* Subjects per Class */}
+                    {/* Subjects per Class - Full Width */}
                     {dashboardData.subjectsPerClass.length > 0 && (
-                      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-2">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Subjects & Sections per Class</h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                          <BarChart data={dashboardData.subjectsPerClass}>
-                            <CartesianGrid strokeDasharray="3 3" />
+                      <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300">
+                        <div className="flex items-center justify-between mb-6">
+                          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <span className="material-symbols-outlined text-violet-500">dashboard</span>
+                            Subjects & Sections per Class
+                          </h3>
+                        </div>
+                        <ResponsiveContainer width="100%" height={340}>
+                          <BarChart data={dashboardData.subjectsPerClass} margin={{ top: 20, right: 30, left: 0, bottom: 60 }}>
+                            <defs>
+                              <linearGradient id="colorSubjects" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#137fec" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="#137fec" stopOpacity={0.3}/>
+                              </linearGradient>
+                              <linearGradient id="colorSections" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="#10b981" stopOpacity={0.3}/>
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                             <XAxis 
                               dataKey="name" 
                               angle={-45} 
                               textAnchor="end" 
                               height={80}
-                              style={{ fontSize: 11 }}
+                              style={{ fontSize: 12 }}
                             />
-                            <YAxis style={{ fontSize: 11 }} />
-                            <Tooltip />
-                            <Legend wrapperStyle={{ fontSize: 11 }} />
-                            <Bar dataKey="subjects" fill="#137fec" name="Subjects" />
-                            <Bar dataKey="sections" fill="#10b981" name="Sections" />
+                            <YAxis style={{ fontSize: 12 }} />
+                            <Tooltip 
+                              contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px', color: '#fff' }}
+                              cursor={{ fill: 'rgba(19, 127, 236, 0.1)' }}
+                            />
+                            <Legend wrapperStyle={{ fontSize: 12 }} />
+                            <Bar dataKey="subjects" fill="url(#colorSubjects)" name="Subjects" radius={[8, 8, 0, 0]} />
+                            <Bar dataKey="sections" fill="url(#colorSections)" name="Sections" radius={[8, 8, 0, 0]} />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
                     )}
 
-                    {/* Statistics Cards */}
-                    <div className="grid grid-cols-2 gap-4 lg:col-span-2">
-                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+                    {/* Statistics Cards - Enhanced */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      <div className="bg-linear-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800 hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">Average Students per Class</p>
-                            <p className="text-2xl font-black text-blue-900 dark:text-blue-100">
+                            <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-2 uppercase tracking-wide">Avg Students/Class</p>
+                            <p className="text-3xl font-black text-blue-900 dark:text-blue-100">
                               {dashboardData.totalClasses > 0 
                                 ? Math.round(dashboardData.totalStudents / dashboardData.totalClasses) 
                                 : 0}
                             </p>
                           </div>
-                          <span className="material-symbols-outlined text-blue-500 text-3xl">trending_up</span>
+                          <span className="material-symbols-outlined text-blue-500 text-4xl opacity-50">trending_up</span>
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
+                      <div className="bg-linear-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl p-6 border border-green-200 dark:border-green-800 hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-1">Average Subjects per Class</p>
-                            <p className="text-2xl font-black text-green-900 dark:text-green-100">
+                            <p className="text-xs font-semibold text-green-600 dark:text-green-400 mb-2 uppercase tracking-wide">Avg Subjects/Class</p>
+                            <p className="text-3xl font-black text-green-900 dark:text-green-100">
                               {dashboardData.totalClasses > 0 
                                 ? Math.round(dashboardData.subjectsPerClass.reduce((sum, item) => sum + item.subjects, 0) / dashboardData.totalClasses) 
                                 : 0}
                             </p>
                           </div>
-                          <span className="material-symbols-outlined text-green-500 text-3xl">book</span>
+                          <span className="material-symbols-outlined text-green-500 text-4xl opacity-50">book</span>
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-4 border border-purple-200 dark:border-purple-800">
+                      <div className="bg-linear-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-2xl p-6 border border-purple-200 dark:border-purple-800 hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">Total Sections</p>
-                            <p className="text-2xl font-black text-purple-900 dark:text-purple-100">
+                            <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 mb-2 uppercase tracking-wide">Total Sections</p>
+                            <p className="text-3xl font-black text-purple-900 dark:text-purple-100">
                               {dashboardData.subjectsPerClass.reduce((sum, item) => sum + item.sections, 0)}
                             </p>
                           </div>
-                          <span className="material-symbols-outlined text-purple-500 text-3xl">category</span>
+                          <span className="material-symbols-outlined text-purple-500 text-4xl opacity-50">category</span>
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl p-4 border border-orange-200 dark:border-orange-800">
+                      <div className="bg-linear-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-2xl p-6 border border-orange-200 dark:border-orange-800 hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-xs font-medium text-orange-600 dark:text-orange-400 mb-1">Subject Coverage</p>
-                            <p className="text-2xl font-black text-orange-900 dark:text-orange-100">
+                            <p className="text-xs font-semibold text-orange-600 dark:text-orange-400 mb-2 uppercase tracking-wide">Subject Coverage</p>
+                            <p className="text-3xl font-black text-orange-900 dark:text-orange-100">
                               {dashboardData.totalClasses > 0 
                                 ? `${Math.round((dashboardData.totalSubjects / dashboardData.totalClasses) * 10)}%`
                                 : '0%'}
                             </p>
                           </div>
-                          <span className="material-symbols-outlined text-orange-500 text-3xl">analytics</span>
+                          <span className="material-symbols-outlined text-orange-500 text-4xl opacity-50">analytics</span>
                         </div>
                       </div>
                     </div>
@@ -346,6 +427,8 @@ function Dashboard() {
             {activeView === 'uploadMarks' && <UploadMarks />}
 
             {activeView === 'uploadPhoto' && <UploadPhoto />}
+
+            {activeView === 'fees' && <FeeManager />}
           </div>
         </main>
     </>

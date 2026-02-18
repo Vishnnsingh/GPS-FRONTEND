@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 
 function About() {
-  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'GJ Public School'
+  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
 
   return (
     <WebsiteLayout>

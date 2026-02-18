@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 function ResultLogin() {
   const navigate = useNavigate()
 
-  const terminals = useMemo(() => ['First', 'Second', 'Annual'], [])
+  const terminals = useMemo(() => ['First', 'Second', 'Third', 'Annual'], [])
 
   const [formData, setFormData] = useState({
     classValue: '',
