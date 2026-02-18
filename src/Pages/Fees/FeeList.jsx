@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getFeeList } from '../../Api/fees'
+import { downloadBillsData, getFeeList } from '../../Api/fees'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
@@ -48,36 +48,66 @@ function FeeList({ onViewInvoice }) {
     setLoading(true)
     setError('')
     try {
-      const response = await getFeeList(classFilter, sectionFilter, monthFilter)
-      // Handle different response structures
-      if (response.success) {
-        setFeeList(response.fees || response.data || [])
-        setTotalCount(response.count || (response.fees || response.data || []).length)
-      } else if (response.data && Array.isArray(response.data)) {
-        // API returns { message, data: [...], count: ... }
-        setFeeList(response.data)
-        setTotalCount(response.count || response.data.length)
-      } else if (Array.isArray(response)) {
-        // API returns array directly
-        setFeeList(response)
-        setTotalCount(response.length)
-      } else if (response.fees && Array.isArray(response.fees)) {
-        // API returns { fees: [...] }
-        setFeeList(response.fees)
-        setTotalCount(response.count || response.fees.length)
+      console.log('Fetching fee list with parameters:', {
+        classFilter,
+        sectionFilter,
+        monthFilter,
+      });
+
+      // Fetch fee list data
+      const feeListResponse = await getFeeList(classFilter, sectionFilter, monthFilter);
+      let feeList = [];
+
+      if (feeListResponse.success) {
+        feeList = feeListResponse.fees || feeListResponse.data || [];
+      } else if (feeListResponse.data && Array.isArray(feeListResponse.data)) {
+        feeList = feeListResponse.data;
+      } else if (Array.isArray(feeListResponse)) {
+        feeList = feeListResponse;
+      } else if (feeListResponse.fees && Array.isArray(feeListResponse.fees)) {
+        feeList = feeListResponse.fees;
       } else {
-        setFeeList([])
-        setTotalCount(0)
-        // Show message but don't treat as error if it's just informational
-        if (response.message && !response.message.toLowerCase().includes('success')) {
-          setError(response.message)
-        }
+        setError(feeListResponse.message || 'Failed to fetch fee list');
       }
+
+      // Fetch bills data
+      const billsResponse = await downloadBillsData(monthFilter, classFilter);
+      let bills = [];
+
+      if (billsResponse && billsResponse.bills && Array.isArray(billsResponse.bills)) {
+        bills = billsResponse.bills;
+      } else {
+        console.warn('No bills data found or invalid format');
+      }
+
+      // Merge bills data into fee list
+      const mergedData = feeList.map((fee) => {
+        const bill = bills.find((b) => b.student?.roll_no === fee.roll_no && b.student?.class === fee.class);
+        return {
+          ...fee,
+          bill_id: bill?.bill_id || '',
+          month: bill?.month || fee.month,
+          tuition_fee: bill?.items?.find((item) => item.fee_name === 'Tuition Fee')?.amount || fee.tuition_fee,
+          exam_fee: bill?.items?.find((item) => item.fee_name === 'Exam Fee')?.amount || fee.exam_fee,
+          annual_fee: bill?.items?.find((item) => item.fee_name === 'Annual Fee')?.amount || fee.annual_fee,
+          computer_fee: bill?.items?.find((item) => item.fee_name === 'Computer Fee')?.amount || fee.computer_fee,
+          transport_fee: bill?.items?.find((item) => item.fee_name === 'Transport Fee')?.amount || fee.transport_fee,
+          previous_due: bill?.items?.find((item) => item.fee_name === 'Previous Due')?.amount || fee.previous_due,
+          total_fee: bill?.summary?.total_amount || fee.total_fee,
+          total_paid: bill?.summary?.advance_used || fee.total_paid,
+          net_payable: bill?.summary?.net_payable || fee.net_payable,
+          bill_status: bill?.summary?.status || fee.bill_status,
+        };
+      });
+
+      setFeeList(mergedData);
+      setTotalCount(mergedData.length);
     } catch (err) {
-      setError(err?.message || err?.data?.message || 'Failed to fetch fee list')
-      setFeeList([])
+      console.error('Error fetching data:', err);
+      setError(err?.message || 'Failed to fetch data');
+      setFeeList([]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -121,7 +151,7 @@ function FeeList({ onViewInvoice }) {
         const totalFee = parseFloat(fee.total_fee) || 0
         const paidAmount = parseFloat(fee.total_paid || fee.paid_amount) || 0
         const netPayable = parseFloat(fee.net_payable || fee.balance) || (totalFee - paidAmount)
-        const billStatus = fee.bill_status || (netPayable === 0 ? 'paid' : netPayable < 0 ? 'paid' : 'unpaid')
+        const billStatus = fee.bill_status || (netPayable === 0 ? 'paid' : 'unpaid')
         
         return [
           fee.student_name || '--',

@@ -1,89 +1,109 @@
-import React, { useState, useEffect } from 'react'
-import { getInvoiceDetails, downloadInvoicePDF } from '../../Api/fees'
+import React, { useState, useEffect } from 'react';
+import { getInvoiceDetails, downloadInvoicePDF } from '../../Api/fees';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 function Invoice({ billId: propBillId = '', onBillIdChange }) {
-  const [billId, setBillId] = useState(propBillId)
-  const [invoiceData, setInvoiceData] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  const [billId, setBillId] = useState(propBillId);
+  const [invoiceData, setInvoiceData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  // Auto-fetch when billId prop changes
   useEffect(() => {
     if (propBillId && propBillId !== billId) {
-      setBillId(propBillId)
+      setBillId(propBillId);
       if (propBillId.trim()) {
-        handleFetchInvoice(propBillId)
+        handleFetchInvoice(propBillId);
       }
     }
-  }, [propBillId])
+  }, [propBillId]);
 
   const handleFetchInvoice = async (billIdToFetch = null) => {
-    const idToUse = billIdToFetch || billId
+    const idToUse = billIdToFetch || billId;
     if (!idToUse || !idToUse.trim()) {
-      setError('Please enter a Bill ID')
-      return
+      setError('Please enter a Bill ID');
+      return;
     }
 
-    setError('')
-    setSuccess('')
-    setLoading(true)
-    setInvoiceData(null)
+    setError('');
+    setSuccess('');
+    setLoading(true);
+    setInvoiceData(null);
 
     try {
-      const response = await getInvoiceDetails(idToUse.trim())
-      // Handle different response structures
+      const response = await getInvoiceDetails(idToUse.trim());
       if (response.invoice) {
-        setInvoiceData(response.invoice)
-        setSuccess(response.message || 'Invoice fetched successfully')
-      } else if (response.success) {
-        setInvoiceData(response.invoice || response.data)
-        setSuccess(response.message || 'Invoice fetched successfully')
-      } else if (response.data) {
-        setInvoiceData(response.data)
-        setSuccess(response.message || 'Invoice fetched successfully')
+        setInvoiceData(response.invoice);
+        setSuccess(response.message || 'Invoice fetched successfully');
       } else {
-        setError(response.message || 'Failed to fetch invoice')
+        setError(response.message || 'Failed to fetch invoice');
       }
     } catch (err) {
-      setError(err?.message || err?.data?.message || err?.response?.data?.message || 'Failed to fetch invoice')
+      setError(err?.message || 'Failed to fetch invoice');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
-  const handleBillIdChange = (value) => {
-    setBillId(value)
-    if (onBillIdChange) {
-      onBillIdChange(value)
-    }
-  }
+  };
 
   const handleDownloadPDF = async () => {
     if (!billId.trim()) {
-      setError('Please enter a Bill ID')
-      return
+      setError('Please enter a Bill ID');
+      return;
     }
 
-    setError('')
-    setLoading(true)
+    setError('');
+    setLoading(true);
 
     try {
-      const blob = await downloadInvoicePDF(billId.trim())
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `invoice-${billId}.pdf`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
+      const blob = await downloadInvoicePDF(billId.trim());
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-${billId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     } catch (err) {
-      setError(err?.message || 'Failed to download invoice PDF')
+      setError(err?.message || 'Failed to download invoice PDF');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+  const generateInvoicePDF = () => {
+    if (!invoiceData) return;
+
+    const doc = new jsPDF();
+    doc.setFontSize(10);
+
+    doc.text('Gyanoday Public School', 10, 10);
+    doc.text('Blaspur Dainmanwa Road, Harinagar (W. Champaran)', 10, 15);
+    doc.text(`Invoice #${invoiceData.invoice_number || invoiceData.bill_id || '--'}`, 10, 25);
+    doc.text(`Student's Name: ${invoiceData.student?.name || '--'}`, 10, 30);
+    doc.text(`Father's Name: ${invoiceData.student?.father_name || '--'}`, 10, 35);
+    doc.text(`Class: ${invoiceData.student?.class || '--'}`, 10, 40);
+    doc.text(`Section: ${invoiceData.student?.section || '--'}`, 10, 45);
+    doc.text(`Month: ${invoiceData.month || '--'}`, 10, 50);
+
+    const items = invoiceData.items.map((item) => [item.fee_name, item.amount]);
+    doc.autoTable({
+      startY: 60,
+      head: [['Details', 'Rs.', 'Amount']],
+      body: [
+        ...items,
+        ['Advance', invoiceData.summary?.advance_used || '--'],
+        ['Previous Due', invoiceData.summary?.previous_due || '--'],
+        ['Total', invoiceData.summary?.total_amount || '--'],
+        ['Net Payable', invoiceData.summary?.net_payable || '--']
+      ],
+      theme: 'grid',
+      styles: { fontSize: 8 }
+    });
+
+    doc.save(`invoice-${billId}.pdf`);
+  };
 
   return (
     <div className="space-y-4">
@@ -372,8 +392,8 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default Invoice
+export default Invoice;
 
