@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getInvoiceDetails, downloadInvoicePDF } from '../../Api/fees';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 function Invoice({ billId: propBillId = '', onBillIdChange }) {
   const [billId, setBillId] = useState(propBillId);
@@ -75,32 +75,139 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
   const generateInvoicePDF = () => {
     if (!invoiceData) return;
 
-    const doc = new jsPDF();
+    const doc = new jsPDF("p", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const margin = 10;
+    const billWidth = (pageWidth - margin * 3) / 2;
+    const billHeight = (pageHeight - margin * 3) / 2;
+
+    const x = margin;
+    const y = margin;
+
+    // Draw border
+    doc.setDrawColor(150, 0, 0);
+    doc.rect(x, y, billWidth, billHeight);
+
+    // Header - School Name
     doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("GYANODAY PUBLIC SCHOOL", x + billWidth / 2, y + 6, { align: "center" });
 
-    doc.text('Gyanoday Public School', 10, 10);
-    doc.text('Blaspur Dainmanwa Road, Harinagar (W. Champaran)', 10, 15);
-    doc.text(`Invoice #${invoiceData.invoice_number || invoiceData.bill_id || '--'}`, 10, 25);
-    doc.text(`Student's Name: ${invoiceData.student?.name || '--'}`, 10, 30);
-    doc.text(`Father's Name: ${invoiceData.student?.father_name || '--'}`, 10, 35);
-    doc.text(`Class: ${invoiceData.student?.class || '--'}`, 10, 40);
-    doc.text(`Section: ${invoiceData.student?.section || '--'}`, 10, 45);
-    doc.text(`Month: ${invoiceData.month || '--'}`, 10, 50);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      "Blaspur Dainmanwa Road, Harinagar (W. Champaran)",
+      x + billWidth / 2,
+      y + 10,
+      { align: "center" }
+    );
 
-    const items = invoiceData.items.map((item) => [item.fee_name, item.amount]);
-    doc.autoTable({
-      startY: 60,
-      head: [['Details', 'Rs.', 'Amount']],
-      body: [
-        ...items,
-        ['Advance', invoiceData.summary?.advance_used || '--'],
-        ['Previous Due', invoiceData.summary?.previous_due || '--'],
-        ['Total', invoiceData.summary?.total_amount || '--'],
-        ['Net Payable', invoiceData.summary?.net_payable || '--']
-      ],
-      theme: 'grid',
-      styles: { fontSize: 8 }
+    doc.text(
+      "Mob: 9876543210, 9123456789",
+      x + billWidth / 2,
+      y + 14,
+      { align: "center" }
+    );
+
+    // Invoice Number
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text(
+      `Invoice #${invoiceData.invoice_number || invoiceData.bill_id || '--'}`,
+      x + billWidth / 2,
+      y + 18,
+      { align: "center" }
+    );
+
+    // Student details
+    const detailsStartY = y + 23;
+    const details = [
+      [`SI No:`, invoiceData.bill_id || "--"],
+      [`Student:`, invoiceData.student?.name || "--"],
+      [`Father:`, invoiceData.student?.father_name || "--"],
+      [`Class:`, invoiceData.student?.class || "--"],
+      [`Roll No:`, invoiceData.student?.roll_no || "--"],
+      [`Sec:`, invoiceData.student?.section || "--"],
+      [`Month:`, invoiceData.month || "--"],
+    ];
+
+    const col1X = x + 8;
+    const col2X = x + billWidth / 2 + 2;
+    const rowHeight = 4;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    details.forEach(([label, value], i) => {
+      const row = Math.floor(i / 2);
+      const isLeft = i % 2 === 0;
+
+      doc.text(
+        `${label} ${value}`,
+        isLeft ? col1X : col2X,
+        detailsStartY + row * rowHeight
+      );
     });
+
+    // Fee items table
+    const items = (invoiceData.items || []).map((item) => [
+      item.fee_name,
+      item.amount || 0,
+      "00",
+    ]);
+
+    autoTable(doc, {
+      startY: detailsStartY + 15,
+      head: [["Details", "Rs.", "P"]],
+      body: items,
+      margin: { left: x + 5 },
+      tableWidth: billWidth - 10,
+      styles: { 
+        fontSize: 8, 
+        cellPadding: 2, 
+        fontStyle: "bold",
+        textColor: [0, 0, 0]
+      },
+      headStyles: { 
+        fillColor: [128, 128, 128], 
+        textColor: [0, 0, 0] 
+      },
+      theme: "grid",
+    });
+
+    const tableEndY = doc.lastAutoTable.finalY + 2;
+
+    // Summary table
+    autoTable(doc, {
+      startY: tableEndY,
+      head: [["Description", "Rs.", "P"]],
+      body: [
+        ["Total", invoiceData.summary?.total_amount || 0, "00"],
+        ["Advance", invoiceData.summary?.advance_used || 0, "00"],
+        ["Net Payable", invoiceData.summary?.net_payable || 0, "00"]
+      ],
+      margin: { left: x + 5 },
+      tableWidth: billWidth - 10,
+      styles: { 
+        fontSize: 8, 
+        cellPadding: 2, 
+        fontStyle: "bold",
+        textColor: [0, 0, 0]
+      },
+      headStyles: { 
+        fillColor: [128, 128, 128], 
+        textColor: [0, 0, 0] 
+      },
+      theme: "grid",
+    });
+
+    // Signature line
+    doc.text(
+      "Signature of Receiver: __________________",
+      x + 10,
+      y + billHeight - 5
+    );
 
     doc.save(`invoice-${billId}.pdf`);
   };
@@ -173,7 +280,103 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
 
       {/* Invoice Details */}
       {invoiceData && (
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 space-y-6">
+        <>
+          {/* Printable Invoice View (A4/4 format) */}
+          <div className="hidden print:block" style={{ pageBreakInside: 'avoid' }}>
+            <div className="w-full max-w-4xl mx-auto" style={{ width: '210mm', height: '147.5mm', padding: '10mm', border: '2px solid #960000', fontFamily: 'Courier New' }}>
+              <div className="flex flex-col h-full">
+                {/* Header */}
+                <div className="text-center mb-2">
+                  <p style={{ fontSize: '10pt', fontWeight: 'bold', margin: '2px 0' }}>GYANODAY PUBLIC SCHOOL</p>
+                  <p style={{ fontSize: '8pt', margin: '1px 0' }}>Blaspur Dainmanwa Road, Harinagar (W. Champaran)</p>
+                  <p style={{ fontSize: '8pt', margin: '1px 0' }}>Mob: 9876543210, 9123456789</p>
+                  <p style={{ fontSize: '9pt', fontWeight: 'bold', margin: '2px 0' }}>Invoice #{invoiceData.invoice_number || invoiceData.bill_id || '--'}</p>
+                </div>
+
+                {/* Student Details */}
+                <div style={{ fontSize: '8pt', marginBottom: '4mm', lineHeight: '1.4' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px' }}>
+                    <span><strong>SI No:</strong> {invoiceData.bill_id || '--'}</span>
+                    <span><strong>Date:</strong> {invoiceData.date ? new Date(invoiceData.date).toLocaleDateString('en-IN') : '--'}</span>
+                    <span><strong>Student:</strong> {invoiceData.student?.name || '--'}</span>
+                    <span><strong>Roll No:</strong> {invoiceData.student?.roll_no || '--'}</span>
+                    <span><strong>Father:</strong> {invoiceData.student?.father_name || '--'}</span>
+                    <span><strong>Class:</strong> {invoiceData.student?.class || '--'} - {invoiceData.student?.section || '--'}</span>
+                    <span style={{ gridColumn: '1 / -1' }}><strong>Month:</strong> {invoiceData.month || '--'}</span>
+                  </div>
+                </div>
+
+                {/* Fee Items Table */}
+                {invoiceData.items && invoiceData.items.length > 0 && (
+                  <div style={{ fontSize: '8pt', marginBottom: '3mm', flex: 1 }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ backgroundColor: '#808080', color: '#000' }}>
+                          <th style={{ border: '1px solid #000', padding: '2px', textAlign: 'left', fontWeight: 'bold' }}>Details</th>
+                          <th style={{ border: '1px solid #000', padding: '2px', textAlign: 'right', fontWeight: 'bold' }}>Rs.</th>
+                          <th style={{ border: '1px solid #000', padding: '2px', textAlign: 'right', fontWeight: 'bold' }}>P</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {invoiceData.items.map((item, idx) => (
+                          <tr key={idx}>
+                            <td style={{ border: '1px solid #000', padding: '2px' }}>{item.fee_name || ''}</td>
+                            <td style={{ border: '1px solid #000', padding: '2px', textAlign: 'right' }}>{(item.amount || 0).toLocaleString('en-IN')}</td>
+                            <td style={{ border: '1px solid #000', padding: '2px', textAlign: 'right' }}>00</td>
+                          </tr>
+                        ))}
+                        <tr style={{ backgroundColor: '#d3d3d3' }}>
+                          <td style={{ border: '1px solid #000', padding: '2px', fontWeight: 'bold' }}>Total</td>
+                          <td style={{ border: '1px solid #000', padding: '2px', textAlign: 'right', fontWeight: 'bold' }}>{(invoiceData.items.reduce((sum, i) => sum + (i.amount || 0), 0)).toLocaleString('en-IN')}</td>
+                          <td style={{ border: '1px solid #000', padding: '2px', textAlign: 'right', fontWeight: 'bold' }}>00</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Summary Table */}
+                {invoiceData.summary && (
+                  <div style={{ fontSize: '8pt', marginBottom: '3mm' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ backgroundColor: '#808080', color: '#000' }}>
+                          <th style={{ border: '1px solid #000', padding: '2px', textAlign: 'left', fontWeight: 'bold' }}>Description</th>
+                          <th style={{ border: '1px solid #000', padding: '2px', textAlign: 'right', fontWeight: 'bold' }}>Rs.</th>
+                          <th style={{ border: '1px solid #000', padding: '2px', textAlign: 'right', fontWeight: 'bold' }}>P</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td style={{ border: '1px solid #000', padding: '2px', fontWeight: 'bold' }}>Total</td>
+                          <td style={{ border: '1px solid #000', padding: '2px', textAlign: 'right' }}>{(invoiceData.summary.total_amount || 0).toLocaleString('en-IN')}</td>
+                          <td style={{ border: '1px solid #000', padding: '2px', textAlign: 'right' }}>00</td>
+                        </tr>
+                        <tr>
+                          <td style={{ border: '1px solid #000', padding: '2px', fontWeight: 'bold' }}>Advance</td>
+                          <td style={{ border: '1px solid #000', padding: '2px', textAlign: 'right' }}>{(invoiceData.summary.advance_used || 0).toLocaleString('en-IN')}</td>
+                          <td style={{ border: '1px solid #000', padding: '2px', textAlign: 'right' }}>00</td>
+                        </tr>
+                        <tr>
+                          <td style={{ border: '1px solid #000', padding: '2px', fontWeight: 'bold' }}>Net Payable</td>
+                          <td style={{ border: '1px solid #000', padding: '2px', textAlign: 'right' }}>{(invoiceData.summary.net_payable || 0).toLocaleString('en-IN')}</td>
+                          <td style={{ border: '1px solid #000', padding: '2px', textAlign: 'right' }}>00</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Signature */}
+                <div style={{ fontSize: '8pt', marginTop: '2mm' }}>
+                  <p>Signature of Receiver: __________________</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Screen Display View */}
+          <div className="print:hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 space-y-6">
           {/* Invoice Header */}
           <div className="bg-gradient-to-r from-blue-50 to-[#137fec]/10 dark:from-blue-900/30 dark:to-blue-800/20 rounded-xl p-5 border border-blue-200 dark:border-blue-700/50">
             <div className="flex items-center justify-between flex-wrap gap-4">
@@ -389,7 +592,8 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
               </div>
             </div>
           )}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

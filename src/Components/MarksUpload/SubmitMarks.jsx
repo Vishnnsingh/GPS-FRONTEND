@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { getAllSubjects } from '../../Api/subjects'
+import { getAllSubjects, getSubjectsForClass } from '../../Api/subjects'
+import { getAllClasses } from '../../Api/classes'
+import { getAllStudents } from '../../Api/students'
 import { submitMarks } from '../../Api/marks'
 
 function SubmitMarks() {
@@ -48,44 +50,49 @@ function SubmitMarks() {
     setLoadingSubjects(true)
     setError('')
     try {
-      const response = await getAllSubjects()
-      if (response.success) {
-        setSubjectsData(response)
-        // Extract unique classes
-        if (response.classes) {
-          const classes = response.classes.map(cls => cls.class)
-          setAvailableClasses([...new Set(classes)].sort())
-        }
+      const [subjectsResponse, classesResponse] = await Promise.all([
+        getAllSubjects(),
+        getAllClasses()
+      ])
+      
+      if (subjectsResponse.success) {
+        setSubjectsData(subjectsResponse)
+      }
+      
+      if (classesResponse && classesResponse.length > 0) {
+        // Sort by class property (numeric sort)
+        const sorted = classesResponse.sort((a, b) => {
+          const classA = typeof a === 'string' ? a : a.class;
+          const classB = typeof b === 'string' ? b : b.class;
+          return parseInt(classA) - parseInt(classB);
+        });
+        setAvailableClasses(sorted)
       }
     } catch (err) {
-      setError(err?.message || 'Failed to fetch subjects')
+      setError(err?.message || 'Failed to fetch subjects and classes')
     } finally {
       setLoadingSubjects(false)
     }
   }
 
-  const loadSectionsForClass = () => {
-    if (!subjectsData?.classes) return
-
-    // Find the selected class
-    const selectedClassData = subjectsData.classes.find(cls => cls.class === formData.class)
-    if (!selectedClassData) {
-      setAvailableSections([])
-      return
-    }
-
-    // Get sections for the selected class
-    const sections = []
-    if (selectedClassData.sections && selectedClassData.sections.length > 0) {
-      selectedClassData.sections.forEach(sec => {
-        sections.push(sec.section)
-      })
-    }
-    setAvailableSections([...new Set(sections)].sort())
+  const loadSectionsForClass = async () => {
+    if (!formData.class) return
     
-    // If no sections, clear section selection
-    if (sections.length === 0) {
-      setFormData(prev => ({ ...prev, section: '' }))
+    try {
+      const students = await getAllStudents(formData.class)
+      if (students && students.length > 0) {
+        const uniqueSections = [...new Set(students.map(s => s.Section))].filter(Boolean).sort()
+        setAvailableSections(uniqueSections)
+        if (uniqueSections.length === 0) {
+          setFormData(prev => ({ ...prev, section: '' }))
+        }
+      } else {
+        setAvailableSections([])
+        setFormData(prev => ({ ...prev, section: '' }))
+      }
+    } catch (err) {
+      console.error('Error loading sections:', err)
+      setAvailableSections([])
     }
   }
 
@@ -276,8 +283,8 @@ function SubmitMarks() {
                 >
                   <option value="">Select Class</option>
                   {availableClasses.map((cls) => (
-                    <option key={cls} value={cls}>
-                      Class {cls}
+                    <option key={cls.class || cls} value={cls.class || cls}>
+                      Class {cls.class || cls}
                     </option>
                   ))}
                 </select>

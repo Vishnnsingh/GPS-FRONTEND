@@ -93,22 +93,22 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
 
       {/* Sidebar */}
       <aside 
-        className={`fixed lg:static top-0 left-0 h-screen lg:h-full bg-white dark:bg-[#101922] border-r border-slate-200 dark:border-slate-700 shadow-lg lg:shadow-none z-50 transition-all duration-300 ease-in-out ${
+        className={`fixed lg:static top-0 left-0 bottom-0 lg:top-auto lg:bottom-auto h-full lg:h-full bg-white dark:bg-[#101922] border-r border-slate-200 dark:border-slate-700 shadow-lg lg:shadow-none z-50 transition-all duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         } ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'} w-4/5 max-w-xs lg:max-w-none`}
         style={{ fontFamily: "'Lexend', sans-serif" }}
       >
-        <div className="flex flex-col h-full bg-white dark:bg-slate-800 rounded-r-lg lg:rounded-none shadow-xl lg:shadow-none overflow-hidden">
+        <div className="flex flex-col h-full bg-white dark:bg-slate-800 rounded-r-none lg:rounded-none shadow-xl lg:shadow-none overflow-hidden">
           {/* Sidebar Header */}
-          <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+            <div className="flex items-center gap-1">
               {/* Desktop Toggle Button */}
               <button
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="hidden lg:flex p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                className="hidden lg:flex p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                 title={sidebarCollapsed ? 'Expand' : 'Collapse'}
               >
-                <span className="material-symbols-outlined text-slate-600 dark:text-slate-400">
+                <span className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-lg">
                   {sidebarCollapsed ? 'menu_open' : 'menu'}
                 </span>
               </button>
@@ -118,13 +118,14 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
                 className="lg:hidden p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                 aria-label="Close sidebar"
               >
-                <span className="material-symbols-outlined text-slate-600 dark:text-slate-400">close</span>
+                <span className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-lg">close</span>
               </button>
             </div>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 lg:hidden truncate">Menu</span>
           </div>
 
           {/* Menu Items */}
-          <nav className="flex-1 p-2 space-y-2 overflow-y-auto min-h-0">
+          <nav className="flex-1 p-2 space-y-1 overflow-y-auto min-h-0">
             {menuItems.map((item) => (
               <button
                 key={item.id}
@@ -132,7 +133,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
                   setActiveView(item.id)
                   setIsOpen(false) // Close sidebar on mobile after selection
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-sm ${
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm ${
                   sidebarCollapsed ? 'justify-center' : ''
                 } ${
                   activeView === item.id
@@ -140,13 +141,13 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                 }`}
                 title={sidebarCollapsed ? item.label : ''}
-                style={{ fontSize: '15px' }}
+                style={{ fontSize: '14px' }}
               >
-                <span className="material-symbols-outlined text-xl">
+                <span className="material-symbols-outlined text-lg flex-shrink-0">
                   {item.icon}
                 </span>
                 {!sidebarCollapsed && (
-                  <span className="font-medium">{item.label}</span>
+                  <span className="font-medium truncate">{item.label}</span>
                 )}
               </button>
             ))}
@@ -157,23 +158,23 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm ${
                 sidebarCollapsed ? 'justify-center' : ''
               }`}
               title={sidebarCollapsed ? 'Logout' : ''}
             >
               {isLoggingOut ? (
                 <>
-                  <span className="material-symbols-outlined text-xl animate-spin">sync</span>
+                  <span className="material-symbols-outlined text-lg animate-spin flex-shrink-0">sync</span>
                   {!sidebarCollapsed && (
-                    <span className="font-medium text-sm">Logging out...</span>
+                    <span className="font-medium text-xs">Logging out...</span>
                   )}
                 </>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-xl">logout</span>
+                  <span className="material-symbols-outlined text-lg flex-shrink-0">logout</span>
                   {!sidebarCollapsed && (
-                    <span className="font-medium text-sm">Logout</span>
+                    <span className="font-medium text-xs">Logout</span>
                   )}
                 </>
               )}

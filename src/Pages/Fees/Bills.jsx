@@ -58,39 +58,12 @@ function Bills() {
         });
 
         // Automatically generate and download the PDF
-        generatePDF(response.bills);
+        generateReceiptPDF(response.bills);
       } else {
         setError(response.message || 'Failed to generate bills');
       }
     } catch (err) {
       setError(err?.message || 'Failed to generate bills');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDownloadBillsData = async () => {
-    if (!formData.month) {
-      setError('Please enter month');
-      return;
-    }
-
-    setError('');
-    setSuccess('');
-    setLoading(true);
-    setBillsData(null);
-
-    try {
-      const response = await downloadBillsData(formData.month, formData.class || '');
-      if (response && response.bills && Array.isArray(response.bills)) {
-        setBillsData(response.bills);
-        setSuccess(`Found ${response.totalBills} bill(s)`);
-        generatePDF(response.bills);
-      } else {
-        setError(response.message || 'No bills found');
-      }
-    } catch (err) {
-      setError(err?.message || 'Failed to fetch bills data');
     } finally {
       setLoading(false);
     }
@@ -121,72 +94,155 @@ function Bills() {
     }
   };
 
-  // Updated the generatePDF function to match the design of the provided bulk invoice
-  const generatePDF = (bills) => {
-    try {
-      const doc = new jsPDF();
+  // Updated the generateReceiptPDF function for a more professional layout
+  const generateReceiptPDF = (bills) => {
+    const doc = new jsPDF("p", "mm", "a4");
 
-      bills.forEach((bill, index) => {
-        if (index !== 0) {
-          doc.addPage();
-        }
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
 
-        // Add school header
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.text('GYANODAY PUBLIC SCHOOL', 10, 10);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Blaspur Dainmanwa Road, Harinagar (W. Champaran)', 10, 16);
+    const margin = 10;
+    const billWidth = (pageWidth - margin * 3) / 2;
+    const billHeight = (pageHeight - margin * 3) / 2;
 
-        // Add invoice details
-        doc.setFontSize(10);
-        doc.text(`Invoice: ${bill.bill_id || '--'}`, 150, 10, { align: 'right' });
-        doc.text(`Date: ${bill.date || '--'}`, 150, 16, { align: 'right' });
+    const logoUrl = "src/assets/logo.jpeg"; // Path to the logo in assets
 
-        // Add student details
-        doc.setFontSize(10);
-        doc.text(`Student's Name: ${bill.student?.name || '--'}`, 10, 30);
-        doc.text(`Class: ${bill.student?.class || '--'}`, 10, 40);
-        doc.text(`Section: ${bill.student?.section || '--'}`, 10, 50);
-        doc.text(`Month: ${bill.month || '--'}`, 10, 60);
+    bills.forEach((bill, index) => {
+      const position = index % 4;
+      const col = position % 2;
+      const row = Math.floor(position / 2);
 
-        // Add fee details table
-        const items = [
-          ['School Fee', bill.items.find((item) => item.fee_name === 'School Fee')?.amount || '--'],
-          ['Examination Fee', bill.items.find((item) => item.fee_name === 'Examination Fee')?.amount || '--'],
-          ['Annual Charges', bill.items.find((item) => item.fee_name === 'Annual Charges')?.amount || '--'],
-          ['Transport Fee', bill.items.find((item) => item.fee_name === 'Transport Fee')?.amount || '--'],
-          ['Hostel Fee', bill.items.find((item) => item.fee_name === 'Hostel Fee')?.amount || '--'],
-          ['Computer Fee', bill.items.find((item) => item.fee_name === 'Computer Fee')?.amount || '--'],
-          ['Fine Fee', bill.items.find((item) => item.fee_name === 'Fine Fee')?.amount || '--'],
-          ['Total', bill.total || '--'],
-          ['Paid', bill.paid || '--'],
-          ['Balance', bill.net_payable || '--'],
-        ];
+      if (index !== 0 && position === 0) {
+        doc.addPage();
+      }
 
-        doc.autoTable({
-          startY: 70,
-          head: [['Details', 'Amount (Rs)']],
-          body: items,
-          theme: 'grid',
-          styles: { fontSize: 10, cellPadding: 2 },
-          columnStyles: {
-            0: { cellWidth: 120 },
-            1: { cellWidth: 60 },
-          },
-        });
+      const x = margin + col * (billWidth + margin);
+      const y = margin + row * (billHeight + margin);
 
-        // Add signature line
-        const finalY = doc.lastAutoTable.finalY + 20;
-        doc.text('Signature of Receiver: ______________________', 10, finalY);
+      doc.setDrawColor(150, 0, 0);
+      doc.rect(x, y, billWidth, billHeight);
+
+      // Add logo on the left side, smaller size
+      doc.addImage(logoUrl, "jpeg", x + 2, y + 2, 8, 8); // Adjusted dimensions for a smaller logo
+
+      // Center school details
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.text("GYANODAY PUBLIC SCHOOL", x + billWidth / 2, y + 6, { align: "center" });
+
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "normal");
+      doc.text(
+        "Blaspur Dainmanwa Road, Harinagar (W. Champaran)",
+        x + billWidth / 2,
+        y + 10,
+        { align: "center" }
+      );
+
+      // ✅ Mobile Number Added
+      doc.text(
+        "Mob: 9876543210, 9123456789",
+        x + billWidth / 2,
+        y + 14,
+        { align: "center" }
+      );
+
+      // Add student details
+      const detailsStartY = y + 25;
+      const details = [
+        [`SI No:`, bill.receipt_number || "--"],
+        [`Student:`, bill.student?.name || "--"],
+        [`Father:`, bill.student?.father_name || "--"],
+        [`Class:`, bill.student?.class || "--"],
+        [`Roll No:`, bill.student?.roll_no || "--"],
+        [`Sec:`, bill.student?.section || "--"],
+        [`Month:`, bill.month || "--"],
+      ];
+
+      // Compact 2-column layout (same details array)
+      const col1X = x + 8;
+      const col2X = x + billWidth / 2 + 2;
+      const rowHeight = 4;
+
+      details.forEach(([label, value], i) => {
+        const row = Math.floor(i / 2);
+        const isLeft = i % 2 === 0;
+
+        doc.setFont("helvetica", "bold"); // Set font to bold for backend data
+        doc.text(
+          `${label} ${value}`,
+          isLeft ? col1X : col2X,
+          detailsStartY + row * rowHeight
+        );
       });
 
-      doc.save('bills.pdf');
-    } catch (error) {
-      console.error('Error in generatePDF:', error);
-      setError('Error generating PDF: ' + error.message);
-    }
+      // Add fee details table
+      doc.setFont("helvetica", "bold");
+      const items = (bill.items || []).map((item) => [
+        item.fee_name,
+        item.amount || 0,
+        "00",
+      ]);
+
+      const total =
+        bill.items?.reduce((sum, i) => sum + (i.amount || 0), 0) || 0;
+
+      autoTable(doc, {
+        startY: detailsStartY + 15, // Adjusted to shift the table upwards
+        head: [["Details", "Rs.", "P"]],
+        body: items,
+        margin: { left: x + 5 },
+        tableWidth: billWidth - 10,
+        styles: { 
+          fontSize: 8, 
+          cellPadding: 2, 
+          fontStyle: "bold",
+          textColor: [0, 0, 0]
+        },
+        headStyles: { 
+          fillColor: [128, 128, 128], 
+          textColor: [0, 0, 0] 
+        },
+        theme: "grid",
+      });
+
+      const tableEndY = doc.lastAutoTable.finalY + 2;
+
+      // Add summary table (Total, Advance, Dues, Net Payable)
+      autoTable(doc, {
+        startY: tableEndY,
+        head: [["Description", "Rs.", "P"]],
+        body: [
+          ["Total", bill.summary?.total_amount || total, "00"],
+          ["Advance", bill.summary?.advance_used || 0, "00"],
+          ["Net Payable", bill.summary?.net_payable || total, "00"]
+        ],
+        margin: { left: x + 5 },
+        tableWidth: billWidth - 10,
+        styles: { 
+          fontSize: 8, 
+          cellPadding: 2, 
+          fontStyle: "bold",
+          textColor: [0, 0, 0]
+        },
+        headStyles: { 
+          fillColor: [128, 128, 128], 
+          textColor: [0, 0, 0] 
+        },
+        theme: "grid",
+      });
+
+      const summaryTableEndY = doc.lastAutoTable.finalY + 3;
+
+      // Add signature line
+      doc.text(
+        "Signature of Receiver: __________________",
+        x + 10,
+        y + billHeight - 5
+      );
+    });
+
+    doc.save(`Bills_${Date.now()}.pdf`);
   };
 
   const handleSubmit = async (e) => {
@@ -199,62 +255,55 @@ function Bills() {
     }
   };
 
-  // Added a new function to download all bills in a single PDF
-  const downloadAllBillsPDF = async () => {
+  // Updated the handleDownloadBillsData function to use generateReceiptPDF
+  const handleDownloadBillsData = async () => {
     if (!formData.month) {
-      setError('Please enter a month to download all bills');
+      setError("Please enter month");
       return;
     }
 
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
+    setLoading(true);
+    setBillsData(null);
+
+    try {
+      const response = await downloadBillsData(formData.month, formData.class || "");
+      if (response && response.bills && Array.isArray(response.bills)) {
+        setBillsData(response.bills);
+        setSuccess(`Found ${response.totalBills} bill(s)`);
+        generateReceiptPDF(response.bills);
+      } else {
+        setError(response.message || "No bills found");
+      }
+    } catch (err) {
+      setError(err?.message || "Failed to fetch bills data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Updated the downloadAllBillsPDF function to use generateReceiptPDF
+  const downloadAllBillsPDF = async () => {
+    if (!formData.month) {
+      setError("Please enter a month to download all bills");
+      return;
+    }
+
+    setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
-      const response = await downloadBillsData(formData.month, formData.class || '');
+      const response = await downloadBillsData(formData.month, formData.class || "");
       if (response && response.bills && Array.isArray(response.bills)) {
-        const doc = new jsPDF();
-        response.bills.forEach((bill, index) => {
-          if (index !== 0) doc.addPage();
-
-          doc.setFontSize(12);
-          doc.setFont('helvetica', 'bold');
-          doc.text('GYANODAY PUBLIC SCHOOL', 10, 10);
-          doc.setFontSize(10);
-          doc.setFont('helvetica', 'normal');
-          doc.text('Blaspur Dainmanwa Road, Harinagar (W. Champaran)', 10, 16);
-
-          doc.text(`Sl. No: ${bill.bill_id || '--'}`, 10, 26);
-          doc.text(`Student's Name: ${bill.student?.name || '--'}`, 10, 32);
-          doc.text(`Father's Name: ${bill.student?.father_name || '--'}`, 10, 38);
-          doc.text(`Class: ${bill.student?.class || '--'}`, 10, 44);
-          doc.text(`Sec: ${bill.student?.section || '--'}`, 10, 50);
-          doc.text(`Month: ${bill.month || '--'}`, 10, 56);
-
-          const items = bill.items.map((item) => [item.fee_name, item.amount]);
-          items.push(['Advance', bill.advance || '--']);
-          items.push(['Previous Due', bill.previous_due || '--']);
-          items.push(['Total', bill.total || '--']);
-          items.push(['Net Payable', bill.net_payable || '--']);
-
-          doc.autoTable({
-            startY: 60,
-            head: [['Details', 'Amount (Rs)']],
-            body: items,
-            theme: 'grid',
-            styles: { fontSize: 8, cellPadding: 2 },
-          });
-
-          doc.text('Signature of Receiver: ______________________', 10, doc.internal.pageSize.getHeight() - 20);
-        });
-
-        doc.save('all_bills.pdf');
-        setSuccess('All bills downloaded successfully');
+        generateReceiptPDF(response.bills);
+        setSuccess("All bills downloaded successfully");
       } else {
-        setError(response.message || 'No bills found to download');
+        setError(response.message || "No bills found to download");
       }
     } catch (err) {
-      setError(err?.message || 'Failed to download all bills');
+      setError(err?.message || "Failed to download all bills");
     } finally {
       setLoading(false);
     }
@@ -367,41 +416,66 @@ function Bills() {
             </div>
 
             {/* Fee Options for Generate Bills */}
-            {actionType === 'generate' && (
-              <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Include Fee Types:</label>
-                <div className="space-y-2">
-                  <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={feeOptions.include_exam_fee}
-                      onChange={(e) => setFeeOptions({ ...feeOptions, include_exam_fee: e.target.checked })}
-                      className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
-                    />
-                    <span className="text-sm text-slate-700 dark:text-slate-300">Include Exam Fee</span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={feeOptions.include_annual_fee}
-                      onChange={(e) => setFeeOptions({ ...feeOptions, include_annual_fee: e.target.checked })}
-                      className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
-                    />
-                    <span className="text-sm text-slate-700 dark:text-slate-300">Include Annual Fee</span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={feeOptions.include_computer_fee}
-                      onChange={(e) => setFeeOptions({ ...feeOptions, include_computer_fee: e.target.checked })}
-                      className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
-                    />
-                    <span className="text-sm text-slate-700 dark:text-slate-300">Include Computer Fee</span>
-                  </label>
-                </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Note: Tuition Fee is always included</p>
-              </div>
-            )}
+{actionType === 'generate' && (
+  <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+    
+    <label className="block text-sm font-bold text-black mb-3">
+      Include Fee Types:
+    </label>
+
+    <div className="space-y-2">
+      
+      <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors">
+        <input
+          type="checkbox"
+          checked={feeOptions.include_exam_fee}
+          onChange={(e) =>
+            setFeeOptions({ ...feeOptions, include_exam_fee: e.target.checked })
+          }
+          className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+        />
+        <span className="text-sm font-bold text-black">
+          Include Exam Fee
+        </span>
+      </label>
+
+      <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors">
+        <input
+          type="checkbox"
+          checked={feeOptions.include_annual_fee}
+          onChange={(e) =>
+            setFeeOptions({ ...feeOptions, include_annual_fee: e.target.checked })
+          }
+          className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+        />
+        <span className="text-sm font-bold text-black">
+          Include Annual Fee
+        </span>
+      </label>
+
+      <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors">
+        <input
+          type="checkbox"
+          checked={feeOptions.include_computer_fee}
+          onChange={(e) =>
+            setFeeOptions({ ...feeOptions, include_computer_fee: e.target.checked })
+          }
+          className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+        />
+        <span className="text-sm font-bold text-black">
+          Include Computer Fee
+        </span>
+      </label>
+
+    </div>
+
+    <p className="text-xs font-semibold text-black mt-2">
+      Note: Tuition Fee is always included
+    </p>
+
+  </div>
+)}
+
 
             <div className="flex gap-3 pt-4">
               <button
@@ -429,7 +503,7 @@ function Bills() {
 
           {/* Bills Data Display */}
           {billsData && billsData.length > 0 && (
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden mt-6">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden mt-4">
               <div className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 px-4 py-3">
                 <h4 className="text-md font-bold text-slate-900 dark:text-white">
                   Bills Data ({billsData.length} {billsData.length === 1 ? 'bill' : 'bills'})
@@ -450,7 +524,7 @@ function Bills() {
                   </thead>
                   <tbody>
                     {billsData.map((bill, index) => (
-                      <tr key={bill.bill_id || index} className="border-b border-slate-200 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-slate-900/50 transition-colors">
+                      <tr key={bill.receipt_number || bill.bill_id || index} className="border-b border-slate-200 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-slate-900/50 transition-colors">
                         <td className="px-4 py-3">
                           <div className="font-semibold text-slate-900 dark:text-white">
                             {bill.student?.name || '--'}
@@ -494,7 +568,7 @@ function Bills() {
                         </td>
                         <td className="px-3 py-3 text-center">
                           <span className="text-xs text-slate-600 dark:text-slate-400 break-all">
-                            {bill.bill_id || '--'}
+                            {bill.receipt_number || bill.bill_id || '--'}
                           </span>
                         </td>
                       </tr>

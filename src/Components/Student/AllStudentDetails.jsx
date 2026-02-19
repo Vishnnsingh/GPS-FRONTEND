@@ -114,39 +114,40 @@ function AllStudentDetails() {
   }
 
   return (
-    <div className="space-y-4" style={{ fontFamily: "'Lexend', sans-serif" }}>
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-black text-[#0d141b] dark:text-white">All Student Details</h2>
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-slate-600 dark:text-slate-400">
-            Total: <span className="font-bold text-[#137fec]">{count}</span> students
+    <div className="space-y-3 sm:space-y-4" style={{ fontFamily: "'Lexend', sans-serif" }}>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#0d141b] dark:text-white">All Student Details</h2>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+          <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 order-2 sm:order-1">
+            Total: <span className="font-bold text-[#137fec]">{count}</span>
           </div>
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 bg-[#137fec] hover:bg-[#137fec]/90 text-white font-bold px-4 py-2 rounded-lg shadow-lg shadow-[#137fec]/20 transition-all text-sm"
+            className="flex items-center justify-center gap-1.5 sm:gap-2 bg-[#137fec] hover:bg-[#137fec]/90 text-white font-bold px-3 sm:px-4 py-2 rounded-lg shadow-lg shadow-[#137fec]/20 transition-all text-xs sm:text-sm order-1 sm:order-2"
           >
             <span className="material-symbols-outlined text-base">person_add</span>
-            <span>Add New Student</span>
+            <span className="hidden sm:inline">Add New Student</span>
+            <span className="sm:hidden">Add</span>
           </button>
         </div>
       </div>
 
       {/* Filters and Search */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 shadow-md border border-blue-200 dark:border-blue-800">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 sm:p-4 shadow-md border border-blue-200 dark:border-blue-800">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
           {/* Class Filter */}
           <div>
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Filter by Class
+              Class
             </label>
             <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">class</span>
+              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-[#137fec] text-base flex-shrink-0">class</span>
               <input
                 type="text"
                 value={classFilter}
                 onChange={(e) => setClassFilter(e.target.value)}
-                placeholder="Enter class (e.g., 1, 4)"
-                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
+                placeholder="1, 4"
+                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -154,16 +155,16 @@ function AllStudentDetails() {
           {/* Roll Number Filter */}
           <div>
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Filter by Roll Number
+              Roll
             </label>
             <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">badge</span>
+              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-[#137fec] text-base flex-shrink-0">badge</span>
               <input
                 type="text"
                 value={rollFilter}
                 onChange={(e) => setRollFilter(e.target.value)}
-                placeholder="Enter roll number"
-                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
+                placeholder="Roll"
+                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -171,16 +172,16 @@ function AllStudentDetails() {
           {/* Section Filter */}
           <div>
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Filter by Section
+              Section
             </label>
             <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">category</span>
+              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-[#137fec] text-base flex-shrink-0">category</span>
               <select
                 value={sectionFilter}
                 onChange={(e) => setSectionFilter(e.target.value)}
-                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white"
+                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white"
               >
-                <option value="">All Sections</option>
+                <option value="">All</option>
                 {uniqueSections.map((section) => (
                   <option key={section} value={section}>
                     {section}
@@ -191,21 +192,21 @@ function AllStudentDetails() {
           </div>
 
           {/* Search */}
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Search Students
+              Search
             </label>
             <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">search</span>
+              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-[#137fec] text-base flex-shrink-0">search</span>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value)
-                  setCurrentPage(1) // Reset to first page on search
+                  setCurrentPage(1)
                 }}
-                placeholder="Search by name, etc."
-                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
+                placeholder="Name"
+                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -214,15 +215,15 @@ function AllStudentDetails() {
 
       {/* Error Message */}
       {error && (
-        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <div className="p-2.5 sm:p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-xs sm:text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center py-12">
-          <span className="material-symbols-outlined animate-spin text-4xl text-[#137fec]">sync</span>
+          <span className="material-symbols-outlined animate-spin text-3xl sm:text-4xl text-[#137fec]">sync</span>
         </div>
       )}
 
@@ -230,85 +231,63 @@ function AllStudentDetails() {
       {!loading && !error && (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md border border-blue-200 dark:border-blue-800 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-xs sm:text-sm">
               <thead className="bg-[#137fec]">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
-                    S.No
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
-                    Roll
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
-                    Name
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
-                    Father Name
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
-                    Class
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
-                    Section
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
-                    Mobile
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
-                    Address
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
-                    Transport
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-white">
-                    Action
-                  </th>
+                  <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white">S.No</th>
+                  <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white">Roll</th>
+                  <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white">Name</th>
+                  <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white hidden md:table-cell">Father</th>
+                  <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white hidden sm:table-cell">Class</th>
+                  <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white hidden lg:table-cell">Section</th>
+                  <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white hidden lg:table-cell">Mobile</th>
+                  <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white hidden xl:table-cell">Address</th>
+                  <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white hidden lg:table-cell">Transport</th>
+                  <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-center font-bold text-white">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                 {paginatedStudents.length === 0 ? (
                   <tr>
-                    <td colSpan="10" className="px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                    <td colSpan="10" className="px-2 sm:px-4 py-6 sm:py-8 text-center text-xs sm:text-sm text-slate-500 dark:text-slate-400">
                       No students found
                     </td>
                   </tr>
                 ) : (
                   paginatedStudents.map((student, index) => (
                     <tr key={index} className="hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors">
-                      <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-white">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-900 dark:text-white">
                         {startIndex + index + 1}
                       </td>
-                      <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-white">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-900 dark:text-white">
                         {student.Roll || '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-white">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-900 dark:text-white truncate">
                         {student.Name || '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-600 dark:text-slate-300 hidden md:table-cell truncate">
                         {student.Father || '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-600 dark:text-slate-300 hidden sm:table-cell">
                         {student.Class || '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-600 dark:text-slate-300 hidden lg:table-cell">
                         {student.Section || '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-600 dark:text-slate-300 hidden lg:table-cell">
                         {student.Mobile || '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300 max-w-xs truncate">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-600 dark:text-slate-300 hidden xl:table-cell truncate">
                         {student.Address || '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-600 dark:text-slate-300 hidden lg:table-cell">
                         {student.Transport && student.Transport !== "No" && typeof student.Transport === 'number' ? (
-                          <div className="flex flex-col gap-1">
+                          <div className="flex flex-col gap-0.5">
                             <span className="inline-flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
                               <span className="material-symbols-outlined text-sm">check_circle</span>
                               Yes
                             </span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400">
-                              ₹{student.Transport}
-                            </span>
+                            <span className="text-xs text-slate-500 dark:text-slate-400">₹{student.Transport}</span>
                           </div>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-xs text-slate-400">
@@ -317,14 +296,14 @@ function AllStudentDetails() {
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-sm">
-                        <div className="flex items-center gap-2">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
+                        <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => {
                               setSelectedStudent(student)
                               setIsEditModalOpen(true)
                             }}
-                            className="p-1.5 text-[#137fec] hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                            className="p-1 text-[#137fec] hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                             title="Edit"
                           >
                             <span className="material-symbols-outlined text-base">edit</span>
@@ -332,7 +311,7 @@ function AllStudentDetails() {
                           <button
                             onClick={() => handleDelete(student)}
                             disabled={deletingId === (student.ID || student._id || student.id || student.Id || student.student_id || student.StudentId)}
-                            className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Delete"
                           >
                             {deletingId === (student.ID || student._id || student.id || student.Id || student.student_id || student.StudentId) ? (
@@ -354,48 +333,36 @@ function AllStudentDetails() {
 
       {/* Pagination */}
       {!loading && !error && filteredStudents.length > 0 && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 shadow-md border border-blue-200 dark:border-blue-800">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-slate-600 dark:text-slate-400">
-              Showing <span className="font-medium text-slate-900 dark:text-white">{startIndex + 1}</span> to{' '}
-              <span className="font-medium text-slate-900 dark:text-white">
-                {Math.min(endIndex, filteredStudents.length)}
-              </span>{' '}
-              of <span className="font-medium text-slate-900 dark:text-white">{filteredStudents.length}</span> students
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 sm:p-4 shadow-md border border-blue-200 dark:border-blue-800">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+              Showing <span className="font-medium text-slate-900 dark:text-white">{startIndex + 1}</span> to <span className="font-medium text-slate-900 dark:text-white">{Math.min(endIndex, filteredStudents.length)}</span> of <span className="font-medium text-slate-900 dark:text-white">{filteredStudents.length}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-start sm:justify-end">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Previous
+                Prev
               </button>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5 sm:gap-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                  if (
-                    page === 1 ||
-                    page === totalPages ||
-                    (page >= currentPage - 2 && page <= currentPage + 2)
-                  ) {
+                  if (page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)) {
                     return (
                       <button
                         key={page}
                         onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                          currentPage === page
-                            ? 'bg-[#137fec] text-white'
-                            : 'text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600'
+                        className={`px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-colors ${
+                          currentPage === page ? 'bg-[#137fec] text-white' : 'text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600'
                         }`}
                       >
                         {page}
                       </button>
                     )
-                  } else if (page === currentPage - 3 || page === currentPage + 3) {
+                  } else if (page === currentPage - 2 || page === currentPage + 2) {
                     return (
-                      <span key={page} className="px-2 text-slate-500 dark:text-slate-400">
-                        ...
-                      </span>
+                      <span key={page} className="px-1 text-slate-500 dark:text-slate-400 text-xs">...</span>
                     )
                   }
                   return null
@@ -404,7 +371,7 @@ function AllStudentDetails() {
               <button
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>

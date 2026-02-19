@@ -10,6 +10,17 @@ export const getAllSubjects = async () => {
   }
 }
 
+// Get subjects for a specific class and section
+export const getSubjectsForClass = async (classValue, section = '') => {
+  try {
+    const params = section ? { section } : {}
+    const response = await api.get(`/subjects/class/${classValue}`, { params })
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}
+
 // Add subject to class
 export const addSubjectToClass = async (subjectData) => {
   try {
