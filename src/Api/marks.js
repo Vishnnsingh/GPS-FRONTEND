@@ -1,31 +1,29 @@
-import api from './auth'
+import api, { buildQueryParams, normalizeApiError } from './auth'
 import publicApi from './publicApi'
 
 // Submit marks
 export const submitMarks = async (marksData) => {
   try {
-    const response = await api.post('/marks/submit', marksData)
+    const response = await api.post('/api/marks/submit', marksData)
     return response.data
   } catch (error) {
-    throw error.response?.data || error.message
+    throw normalizeApiError(error, 'Failed to submit marks')
   }
 }
 
 // Get marks by class, section, and terminal
 export const getMarks = async (classValue, section, terminal) => {
   try {
-    const params = {
+    const params = buildQueryParams({
       class: classValue,
-      terminal: terminal
-    }
-    if (section) {
-      params.section = section
-    }
-    
-    const response = await api.get('/marks', { params })
+      terminal,
+      section,
+    })
+
+    const response = await api.get('/api/marks', { params })
     return response.data
   } catch (error) {
-    throw error.response?.data || error.message
+    throw normalizeApiError(error, 'Failed to fetch marks')
   }
 }
 
@@ -34,15 +32,14 @@ export const getMarks = async (classValue, section, terminal) => {
 // Expected response includes: student, marks[], summary (total_max_marks, total_obtained, percentage, division, rank, published_date)
 export const getStudentResultPublic = async ({ classValue, roll, terminal, section }) => {
   try {
-    const params = {
+    const params = buildQueryParams({
       class: classValue,
-      roll: roll,
-      terminal: terminal,
-    }
+      roll,
+      terminal,
+      section,
+    })
 
-    if (section) params.section = section
-
-    const response = await publicApi.get('/marks/result', { params })
+    const response = await publicApi.get('/api/marks/result', { params })
     return response.data
   } catch (error) {
     // Preserve status and response data so callers can handle 404/403 more precisely
@@ -56,14 +53,14 @@ export const getStudentResultPublic = async ({ classValue, roll, terminal, secti
 // Publish results for a class
 export const publishResults = async (classValue, section, terminal) => {
   try {
-    const response = await api.post('/marks/publish', {
+    const response = await api.post('/api/marks/publish', {
       class: classValue,
       section: section || undefined,
       terminal: terminal
     })
     return response.data
   } catch (error) {
-    throw error.response?.data || error.message
+    throw normalizeApiError(error, 'Failed to publish results')
   }
 }
 

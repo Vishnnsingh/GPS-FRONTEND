@@ -3,6 +3,7 @@ import { useNavigate, useOutletContext } from 'react-router-dom'
 import Sidebar from '../../Components/Sidebar'
 import ResultView from '../../Components/ResultView/ResultView'
 import Student from './Student'
+import StudentLifecycle from './StudentLifecycle'
 import Subject from './Subject'
 import UploadMarks from './UploadMarks'
 import UploadPhoto from '../../Components/UploadPhoto/UploadPhoto'
@@ -333,6 +334,8 @@ function Dashboard() {
             {(loginType === 'student' || activeView === 'result') && <ResultView />}
             
             {activeView === 'student' && <Student />}
+
+            {activeView === 'studentLifecycle' && <StudentLifecycle />}
             
             {activeView === 'subject' && <Subject />}
             

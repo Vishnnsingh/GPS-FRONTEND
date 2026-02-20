@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { setSession } from '../../Api/auth'
+import { emitToast, login, setSession } from '../../Api/auth'
 
 function StudentLogin() {
   const navigate = useNavigate()
@@ -8,6 +8,8 @@ function StudentLogin() {
     rollNumber: '',
     password: ''
   })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -17,27 +19,31 @@ function StudentLogin() {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('Login Data:', formData)
-    
-    // Store student login type
-    // For student login, we'll create a mock session
-    const mockSession = {
-      user: {
-        id: 'student-' + formData.rollNumber,
-        email: formData.rollNumber + '@student.edu',
-        role: 'student'
-      },
-      session: {
-        access_token: 'student-token-' + formData.rollNumber,
-        refresh_token: 'student-refresh-' + formData.rollNumber
+    setError('')
+    setLoading(true)
+
+    try {
+      const response = await login(formData.rollNumber, formData.password)
+      const userRole = response?.user?.role
+      const loginType = userRole === 'student' ? 'student' : 'all'
+      setSession(response, loginType)
+
+      if (userRole && userRole !== 'student') {
+        emitToast('warning', 'Non-student account detected. Redirecting to standard dashboard.', 'Role Notice')
+      } else {
+        emitToast('success', 'Student login successful', 'Welcome')
       }
+
+      navigate('/dashboard')
+    } catch (err) {
+      const message = err?.message || 'Student login failed. Please verify credentials.'
+      setError(message)
+      emitToast('error', message, 'Login Failed')
+    } finally {
+      setLoading(false)
     }
-    setSession(mockSession, 'student')
-    
-    // Navigate to dashboard after successful login
-    navigate('/dashboard')
   }
 
   return (
@@ -106,6 +112,12 @@ function StudentLogin() {
               </p>
             </div>
 
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-3">
               {/* Roll Number */}
               <div className="relative group">
@@ -163,10 +175,20 @@ function StudentLogin() {
               <div className="pt-2">
                 <button
                   type="submit"
+                  disabled={loading}
                   className="w-full bg-[#137fec] hover:bg-[#137fec]/90 text-white font-bold py-2 rounded-lg shadow-lg shadow-[#137fec]/20 transition-all flex items-center justify-center gap-2 text-sm"
                 >
-                  <span>Log In</span>
-                  <span className="material-symbols-outlined text-base">arrow_forward</span>
+                  {loading ? (
+                    <>
+                      <span className="material-symbols-outlined animate-spin text-base">sync</span>
+                      <span>Logging in...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Log In</span>
+                      <span className="material-symbols-outlined text-base">arrow_forward</span>
+                    </>
+                  )}
                 </button>
               </div>
 

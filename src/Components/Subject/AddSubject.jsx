@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { addSubjectToClass, addMultipleSubjectsToClass, getAllSubjects } from '../../Api/subjects'
 
-function AddSubject({ isOpen, onClose, onSuccess, availableClasses = [], availableSections = [] }) {
+function AddSubject({ isOpen, onClose, onSuccess }) {
   const [mode, setMode] = useState('single') // 'single' or 'multiple'
   const [formData, setFormData] = useState({
     class: '',
-    section: '',
     subject_id: '',
     subject_name: '',
     subject_code: '',
@@ -115,8 +114,7 @@ function AddSubject({ isOpen, onClose, onSuccess, availableClasses = [], availab
           class: formData.class,
           subject_name: formData.subject_name,
           subject_code: formData.subject_code,
-          sequence: parseInt(formData.sequence) || 1,
-          section: formData.section || undefined
+          sequence: parseInt(formData.sequence) || 1
         }
 
         const response = await addSubjectToClass(submitData)
@@ -142,7 +140,6 @@ function AddSubject({ isOpen, onClose, onSuccess, availableClasses = [], availab
 
         const submitData = {
           class: formData.class,
-          section: formData.section || undefined,
           subjects: validSubjectIds.map(subjectId => ({
             subject_id: subjectId
           }))
@@ -180,7 +177,6 @@ function AddSubject({ isOpen, onClose, onSuccess, availableClasses = [], availab
   const resetForm = () => {
     setFormData({
       class: '',
-      section: '',
       subject_id: '',
       subject_name: '',
       subject_code: '',
@@ -264,7 +260,7 @@ function AddSubject({ isOpen, onClose, onSuccess, availableClasses = [], availab
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {/* Class */}
             <div>
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -280,24 +276,6 @@ function AddSubject({ isOpen, onClose, onSuccess, availableClasses = [], availab
                   className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
                   placeholder="Enter class (e.g., 1, 2, LKG)"
                   required
-                />
-              </div>
-            </div>
-
-            {/* Section */}
-            <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Section
-              </label>
-              <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">category</span>
-                <input
-                  type="text"
-                  name="section"
-                  value={formData.section}
-                  onChange={handleChange}
-                  className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
-                  placeholder="Enter section (e.g., A, B)"
                 />
               </div>
             </div>

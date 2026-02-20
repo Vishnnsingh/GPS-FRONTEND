@@ -1,11 +1,8 @@
 /* Print Styles for Results Card - Card Only */
 @media print {
-  /* Reset everything */
-  * {
-    background: transparent !important;
-    color: #000 !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
+  @page {
+    size: A4;
+    margin: 10mm;
   }
 
   html,
@@ -13,134 +10,96 @@
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100%;
+    height: auto;
+    background: #fff !important;
     font-family: 'Lexend', Arial, sans-serif;
+    color: #000 !important;
   }
 
-  @page {
-    size: A4;
-    margin: 10mm;
+  body * {
+    visibility: hidden !important;
   }
 
-  /* Hide everything by default */
-  body > * {
-    display: none !important;
+  .print-card-only,
+  .print-card-only * {
+    visibility: visible !important;
   }
 
-  /* Show only the main container with the card */
-  body > div:has(.print-card) {
-    display: block !important;
+  .print-card-only {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
     margin: 0 !important;
     padding: 0 !important;
   }
 
-  /* Hide all non-print elements */
   .no-print,
-  [class*="no-print"] {
+  .no-print * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  .print-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border: 1.4px solid #000 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    background: #fff !important;
+  }
+
+  .print-card * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    color: #000 !important;
+    border-color: #000 !important;
+  }
+
+  .material-symbols-outlined {
     display: none !important;
   }
 
-  /* Result Card - Full Screen Print */
-  .print-card {
-    border: 2px solid #000 !important;
-    page-break-inside: auto;
-    page-break-after: auto;
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    background: white !important;
-    display: block !important;
-  }
-
-  /* All card elements visible */
-  .print-card * {
-    background: transparent !important;
-    color: #000 !important;
-    border-color: #000 !important;
-    page-break-inside: avoid;
-  }
-
-  /* Tables Styling */
   table {
     width: 100%;
     border-collapse: collapse;
     page-break-inside: avoid;
   }
 
-  thead {
-    display: table-header-group;
-    background: #333 !important;
-  }
-
-  tbody {
-    display: table-row-group;
-  }
-
-  tr {
-    page-break-inside: avoid;
+  th,
+  td {
+    border: 1px solid #000 !important;
+    font-size: 9.5px !important;
+    padding: 4px 3px !important;
+    line-height: 1.25 !important;
+    text-align: left;
   }
 
   th {
-    background: #333 !important;
-    color: #fff !important;
-    border: 1px solid #000 !important;
-    padding: 6px 4px;
-    text-align: left;
-    font-weight: bold;
-    font-size: 11px;
-  }
-
-  td {
-    border: 1px solid #000 !important;
-    padding: 4px 3px;
-    font-size: 10px;
-    text-align: left;
-  }
-
-  /* Headers */
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    page-break-after: avoid;
-    page-break-inside: avoid;
-    margin: 2px 0;
-    color: #000 !important;
+    background: #e9edf5 !important;
+    font-weight: 700 !important;
   }
 
   h1 {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 18px !important;
   }
 
+  h2,
   h3 {
-    font-size: 12px;
+    font-size: 12px !important;
   }
 
-  p {
+  p,
+  li {
+    font-size: 9.5px !important;
+  }
+
+  ul {
     margin: 0;
-    font-size: 10px;
+    padding-left: 15px;
   }
 
-  /* Borders - Keep all borders */
-  .border,
-  .border-b,
-  .border-t,
-  .border-l,
-  .border-r {
-    border-color: #000 !important;
-  }
-
-  /* Remove background colors */
-  [class*="bg-"] {
-    background: transparent !important;
-  }
-
-  /* Keep text colors for readability */
   .text-green-600,
   .text-green-400 {
     color: #008000 !important;
@@ -148,44 +107,18 @@
 
   .text-blue-600,
   .text-blue-400 {
-    color: #0000ff !important;
+    color: #002b8a !important;
   }
 
   .text-purple-600,
   .text-purple-400 {
-    color: #800080 !important;
-  }
-
-  /* Signature area - maintain height for spaces */
-  div[className*="h-16"],
-  div[className*="h-12"],
-  div[className*="h-14"] {
-    border-top: 1px solid #000 !important;
-    height: auto !important;
-    min-height: 3mm;
-  }
-
-  /* Remove Material Icons from print */
-  .material-symbols-outlined {
-    display: none !important;
-  }
-
-  /* List styling */
-  ul {
-    margin: 2px 0;
-    padding-left: 15px;
-  }
-
-  li {
-    font-size: 9px;
-    margin: 1px 0;
+    color: #5d1a7a !important;
   }
 }
 
-/* Screen styles for better visibility */
 @media screen {
   .result-print {
-    max-width: 900px;
+    max-width: 980px;
     margin: 0 auto;
   }
 

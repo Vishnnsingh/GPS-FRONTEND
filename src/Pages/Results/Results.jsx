@@ -1,10 +1,78 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { getStudentResultPublic } from '../../Api/marks'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import { getMarks, getStudentResultPublic } from '../../Api/marks'
+import schoolLogo from '../../assets/logo.jpeg'
+import '../../styles/print.css'
+
+const SUMMARY_TERMINALS = ['First', 'Second', 'Third', 'Annual']
+
+const getStudentId = (row) => (
+  row?.student_id ||
+  row?.studentId ||
+  row?.id ||
+  row?._id ||
+  row?.ID ||
+  ''
+)
+
+const calculateTotalFromMarks = (marksList = []) => {
+  return marksList.reduce((sum, mark) => {
+    if (typeof mark?.total_obtained === 'number') return sum + mark.total_obtained
+    const external = Number(mark?.external_marks)
+    const internal = Number(mark?.internal_marks)
+    const extValue = Number.isFinite(external) ? external : 0
+    const intValue = Number.isFinite(internal) ? internal : 0
+    return sum + extValue + intValue
+  }, 0)
+}
+
+const computeClassSectionRank = ({ students = [], targetRoll, targetId }) => {
+  const parsed = students.map((studentRow) => {
+    const total = calculateTotalFromMarks(studentRow?.marks || [])
+    const rollValue = Number(studentRow?.roll_no ?? studentRow?.Roll)
+    return {
+      id: String(getStudentId(studentRow)),
+      roll: Number.isFinite(rollValue) ? rollValue : null,
+      total,
+    }
+  })
+
+  const sorted = parsed.sort((a, b) => {
+    if (b.total !== a.total) return b.total - a.total
+    if (a.roll !== null && b.roll !== null) return a.roll - b.roll
+    return 0
+  })
+
+  let rank = 0
+  let prevTotal = null
+  let position = 0
+
+  const ranked = sorted.map((item) => {
+    position += 1
+    if (prevTotal === null || item.total !== prevTotal) {
+      rank = position
+    }
+    prevTotal = item.total
+    return { ...item, rank }
+  })
+
+  const targetById = targetId ? ranked.find((item) => item.id && item.id === String(targetId)) : null
+  if (targetById) return targetById.rank
+
+  if (targetRoll !== null && targetRoll !== undefined) {
+    const targetByRoll = ranked.find((item) => item.roll === Number(targetRoll))
+    if (targetByRoll) return targetByRoll.rank
+  }
+
+  return null
+}
 
 function Results() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
   const SCHOOL_ADDRESS = import.meta.env.VITE_SCHOOL_ADDRESS || 'Bilaspur Dainmarwa Road, Harinagar (W. Champaran)'
+  const cardRef = useRef(null)
 
   const [searchParams] = useSearchParams()
 
@@ -19,10 +87,9 @@ function Results() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [data, setData] = useState(null)
-  // Holds summaries for each terminal fetched (e.g., { First: {...}, Second: {...} })
   const [termSummaries, setTermSummaries] = useState({})
-  // Terminals we will show columns for based on selected terminal
-  const [visibleTerminals, setVisibleTerminals] = useState([]) 
+  const [visibleTerminals, setVisibleTerminals] = useState([])
+  const [classSectionRanks, setClassSectionRanks] = useState({})
 
   useEffect(() => {
     const run = async () => {
@@ -32,59 +99,89 @@ function Results() {
         setData(null)
         setTermSummaries({})
         setVisibleTerminals([])
+        setClassSectionRanks({})
         setError('Missing params. Please go back and fill Class, Roll and Terminal.')
         return
       }
 
       setLoading(true)
+      setClassSectionRanks({})
 
-      // Ordered list - extend if you have other terminal names in your system
-      const orderedTerminals = ['First', 'Second', 'Third', 'Final', 'Annual']
-
-      // Determine which terminals to show (all up to & including selected terminal)
-      const idx = orderedTerminals.indexOf(params.terminal)
-      const terminalsToFetch = idx >= 0 ? orderedTerminals.slice(0, idx + 1) : [params.terminal]
+      const terminalsToFetch = [...new Set([...SUMMARY_TERMINALS, params.terminal])]
 
       try {
-        // Fetch summaries for each terminal in parallel
         const responses = await Promise.all(terminalsToFetch.map(async (t) => {
           try {
             const res = await getStudentResultPublic({ ...params, terminal: t })
             return { terminal: t, data: res }
-          } catch (e) {
-            // If not found or unpublished, return null to indicate missing
+          } catch {
             return { terminal: t, data: null }
           }
         }))
 
-        const summaries = {}
-        let currentData = null
+        const responseByTerminal = responses.reduce((acc, row) => {
+          acc[row.terminal] = row.data
+          return acc
+        }, {})
 
-        responses.forEach(r => {
-          if (r.data?.summary) summaries[r.terminal] = r.data.summary
-          else summaries[r.terminal] = null
+        const summaries = SUMMARY_TERMINALS.reduce((acc, terminal) => {
+          acc[terminal] = responseByTerminal[terminal]?.summary || null
+          return acc
+        }, {})
 
-          // Keep the full data for the terminal the user is currently viewing
-          if (r.terminal === params.terminal) {
-            currentData = r.data
-          }
-        })
+        const currentData = responseByTerminal[params.terminal] || null
 
         setTermSummaries(summaries)
-        setVisibleTerminals(terminalsToFetch)
+        setVisibleTerminals(SUMMARY_TERMINALS)
 
-        // If we have full result for current terminal, set it; otherwise fallback to null
         if (currentData) {
           setData(currentData)
+
+          const accessToken = localStorage.getItem('access_token')
+          const effectiveSection =
+            params.section ||
+            currentData?.student?.section ||
+            currentData?.student?.Section ||
+            ''
+
+          if (accessToken && params.classValue && effectiveSection) {
+            const targetRoll = Number(currentData?.student?.roll_no ?? params.roll)
+            const targetId = getStudentId(currentData?.student)
+
+            const rankRows = await Promise.all(
+              SUMMARY_TERMINALS.map(async (t) => {
+                try {
+                  const marksResponse = await getMarks(params.classValue, effectiveSection, t)
+                  const studentsList = marksResponse?.students || marksResponse?.data?.students || []
+                  const rankValue = computeClassSectionRank({
+                    students: Array.isArray(studentsList) ? studentsList : [],
+                    targetRoll: Number.isFinite(targetRoll) ? targetRoll : null,
+                    targetId,
+                  })
+                  return [t, rankValue]
+                } catch {
+                  return [t, null]
+                }
+              })
+            )
+
+            const computedRanks = rankRows.reduce((acc, [terminalKey, rankValue]) => {
+              if (rankValue !== null && rankValue !== undefined) {
+                acc[terminalKey] = rankValue
+              }
+              return acc
+            }, {})
+            setClassSectionRanks(computedRanks)
+          }
         } else {
           setData(null)
-          // Only show an error if current terminal fetch failed; earlier terminals can be missing
           setError('Result for this terminal is not available or not published yet.')
         }
       } catch (err) {
         setData(null)
         setTermSummaries({})
         setVisibleTerminals([])
+        setClassSectionRanks({})
         setError(err?.message || 'Failed to fetch result')
       } finally {
         setLoading(false)
@@ -95,20 +192,34 @@ function Results() {
   }, [params])
 
   const student = data?.student
-  const marks = Array.isArray(data?.marks) ? data.marks : []
+  const marks = useMemo(() => (
+    Array.isArray(data?.marks) ? data.marks : []
+  ), [data?.marks])
   const summary = data?.summary
 
+  const fireToast = (type, title, message) => {
+    window.dispatchEvent(new CustomEvent('app:toast', { detail: { type, title, message } }))
+  }
+
   const handlePrint = () => {
+    if (!cardRef.current) return
     window.print()
   }
 
-  const getPercentageColor = (percentage) => {
-    const percent = parseFloat(percentage)
-    if (percent >= 90) return 'from-green-500 to-emerald-600'
-    if (percent >= 80) return 'from-blue-500 to-cyan-600'
-    if (percent >= 70) return 'from-purple-500 to-pink-600'
-    if (percent >= 60) return 'from-amber-500 to-orange-600'
-    return 'from-red-500 to-rose-600'
+  const toNumber = (value) => {
+    if (value === null || value === undefined || value === '') return null
+    const numeric = Number(value)
+    return Number.isFinite(numeric) ? numeric : null
+  }
+
+  const isAbsent = (value) => {
+    return typeof value === 'string' && value.trim().toUpperCase() === 'AB'
+  }
+
+  const toDisplayValue = (value) => {
+    if (value === null || value === undefined || value === '') return '--'
+    if (typeof value === 'string') return value.trim() || '--'
+    return value
   }
 
   const getDivisionColor = (division) => {
@@ -124,33 +235,6 @@ function Results() {
     }
   }
 
-  // Calculate rank (1-based). Prefer summary.rank, fall back to top-level if present
-  const calculateRank = () => {
-    const r = data?.summary?.rank ?? data?.rank
-    // If it's a numeric string like "1", convert to number. If non-numeric, return as-is.
-    if (typeof r === 'number' && !isNaN(r)) return r
-    if (typeof r === 'string' && r.trim() !== '' && !isNaN(Number(r))) return Number(r)
-    return r ? r : 'N/A'
-  }
-
-  const getRankPosition = () => {
-    const rank = calculateRank()
-    if (typeof rank !== 'number') return 'th'
-    const mod100 = rank % 100
-    if (mod100 >= 11 && mod100 <= 13) return 'th'
-    switch (rank % 10) {
-      case 1:
-        return 'st'
-      case 2:
-        return 'nd'
-      case 3:
-        return 'rd'
-      default:
-        return 'th'
-    }
-  }
-
-  // Helper to get suffix for any numeric rank
   const getRankSuffixFor = (rank) => {
     if (typeof rank !== 'number') return 'th'
     const mod100 = rank % 100
@@ -163,75 +247,427 @@ function Results() {
     }
   }
 
-  // Use the term-based summary for the current terminal if available
+  const getSectionRankFromSummary = (summaryRow) => {
+    if (!summaryRow) return null
+    return (
+      summaryRow?.class_section_rank ??
+      summaryRow?.section_rank ??
+      summaryRow?.rank_in_section ??
+      summaryRow?.classSectionRank ??
+      summaryRow?.sectionRank ??
+      summaryRow?.section_position ??
+      null
+    )
+  }
+
+  const isTermAvailable = (terminalKey) => {
+    return Boolean(termSummaries[terminalKey])
+  }
+
+  const getSummaryCellValue = (terminalKey, value, fallback = '--') => {
+    if (!isTermAvailable(terminalKey)) return 'Result Not Found'
+    if (value === undefined || value === null || value === '') return fallback
+    return value
+  }
+
+  const getDisplayRank = (terminalKey) => {
+    if (!isTermAvailable(terminalKey) && (classSectionRanks[terminalKey] === undefined || classSectionRanks[terminalKey] === null)) {
+      return 'Result Not Found'
+    }
+
+    const computedRank = classSectionRanks[terminalKey]
+    if (typeof computedRank === 'number' && Number.isFinite(computedRank)) {
+      return `${computedRank}${getRankSuffixFor(computedRank)}`
+    }
+
+    const summaryRank = getSectionRankFromSummary(termSummaries[terminalKey])
+    if (typeof summaryRank === 'number' && Number.isFinite(summaryRank)) {
+      return `${summaryRank}${getRankSuffixFor(summaryRank)}`
+    }
+    if (typeof summaryRank === 'string' && summaryRank.trim()) {
+      const numericRank = Number(summaryRank)
+      if (Number.isFinite(numericRank)) {
+        return `${numericRank}${getRankSuffixFor(numericRank)}`
+      }
+      return summaryRank
+    }
+    return isTermAvailable(terminalKey) ? '--' : 'Result Not Found'
+  }
+
   const currentSummary = termSummaries[params.terminal] ?? summary
 
+  const processedMarks = useMemo(() => {
+    return marks.map((mark, idx) => {
+      const subjectName = toDisplayValue(
+        mark?.subject || mark?.subject_name || mark?.name || `Subject ${idx + 1}`
+      )
+      const subjectCode = String(mark?.code || mark?.subject_code || '').trim()
+
+      const combinedRef = `${String(subjectName).toLowerCase()} ${subjectCode.toLowerCase()}`
+      const drawingSubject =
+        combinedRef.includes('drawing') ||
+        subjectCode.toLowerCase() === 'dr' ||
+        subjectCode.toLowerCase().startsWith('dr')
+
+      const fullMarks = drawingSubject ? 50 : (toNumber(mark?.max_marks) ?? 100)
+      const passMarks = drawingSubject ? 15 : 30
+
+      const externalAbsent = isAbsent(mark?.external_marks)
+      const internalAbsent = isAbsent(mark?.internal_marks)
+      const totalAbsent = isAbsent(mark?.total_obtained)
+
+      const externalNumeric = toNumber(mark?.external_marks)
+      const internalNumeric = drawingSubject ? null : toNumber(mark?.internal_marks)
+      const totalNumeric = toNumber(mark?.total_obtained)
+
+      const markAbsent = totalAbsent || externalAbsent || (!drawingSubject && internalAbsent)
+
+      const externalDisplay = externalAbsent ? 'AB' : toDisplayValue(externalNumeric)
+      const internalDisplay = drawingSubject
+        ? '--'
+        : (internalAbsent ? 'AB' : toDisplayValue(internalNumeric))
+
+      let obtainedDisplay = '--'
+      let obtainedNumeric = null
+
+      if (markAbsent) {
+        obtainedDisplay = 'AB'
+      } else if (totalNumeric !== null) {
+        obtainedDisplay = totalNumeric
+        obtainedNumeric = totalNumeric
+      } else if (externalNumeric !== null || internalNumeric !== null) {
+        const sum = (externalNumeric ?? 0) + (internalNumeric ?? 0)
+        obtainedDisplay = sum
+        obtainedNumeric = sum
+      }
+
+      let status = '--'
+      if (obtainedDisplay === 'AB') {
+        status = 'AB'
+      } else if (typeof obtainedNumeric === 'number') {
+        status = obtainedNumeric >= passMarks ? 'PASS' : 'FAIL'
+      }
+
+      return {
+        key: `${subjectCode || 'sub'}-${idx}`,
+        subjectName,
+        fullMarks,
+        passMarks,
+        externalDisplay,
+        internalDisplay,
+        obtainedDisplay,
+        status,
+      }
+    })
+  }, [marks])
+
+  const todayLabel = useMemo(() => new Date().toLocaleDateString('en-IN'), [])
+  const year = useMemo(() => new Date().getFullYear(), [])
+
+  const sessionLabel = toDisplayValue(
+    student?.academic_year ||
+    currentSummary?.academic_year ||
+    `${new Date().getFullYear()}-${String(new Date().getFullYear() + 1).slice(-2)}`
+  )
+
+  const downloadFileName = useMemo(() => {
+    const safeName = String(student?.name || 'student')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+    return `result-card-${params.classValue || 'class'}-${params.roll || 'roll'}-${safeName || 'student'}`
+  }, [params.classValue, params.roll, student?.name])
+
+  const studentInfoLeft = [
+    ['Name of Student', student?.name || '--'],
+    ["Father's Name", student?.father_name || '--'],
+    ['Class', student?.class ?? params.classValue ?? '--'],
+  ]
+
+  const studentInfoRight = [
+    ['Roll Number', student?.roll_no ?? params.roll ?? '--'],
+    ['Section', (student?.section ?? params.section) || '--'],
+    ['Current Terminal', data?.terminal || params.terminal || '--'],
+  ]
+
+  const getInfoIcon = (label) => {
+    const normalized = String(label || '').toLowerCase()
+    if (normalized.includes('name of student')) return 'person'
+    if (normalized.includes("father")) return 'family_restroom'
+    if (normalized.includes('class')) return 'school'
+    if (normalized.includes('roll')) return 'badge'
+    if (normalized.includes('section')) return 'grid_view'
+    if (normalized.includes('terminal')) return 'event'
+    return 'info'
+  }
+
+  const getStatusTextColor = (status) => {
+    if (status === 'PASS') return 'text-emerald-700 dark:text-emerald-300'
+    if (status === 'FAIL') return 'text-rose-700 dark:text-rose-300'
+    if (status === 'AB') return 'text-amber-700 dark:text-amber-300'
+    return 'text-[#2b456f] dark:text-slate-200'
+  }
+
+  const handleDownloadPdf = () => {
+    if (!data) return
+
+    try {
+      const doc = new jsPDF('p', 'mm', 'a4')
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const pageHeight = doc.internal.pageSize.getHeight()
+      const margin = 8
+      const contentWidth = pageWidth - margin * 2
+
+      doc.setDrawColor(70, 94, 126)
+      doc.setLineWidth(0.4)
+      doc.roundedRect(margin, margin, contentWidth, pageHeight - margin * 2, 4, 4)
+
+      let y = margin + 8
+      doc.setFont('times', 'bold')
+      doc.setTextColor(31, 52, 96)
+      doc.setFontSize(24)
+      doc.text(String(SCHOOL_NAME).toUpperCase(), pageWidth / 2, y, { align: 'center' })
+      y += 6
+
+      doc.setFont('times', 'bold')
+      doc.setTextColor(52, 74, 115)
+      doc.setFontSize(10)
+      doc.text(String(SCHOOL_ADDRESS).toUpperCase(), pageWidth / 2, y, { align: 'center' })
+      y += 7
+
+      doc.setTextColor(42, 63, 103)
+      doc.setFontSize(13)
+      doc.text(
+        `${String(data?.terminal || params.terminal || '--').toUpperCase()} EXAMINATION RESULT - ${sessionLabel}`,
+        pageWidth / 2,
+        y,
+        { align: 'center' }
+      )
+      y += 4
+
+      doc.setDrawColor(194, 204, 221)
+      doc.line(margin + 3, y, pageWidth - margin - 3, y)
+      y += 3
+
+      const infoBody = [
+        [
+          'Name of Student',
+          toDisplayValue(student?.name),
+          'Roll Number',
+          toDisplayValue(student?.roll_no ?? params.roll),
+        ],
+        [
+          "Father's Name",
+          toDisplayValue(student?.father_name),
+          'Section',
+          toDisplayValue(student?.section ?? params.section),
+        ],
+        [
+          'Class',
+          toDisplayValue(student?.class ?? params.classValue),
+          'Current Terminal',
+          toDisplayValue(data?.terminal || params.terminal),
+        ],
+      ]
+
+      autoTable(doc, {
+        startY: y,
+        margin: { left: margin + 3, right: margin + 3 },
+        tableWidth: contentWidth - 6,
+        theme: 'grid',
+        body: infoBody,
+        styles: { fontSize: 9, cellPadding: 2, textColor: [20, 28, 43] },
+        columnStyles: {
+          0: { fontStyle: 'bold', fillColor: [238, 242, 248], cellWidth: 40 },
+          1: { fontStyle: 'bold', cellWidth: 54 },
+          2: { fontStyle: 'bold', fillColor: [238, 242, 248], cellWidth: 32 },
+          3: { fontStyle: 'bold', cellWidth: 52 },
+        },
+      })
+
+      y = doc.lastAutoTable.finalY + 3
+
+      const marksBody = processedMarks.length
+        ? processedMarks.map((m) => [
+            String(m.subjectName),
+            String(m.fullMarks),
+            String(m.passMarks),
+            String(m.externalDisplay),
+            String(m.internalDisplay),
+            String(m.obtainedDisplay),
+            String(m.status),
+          ])
+        : [['No marks available', '--', '--', '--', '--', '--', '--']]
+
+      autoTable(doc, {
+        startY: y,
+        margin: { left: margin + 3, right: margin + 3 },
+        tableWidth: contentWidth - 6,
+        head: [['Subject', 'FM', 'Pass', 'Ext', 'Int', 'Obtained', 'Result']],
+        body: marksBody,
+        theme: 'grid',
+        styles: { fontSize: 8.2, cellPadding: 1.8, textColor: [20, 28, 43] },
+        headStyles: { fillColor: [231, 236, 245], textColor: [37, 55, 80], fontStyle: 'bold' },
+        columnStyles: {
+          0: { cellWidth: 60, fontStyle: 'bold' },
+          1: { halign: 'center', cellWidth: 16 },
+          2: { halign: 'center', cellWidth: 16 },
+          3: { halign: 'center', cellWidth: 15 },
+          4: { halign: 'center', cellWidth: 15 },
+          5: { halign: 'center', cellWidth: 20, fontStyle: 'bold' },
+          6: { halign: 'center', cellWidth: 20, fontStyle: 'bold' },
+        },
+      })
+
+      y = doc.lastAutoTable.finalY + 3
+
+      const summaryHeader = ['Metric', ...visibleTerminals.map((t) => `${t} Term`)]
+      const summaryRows = [
+        ['Total Marks', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.total_max_marks)))],
+        ['Marks Obtained', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.total_obtained)))],
+        [
+          'Percentage',
+          ...visibleTerminals.map((t) => String(getSummaryCellValue(
+            t,
+            typeof termSummaries[t]?.percentage !== 'undefined' && termSummaries[t]?.percentage !== null
+              ? `${termSummaries[t].percentage}%`
+              : '--'
+          ))),
+        ],
+        ['Division', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.division)))],
+        ['Class & Section Rank', ...visibleTerminals.map((t) => String(getDisplayRank(t)))],
+        [
+          'Published Date',
+          ...visibleTerminals.map((t) => String(getSummaryCellValue(
+            t,
+            termSummaries[t]?.published_date
+              ? new Date(termSummaries[t].published_date).toLocaleDateString('en-IN')
+              : '--'
+          ))),
+        ],
+      ]
+
+      autoTable(doc, {
+        startY: y,
+        margin: { left: margin + 3, right: margin + 3 },
+        tableWidth: contentWidth - 6,
+        head: [summaryHeader],
+        body: summaryRows,
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 1.8, textColor: [20, 28, 43] },
+        headStyles: { fillColor: [231, 236, 245], textColor: [37, 55, 80], fontStyle: 'bold' },
+        columnStyles: {
+          0: { fontStyle: 'bold', cellWidth: 48 },
+        },
+      })
+
+      y = doc.lastAutoTable.finalY + 4
+      doc.setTextColor(50, 64, 86)
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(8.5)
+
+      const notes = [
+        'This is a computer-generated result marksheet and does not require any signature.',
+        'Pass Marks: 30 for regular subjects and 15 for Drawing (FM: 50, External only).',
+        'Rank is calculated class and section wise.',
+      ]
+
+      notes.forEach((note) => {
+        if (y > pageHeight - 18) return
+        doc.text(`- ${note}`, margin + 5, y)
+        y += 4
+      })
+
+      const signatureLineY = Math.max(y + 3, pageHeight - 20)
+      doc.setDrawColor(120, 130, 148)
+      doc.line(pageWidth - 68, signatureLineY, pageWidth - 18, signatureLineY)
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(8.5)
+      doc.text("Principal's Signature", pageWidth - 43, signatureLineY + 4, { align: 'center' })
+
+      doc.setFont('helvetica', 'normal')
+      doc.text(`Generated: ${todayLabel}`, margin + 5, signatureLineY + 4)
+
+      doc.save(`${downloadFileName}.pdf`)
+      fireToast('success', 'Download', 'Result card PDF downloaded.')
+    } catch (err) {
+      console.error('Failed to download result card PDF:', err)
+      fireToast('error', 'Download', 'Unable to download result card PDF.')
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#101922] text-slate-900 dark:text-slate-100" style={{ fontFamily: "'Lexend', sans-serif" }}>
-      {/* Top Bar */}
-      <div className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#101922]/80 backdrop-blur">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#137fec] text-white rounded-xl p-2 shadow-sm">
-              <span className="material-symbols-outlined text-base">school</span>
+    <div className="min-h-screen bg-[#edf2fb] dark:bg-[#0f1724] text-slate-900 dark:text-slate-100 overflow-x-hidden" style={{ fontFamily: "'Lexend', sans-serif" }}>
+      <header className="no-print border-b border-slate-200 dark:border-slate-800 bg-gradient-to-r from-white/95 via-white/85 to-[#dbeafe]/75 dark:from-[#0f1724]/95 dark:via-[#0f1724]/85 dark:to-[#17233a]/75 backdrop-blur">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="h-11 w-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white flex items-center justify-center overflow-hidden">
+              <img src={schoolLogo} alt="School logo" className="h-full w-full object-cover" />
             </div>
-            <div>
-              <p className="text-sm font-black leading-tight">{SCHOOL_NAME}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-tight">Student Result</p>
+            <div className="min-w-0">
+              <p className="text-sm sm:text-base font-bold leading-tight truncate">{SCHOOL_NAME}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Student Result Card Portal</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Link
               to="/results-portal"
-              className="text-xs font-bold text-[#137fec] hover:underline"
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
-              New Result
+              <span className="material-symbols-outlined text-sm">arrow_back</span>
+              New Search
             </Link>
-            <span className="text-slate-300 dark:text-slate-700">|</span>
-            {data && (
+            {data ? (
               <>
                 <button
                   onClick={handlePrint}
-                  className="text-xs font-bold text-[#137fec] hover:underline flex items-center gap-1"
+                  className="inline-flex items-center gap-1 rounded-lg bg-[#137fec] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#137fec]/90"
                 >
                   <span className="material-symbols-outlined text-sm">print</span>
-                  Print
+                  Print Card
                 </button>
-                <span className="text-slate-300 dark:text-slate-700">|</span>
+                <button
+                  onClick={handleDownloadPdf}
+                  className="inline-flex items-center gap-1 rounded-lg bg-[#0f766e] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#0f766e]/90"
+                >
+                  <span className="material-symbols-outlined text-sm">download</span>
+                  Download PDF
+                </button>
               </>
-            )}
+            ) : null}
             <Link
               to="/login"
-              className="text-xs font-bold text-slate-700 dark:text-slate-200 hover:underline"
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
+              <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
               Admin Login
             </Link>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-5xl mx-auto px-4 py-6 space-y-4">
-        {/* Query Summary */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+      <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+        <div className="bg-gradient-to-r from-white to-[#eef4ff] dark:from-slate-800 dark:to-slate-800/90 rounded-2xl border border-[#d4deee] dark:border-slate-700 shadow-[0_10px_30px_rgba(15,23,42,0.08)] p-4 no-print">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[#137fec]">badge</span>
               <div>
-                <p className="text-sm font-black">Class {params.classValue || '--'} • Roll {params.roll || '--'}</p>
+                <p className="text-sm font-bold">Class {params.classValue || '--'} | Roll {params.roll || '--'}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   Terminal: <span className="font-bold">{params.terminal || '--'}</span>
                   {params.section ? (
                     <>
                       {' '}
-                      • Section: <span className="font-bold">{params.section}</span>
+                      | Section: <span className="font-bold">{params.section}</span>
                     </>
                   ) : null}
                 </p>
               </div>
             </div>
             {currentSummary?.status ? (
-              <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-[#137fec]/10 text-[#137fec]">
+              <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-gradient-to-r from-[#137fec]/15 to-[#1f5fb8]/15 text-[#0f5fc6] border border-[#137fec]/20">
                 <span className="material-symbols-outlined text-sm">verified</span>
                 {currentSummary.status}
               </span>
@@ -239,7 +675,6 @@ function Results() {
           </div>
         </div>
 
-        {/* States */}
         {loading ? (
           <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
@@ -260,222 +695,254 @@ function Results() {
 
         {(!loading && !error && data) && (
           <>
-            {/* Result Card - Professional Design */}
-            <div className="bg-white dark:bg-slate-800 border-2 border-slate-400 dark:border-slate-500 overflow-hidden shadow-2xl result-print print-card" style={{ maxWidth: '900px', margin: '0 auto' }}>
-              {/* Header Section */}
-              <div className="border-b-2 border-slate-400 dark:border-slate-500 p-4 bg-linear-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 print:p-3">
-                <div className="flex items-start gap-4">
-                  {/* Logo - Left Side */}
-                  <div className="shrink-0">
-                    <div className="h-16 w-16 rounded-lg bg-[#137fec]/15 flex items-center justify-center border border-[#137fec]/30 print:h-14 print:w-14">
-                      <span className="material-symbols-outlined text-3xl text-[#137fec] print:text-2xl">school</span>
+            <div className="print-card-only">
+              <div
+                ref={cardRef}
+                className="relative isolate bg-[#f6f7fb] dark:bg-slate-800 border-2 border-[#c8d2e1] dark:border-slate-600 rounded-[30px] overflow-hidden shadow-[0_28px_80px_rgba(15,23,42,0.18)] result-print print-card text-[13px] sm:text-[14px] leading-[1.45]"
+                style={{ maxWidth: '980px', margin: '0 auto' }}
+              >
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                  <p className="select-none text-[38px] sm:text-[64px] font-medium tracking-[0.1em] uppercase text-slate-400/10 -rotate-[30deg]">
+                    {SCHOOL_NAME}
+                  </p>
+                </div>
+                <div className="pointer-events-none absolute -top-16 -right-12 h-48 w-48 rounded-full bg-[#1f6fd7]/14 blur-3xl" />
+                <div className="pointer-events-none absolute -bottom-20 -left-10 h-52 w-52 rounded-full bg-[#d09a3d]/12 blur-3xl" />
+
+                <div className="relative z-10">
+                  <div className="border-b border-[#cfd5df] dark:border-slate-600 bg-[linear-gradient(180deg,#f8faff_0%,#eef3fa_100%)] dark:bg-slate-800">
+                    <div className="p-4 sm:p-6">
+                      <div className="flex items-center justify-center gap-3 sm:gap-7 rounded-2xl border border-[#d3dded] dark:border-slate-700 bg-white/55 dark:bg-slate-800/70 backdrop-blur-sm px-3 py-3 sm:px-5 sm:py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                        <div className="shrink-0">
+                          <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border border-[#ccb46e] bg-gradient-to-br from-[#fff2c6] via-[#f3da86] to-[#c8a651] p-1.5 shadow-[0_10px_24px_rgba(168,128,43,0.35)]">
+                            <img src={schoolLogo} alt="School logo" className="h-full w-full object-cover rounded-xl" />
+                          </div>
+                        </div>
+
+                        <div className="min-w-0 text-left">
+                          <p className="inline-flex items-center rounded-full border border-[#d7e2f4] bg-white/80 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold tracking-[0.08em] text-[#40577d] uppercase">
+                            Academic Result Card
+                          </p>
+                          <h1 className="text-[18px] sm:text-[32px] font-bold leading-tight tracking-[0.01em] text-[#1f3460] uppercase print:text-xl" style={{ fontFamily: "'Cambria', 'Georgia', serif" }}>
+                            {SCHOOL_NAME}
+                          </h1>
+                          <p className="text-[10px] sm:text-[13px] font-medium mt-1 text-[#334a73] print:text-xs" style={{ fontFamily: "'Cambria', 'Georgia', serif" }}>
+                            {SCHOOL_ADDRESS}
+                          </p>
+                          <p className="text-[12px] sm:text-[22px] font-semibold mt-1.5 text-[#2a3f67] uppercase print:text-sm" style={{ fontFamily: "'Cambria', 'Georgia', serif" }}>
+                            {data.terminal} Examination Result - {sessionLabel}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  
-                  {/* Header Text - Center */}
-                  <div className="flex-1 text-center">
-                    <h1 className="text-2xl font-black text-slate-900 dark:text-white leading-tight print:text-xl">{SCHOOL_NAME}</h1>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 print:text-xs">{SCHOOL_ADDRESS}</p>
-                    <p className="text-xs font-bold text-[#137fec] mt-1 uppercase tracking-wide print:text-xs print:mt-0.5">
-                      {data.terminal} Terminal Examination Result Card
-                    </p>
-                  </div>
-                </div>
-              </div>
 
-              {/* Student Info Section */}
-              <div className="grid grid-cols-1 md:grid-cols-2 border-b-2 border-slate-400 dark:border-slate-500 bg-white dark:bg-slate-800 print:grid-cols-2">
-                <div className="p-4 border-r border-slate-200 dark:border-slate-700 print:p-3 print:border-r-2 print:border-slate-400">
-                  <div className="grid grid-cols-2 gap-4 text-sm print:grid-cols-2 print:gap-3 print:text-xs">
-                    <div>
-                      <p className="font-bold text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide">Student Name</p>
-                      <p className="text-slate-900 dark:text-white font-black text-base mt-1 print:text-sm">{student?.name || '--'}</p>
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide">Father Name</p>
-                      <p className="text-slate-900 dark:text-white font-bold mt-1 print:text-sm">{student?.father_name || '--'}</p>
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide">Class</p>
-                      <p className="text-slate-900 dark:text-white font-black text-lg mt-1 print:text-base">{student?.class ?? params.classValue}</p>
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide">Roll No</p>
-                      <p className="text-slate-900 dark:text-white font-black text-lg mt-1 print:text-base">{student?.roll_no ?? params.roll}</p>
+                  <div className="px-4 sm:px-6 pt-4">
+                    <div className="rounded-2xl overflow-hidden border border-[#cfd5df] dark:border-slate-600 bg-white/90 dark:bg-slate-800/70 backdrop-blur-sm shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
+                      <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-[#d9dfeb] dark:divide-slate-700">
+                        {[studentInfoLeft, studentInfoRight].map((group, groupIndex) => (
+                          <div
+                            key={groupIndex === 0 ? 'left-col' : 'right-col'}
+                            className={`${groupIndex === 1 ? 'border-t md:border-t-0 border-[#d9dfeb] dark:border-slate-700' : ''}`}
+                          >
+                            {group.map(([label, value]) => (
+                              <div key={label} className="grid grid-cols-[132px_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)] border-b border-[#dde3eb] dark:border-slate-700 last:border-b-0">
+                                <div className="px-3 sm:px-4 py-2.5 sm:py-3 font-semibold text-[#2d3c56] dark:text-slate-200 bg-[#eef2f8] dark:bg-slate-700 flex items-center gap-1.5">
+                                  <span className="material-symbols-outlined text-sm text-[#36598e] dark:text-slate-300">{getInfoIcon(label)}</span>
+                                  <span>{label}:</span>
+                                </div>
+                                <div className="px-3 sm:px-4 py-2.5 sm:py-3 font-medium text-[#1e2e46] dark:text-white">
+                                  {value}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="p-4 print:p-3">
-                  <div className="grid grid-cols-2 gap-4 text-sm print:grid-cols-2 print:gap-3 print:text-xs">
-                    <div>
-                      <p className="font-bold text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide">Section</p>
-                      <p className="text-slate-900 dark:text-white font-bold mt-1 print:text-sm">{(student?.section ?? params.section) || '--'}</p>
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide">Year</p>
-                      <p className="text-slate-900 dark:text-white font-bold mt-1 print:text-sm">{new Date().getFullYear()}</p>
-                    </div>
-                    <div className="col-span-2">
-                      <p className="font-bold text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide">Current Terminal</p>
-                      <p className="text-[#137fec] dark:text-blue-400 font-black text-lg mt-1 print:text-base">{data?.terminal || params.terminal}</p>
+
+                  <div className="px-4 sm:px-6 pt-4">
+                    <div className="rounded-2xl overflow-hidden border border-[#cfd5df] dark:border-slate-600 bg-white/90 dark:bg-slate-800/70 backdrop-blur-sm shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
+                      <div className="px-3 sm:px-4 py-2.5 bg-gradient-to-r from-[#eef2f8] to-[#e4ecfa] dark:from-slate-700 dark:to-slate-700 border-b border-[#d9dfeb] dark:border-slate-600 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <h3 className="text-sm font-semibold text-[#22334d] dark:text-white uppercase tracking-[0.06em]">Subject Details</h3>
+                        <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                          <span className="inline-flex items-center rounded-full px-2 py-0.5 font-semibold bg-[#dce8ff] text-[#2d4f82] dark:bg-slate-800 dark:text-slate-300">{processedMarks.length} Subjects</span>
+                          <span className="inline-flex items-center rounded-full px-2 py-0.5 font-semibold bg-white text-[#3e4f6c] dark:bg-slate-800 dark:text-slate-300">Pass: 30</span>
+                          <span className="inline-flex items-center rounded-full px-2 py-0.5 font-semibold bg-[#fff2cf] text-[#8c5c16] dark:bg-amber-900/30 dark:text-amber-300">Drawing Pass: 15</span>
+                        </div>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="w-full min-w-[760px] text-[12px] sm:text-[13px]">
+                          <thead>
+                            <tr className="bg-[#dfe9f9] dark:bg-slate-700 text-[#253750] dark:text-slate-100">
+                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-3 py-2.5 text-left font-semibold">Subject Details</th>
+                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Full Marks</th>
+                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Pass Marks</th>
+                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Ext</th>
+                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Int</th>
+                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Obtained</th>
+                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Result</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {processedMarks.length === 0 && (
+                              <tr>
+                                <td colSpan={7} className="text-center py-6 text-slate-600 dark:text-slate-400">No marks available</td>
+                              </tr>
+                            )}
+
+                            {processedMarks.map((m, idx) => (
+                              <tr key={m.key} className={`${idx % 2 === 0 ? 'bg-white dark:bg-slate-800/60' : 'bg-[#f9fbff] dark:bg-slate-800/40'} hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors`}>
+                                <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1e2f48] dark:text-white">{m.subjectName}</td>
+                                <td className="border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-medium text-[#2a3d59] dark:text-slate-200">{m.fullMarks}</td>
+                                <td className="border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-medium text-[#3b527a] dark:text-slate-200">{m.passMarks}</td>
+                                <td className="border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-medium text-[#2a3a53] dark:text-slate-200">{m.externalDisplay}</td>
+                                <td className="border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-medium text-[#2a3a53] dark:text-slate-200">{m.internalDisplay}</td>
+                                <td className="border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-semibold text-[#1f3f67] dark:text-slate-100">{m.obtainedDisplay}</td>
+                                <td className={`border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-semibold ${getStatusTextColor(m.status)}`}>{m.status}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Marks Table */}
-              <div className="p-4 border-b-2 border-slate-400 dark:border-slate-500 bg-white dark:bg-slate-800 print:p-3">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 uppercase tracking-wide print:text-xs print:mb-2">Subject Marks</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs print:text-xs">
-                    <thead>
-                      <tr className="bg-slate-900 dark:bg-slate-950 text-white border-2 border-slate-400 dark:border-slate-500">
-                        <th className="border border-slate-400 dark:border-slate-500 px-3 py-2.5 text-left font-bold print:px-2 print:py-2">Subject</th>
-                        <th className="border border-slate-400 dark:border-slate-500 px-2 py-2.5 text-center font-bold print:px-2 print:py-2">Max</th>
-                        <th className="border border-slate-400 dark:border-slate-500 px-2 py-2.5 text-center font-bold print:px-2 print:py-2">Ext</th>
-                        <th className="border border-slate-400 dark:border-slate-500 px-2 py-2.5 text-center font-bold print:px-2 print:py-2">Int</th>
-                        <th className="border border-slate-400 dark:border-slate-500 px-3 py-2.5 text-center font-bold print:px-2 print:py-2">Obtained</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {marks.length === 0 && (
-                        <tr>
-                          <td colSpan={5} className="text-center py-6 text-slate-600 dark:text-slate-400">No marks available</td>
-                        </tr>
-                      )}
+                  <div className="px-4 sm:px-6 pt-4">
+                    <div className="rounded-2xl overflow-hidden border border-[#cfd5df] dark:border-slate-600 bg-white/90 dark:bg-slate-800/70 backdrop-blur-sm shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
+                      <div className="px-3 sm:px-4 py-2.5 bg-gradient-to-r from-[#eef2f8] to-[#e4ecfa] dark:from-slate-700 dark:to-slate-700 border-b border-[#d9dfeb] dark:border-slate-600 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <h3 className="text-sm font-semibold text-[#22334d] dark:text-white uppercase tracking-[0.06em]">Summary Report</h3>
+                        <span className="inline-flex items-center rounded-full bg-[#dce8ff] dark:bg-slate-800 px-2.5 py-0.5 text-[11px] font-semibold text-[#3d5378] dark:text-blue-300">Rank Scope: Class + Section</span>
+                      </div>
 
-                      {marks.map((m, idx) => {
-                        // Use nullish coalescing so zero values are shown correctly
-                        const obtained = m?.total_obtained ?? '--'
-                        const isAbsent = m?.total_obtained === 'AB'
-                        return (
-                          <tr key={`${m?.code || 'SUB'}-${idx}`} className="border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-slate-900/50 transition-colors">
-                            <td className="border border-slate-300 dark:border-slate-600 px-3 py-2 font-bold text-slate-900 dark:text-white print:px-2 print:py-1.5">{m?.subject || '--'}</td>
-                            <td className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center text-slate-700 dark:text-slate-300 print:px-2 print:py-1.5">{m?.max_marks ?? '--'}</td>
-                            <td className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center text-slate-700 dark:text-slate-300 print:px-2 print:py-1.5">{m?.external_marks ?? '--'}</td>
-                            <td className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center text-slate-700 dark:text-slate-300 print:px-2 print:py-1.5">{m?.internal_marks ?? '--'}</td>
-                            <td className="border border-slate-300 dark:border-slate-600 px-3 py-2 text-center font-bold print:px-2 print:py-1.5">
-                              <span className={`${isAbsent ? 'text-red-600 dark:text-red-400 font-black' : 'text-green-600 dark:text-green-400 font-black'}`}>
-                                {obtained}
-                              </span>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full min-w-[690px] text-[12px] sm:text-[13px]">
+                          <thead>
+                            <tr className="bg-[#dfe9f9] dark:bg-slate-700 text-[#253750] dark:text-slate-100">
+                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-3 py-2.5 text-left font-semibold">Metric</th>
+                              {visibleTerminals.map((t) => (
+                                <th key={t} className="border border-[#d5dbe7] dark:border-slate-600 px-3 py-2.5 text-center font-semibold">{t} Term</th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
+                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Total Marks</td>
+                              {visibleTerminals.map((t) => (
+                                <td key={t} className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-medium text-[#2a3d59] dark:text-slate-200">
+                                  {getSummaryCellValue(t, termSummaries[t]?.total_max_marks)}
+                                </td>
+                              ))}
+                            </tr>
+                            <tr className="bg-[#f9fbff] dark:bg-slate-800/40 hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
+                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Marks Obtained</td>
+                              {visibleTerminals.map((t) => (
+                                <td key={t} className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-semibold text-[#1f406f] dark:text-blue-300">
+                                  {getSummaryCellValue(t, termSummaries[t]?.total_obtained)}
+                                </td>
+                              ))}
+                            </tr>
+                            <tr className="hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
+                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Percentage</td>
+                              {visibleTerminals.map((t) => (
+                                <td key={t} className={`border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-semibold ${getDivisionColor(termSummaries[t]?.division)}`}>
+                                  {getSummaryCellValue(
+                                    t,
+                                    typeof termSummaries[t]?.percentage !== 'undefined' && termSummaries[t]?.percentage !== null
+                                      ? `${termSummaries[t].percentage}%`
+                                      : '--'
+                                  )}
+                                </td>
+                              ))}
+                            </tr>
+                            <tr className="bg-[#f9fbff] dark:bg-slate-800/40 hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
+                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Division</td>
+                              {visibleTerminals.map((t) => (
+                                <td key={t} className={`border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-semibold ${getDivisionColor(termSummaries[t]?.division)}`}>
+                                  {getSummaryCellValue(t, termSummaries[t]?.division)}
+                                </td>
+                              ))}
+                            </tr>
+                            <tr className="hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
+                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Class &amp; Section Rank</td>
+                              {visibleTerminals.map((t) => (
+                                <td key={t} className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-semibold text-[#2b456f] dark:text-blue-300">
+                                  {getDisplayRank(t)}
+                                </td>
+                              ))}
+                            </tr>
+                            <tr className="bg-[#f9fbff] dark:bg-slate-800/40 hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
+                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Published Date</td>
+                              {visibleTerminals.map((t) => (
+                                <td key={t} className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-medium text-[#2a3d59] dark:text-slate-300">
+                                  {getSummaryCellValue(
+                                    t,
+                                    termSummaries[t]?.published_date
+                                      ? new Date(termSummaries[t].published_date).toLocaleDateString('en-IN')
+                                      : '--'
+                                  )}
+                                </td>
+                              ))}
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
 
-              {/* Summary Details Section - All Terminals */}
-              <div className="p-4 border-b-2 border-slate-400 dark:border-slate-500 bg-white dark:bg-slate-800 print:p-3">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 uppercase tracking-wide print:text-xs print:mb-2">Summary Report</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs print:text-xs">
-                    <thead>
-                      <tr className="bg-slate-900 dark:bg-slate-950 text-white border-2 border-slate-400 dark:border-slate-500">
-                        <th className="border border-slate-400 dark:border-slate-500 px-3 py-2.5 text-left font-bold print:px-2 print:py-2">Metric</th>
-                        {visibleTerminals.map((t) => (
-                          <th key={t} className="border border-slate-400 dark:border-slate-500 px-3 py-2.5 text-center font-bold print:px-2 print:py-2">{t}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/* Total Marks Row */}
-                      <tr className="border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/30 hover:bg-blue-50 dark:hover:bg-slate-900/50">
-                        <td className="border border-slate-300 dark:border-slate-600 px-3 py-2 font-bold text-slate-900 dark:text-white print:px-2 print:py-1.5">Total Marks</td>
-                        {visibleTerminals.map((t) => (
-                          <td key={t} className="border border-slate-300 dark:border-slate-600 px-3 py-2 text-center text-slate-700 dark:text-slate-300 font-bold print:px-2 print:py-1.5">{termSummaries[t]?.total_max_marks ?? '--'}</td>
-                        ))}
-                      </tr>
+                  <div className="px-4 sm:px-6 pt-4 pb-5">
+                    <div className="rounded-2xl border border-[#cfd5df] dark:border-slate-600 bg-gradient-to-br from-white to-[#f3f7ff] dark:from-slate-800/80 dark:to-slate-800/60 px-4 sm:px-5 py-4 sm:py-5 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_230px] gap-5 shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
+                      <div>
+                        <p className="text-base font-semibold text-center lg:text-left text-[#243653] dark:text-white mb-3 uppercase tracking-[0.06em]">Important Information</p>
+                        <ul className="space-y-2 text-[12px] sm:text-[13px] text-[#37485f] dark:text-slate-300">
+                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>This is a computer-generated result marksheet and does not require any signature.</span></li>
+                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>The details shown here are based on official school records.</span></li>
+                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>Any discrepancy should be reported within 7 days of result declaration.</span></li>
+                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span><strong>AB</strong> denotes absent and <strong>NA</strong> denotes not applicable.</span></li>
+                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>Pass Marks: 30 for regular subjects and 15 for Drawing.</span></li>
+                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>Drawing is evaluated only by External marks (FM: 50).</span></li>
+                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>Rank displayed above is calculated class and section wise.</span></li>
+                        </ul>
+                      </div>
 
-                      {/* Marks Obtained Row */}
-                      <tr className="border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-slate-900/50">
-                        <td className="border border-slate-300 dark:border-slate-600 px-3 py-2 font-bold text-slate-900 dark:text-white print:px-2 print:py-1.5">Marks Obtained</td>
-                        {visibleTerminals.map((t) => (
-                          <td key={t} className="border border-slate-300 dark:border-slate-600 px-3 py-2 text-center font-bold text-green-600 dark:text-green-400 print:px-2 print:py-1.5">{termSummaries[t]?.total_obtained ?? '--'}</td>
-                        ))}
-                      </tr>
+                      <div className="flex flex-col justify-between">
+                        <div className="rounded-xl bg-[#eef2f8] dark:bg-slate-700 border border-[#d9dfeb] dark:border-slate-600 px-3 py-2 text-center">
+                          <p className="text-[11px] font-semibold uppercase text-[#3d5275] dark:text-slate-200">Generated On</p>
+                          <p className="text-sm font-semibold text-[#233650] dark:text-white">{todayLabel}</p>
+                        </div>
+                        <div className="mt-6 text-center">
+                          <div className="h-12 border-b-2 border-[#8b97ac] dark:border-slate-500"></div>
+                          <p className="mt-2 text-sm font-semibold text-[#233650] dark:text-slate-300">Principal&apos;s Signature &amp; Stamp</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-                      {/* Percentage Row */}
-                      <tr className="border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/30 hover:bg-blue-50 dark:hover:bg-slate-900/50">
-                        <td className="border border-slate-300 dark:border-slate-600 px-3 py-2 font-bold text-slate-900 dark:text-white print:px-2 print:py-1.5">Percentage</td>
-                        {visibleTerminals.map((t) => (
-                          <td key={t} className={`border border-slate-300 dark:border-slate-600 px-3 py-2 text-center font-black ${getDivisionColor(termSummaries[t]?.division)} print:px-2 print:py-1.5`}>
-                            {typeof termSummaries[t]?.percentage !== 'undefined' && termSummaries[t]?.percentage !== null ? `${termSummaries[t].percentage}%` : '--'}
-                          </td>
-                        ))}
-                      </tr>
-
-                      {/* Division Row */}
-                      <tr className="border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-slate-900/50">
-                        <td className="border border-slate-300 dark:border-slate-600 px-3 py-2 font-bold text-slate-900 dark:text-white print:px-2 print:py-1.5">Division</td>
-                        {visibleTerminals.map((t) => (
-                          <td key={t} className={`border border-slate-300 dark:border-slate-600 px-3 py-2 text-center font-bold ${getDivisionColor(termSummaries[t]?.division)} print:px-2 print:py-1.5`}>{termSummaries[t]?.division ?? '--'}</td>
-                        ))}
-                      </tr>
-
-                      {/* Rank Row */}
-                      <tr className="border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/30 hover:bg-blue-50 dark:hover:bg-slate-900/50">
-                        <td className="border border-slate-300 dark:border-slate-600 px-3 py-2 font-bold text-slate-900 dark:text-white print:px-2 print:py-1.5">Rank (Top 10)</td>
-                        {visibleTerminals.map((t) => (
-                          <td key={t} className="border border-slate-300 dark:border-slate-600 px-3 py-2 text-center font-bold text-blue-600 dark:text-blue-400 print:px-2 print:py-1.5">
-                            {typeof termSummaries[t]?.rank !== 'undefined' && termSummaries[t]?.rank !== null ? (isNaN(Number(termSummaries[t].rank)) ? termSummaries[t].rank : `${Number(termSummaries[t].rank)}${getRankSuffixFor(Number(termSummaries[t].rank))}`) : '--'}
-                          </td>
-                        ))}
-                      </tr>
-
-                      {/* Published Date Row */}
-                      <tr className="border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-slate-900/50">
-                        <td className="border border-slate-300 dark:border-slate-600 px-3 py-2 font-bold text-slate-900 dark:text-white print:px-2 print:py-1.5">Published Date</td>
-                        {visibleTerminals.map((t) => (
-                          <td key={t} className="border border-slate-300 dark:border-slate-600 px-3 py-2 text-center font-bold text-slate-700 dark:text-slate-300 print:px-2 print:py-1.5">
-                            {termSummaries[t]?.published_date ? new Date(termSummaries[t].published_date).toLocaleDateString('en-IN') : '--'}
-                          </td>
-                        ))}
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Notes Section */}
-              <div className="p-4 bg-slate-50 dark:bg-slate-900/30 border-b-2 border-slate-400 dark:border-slate-500 text-xs text-slate-600 dark:text-slate-400 print:p-3 print:text-xs">
-                <p className="font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-wide print:mb-1">Important Notes:</p>
-                <ul className="space-y-1 list-disc list-inside text-xs print:space-y-0.5 print:text-xs">
-                  <li>This is a computer-generated result marksheet</li>
-                  <li><strong>AB</strong> denotes Absent; <strong>NA</strong> denotes Not Applicable</li>
-                  <li>Any discrepancy should be reported within 7 days</li>
-                  <li>Please verify the information and contact the school if there are any errors</li>
-                </ul>
-              </div>
-
-              {/* Signature Section */}
-              <div className="p-4 flex items-end justify-between bg-white dark:bg-slate-800 border-t-2 border-slate-400 dark:border-slate-500 print:p-3">
-                <div className="text-center">
-                  <div className="h-16 w-28 border-t-2 border-slate-400 dark:border-slate-500 mb-2 print:h-12 print:w-24 print:mb-1"></div>
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide print:text-xs">Student/Parent</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs font-bold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wide print:mb-1 print:text-xs">Date</p>
-                  <p className="text-xs text-slate-700 dark:text-slate-300 font-bold print:text-xs">{new Date().toLocaleDateString('en-IN')}</p>
-                </div>
-                <div className="text-center">
-                  <div className="h-16 w-28 border-t-2 border-slate-400 dark:border-slate-500 mb-2 print:h-12 print:w-24 print:mb-1"></div>
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide print:text-xs">Principal</p>
+                  <div className="px-4 sm:px-6 pb-5 text-center text-[11px] font-semibold text-[#41516c] dark:text-slate-400 border-t border-[#d7e0ee] dark:border-slate-700 pt-3">
+                    {SCHOOL_NAME} | {SCHOOL_ADDRESS}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="text-center text-xs text-slate-500 dark:text-slate-400 py-4 no-print">
-              © {new Date().getFullYear()} {SCHOOL_NAME}. Result portal.
-            </div>
+            <footer className="no-print rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/85 dark:bg-slate-800/80 px-4 py-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs">
+                <p className="text-slate-600 dark:text-slate-300">(c) {year} {SCHOOL_NAME}. All rights reserved.</p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link to="/results-portal" className="font-bold text-[#137fec] hover:underline">Result Portal</Link>
+                  <Link to="/contact" className="font-bold text-[#137fec] hover:underline">Contact</Link>
+                  <Link to="/" className="font-bold text-[#137fec] hover:underline">Website</Link>
+                </div>
+              </div>
+            </footer>
           </>
         )}
-      </div>
+      </main>
     </div>
   )
 }
 
 export default Results
+

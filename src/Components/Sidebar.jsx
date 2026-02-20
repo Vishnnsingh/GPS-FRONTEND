@@ -18,6 +18,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
     admin: [
       { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
       { id: 'student', label: 'Student', icon: 'person_add' },
+      { id: 'studentLifecycle', label: 'Leave/Rejoin', icon: 'sync_alt' },
       { id: 'subject', label: 'Subject', icon: 'book' },
       { id: 'fees', label: 'Fees', icon: 'payments' },
       { id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' },
@@ -25,6 +26,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
     ],
     teacher: [
       { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { id: 'studentLifecycle', label: 'Leave/Rejoin', icon: 'sync_alt' },
       { id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' },
       { id: 'uploadPhoto', label: 'Upload Photo', icon: 'photo_camera' }
     ],

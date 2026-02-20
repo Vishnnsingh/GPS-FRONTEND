@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { recordFeePayment } from '../../Api/fees'
+import { emitToast } from '../../Api/auth'
 
 function PayFees() {
   const [loading, setLoading] = useState(false)
@@ -48,6 +49,7 @@ function PayFees() {
       // Handle successful response
       if (response.message || response.payment || response.bill_id) {
         setSuccess(response.message || 'Payment processed successfully!')
+        emitToast('success', response.message || 'Payment processed successfully!', 'Fee Payment')
         setPaymentResponse(response)
         setShowPaymentModal(true)
         

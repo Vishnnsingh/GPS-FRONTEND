@@ -1,166 +1,132 @@
 import axios from 'axios'
 
-// Prefer a relative base URL so Vite dev proxy can avoid CORS issues.
-// Override via .env: VITE_API_BASE_URL=http://localhost:5000/api (if you want absolute)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
-// Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
+  timeout: 20000,
 })
 
-// Flag to prevent multiple refresh attempts
+export const publicApi = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 20000,
+})
+
 let isRefreshing = false
 let failedQueue = []
 
 const processQueue = (error, token = null) => {
-  failedQueue.forEach(prom => {
+  failedQueue.forEach((request) => {
     if (error) {
-      prom.reject(error)
-    } else {
-      prom.resolve(token)
+      request.reject(error)
+      return
     }
+    request.resolve(token)
   })
-  
   failedQueue = []
 }
 
-// Login API
-export const login = async (email, password) => {
-  try {
-    const response = await api.post('/auth/login', {
-      email,
-      password,
+export const emitToast = (type = 'info', message = '', title = '') => {
+  window.dispatchEvent(
+    new CustomEvent('app:toast', {
+      detail: { type, message, title },
     })
-    return response.data
-  } catch (error) {
-    throw error.response?.data || error.message
+  )
+}
+
+export const normalizeApiError = (error, fallbackMessage = 'Request failed') => {
+  if (error?.status && error?.message && !error?.response) {
+    return error
+  }
+
+  const status = error?.response?.status || error?.status || 0
+  const data = error?.response?.data || error?.data || null
+  const serverMessage = data?.message || data?.error || (typeof data === 'string' ? data : null)
+
+  const statusMessages = {
+    400: 'Validation error. Please check submitted data.',
+    401: 'Unauthorized request. Please login again.',
+    405: 'Method not allowed for this endpoint.',
+    409: 'Conflict detected. This may be a roll number conflict.',
+    500: 'Server error. Please try again in a moment.',
+  }
+
+  return {
+    status,
+    message: serverMessage || statusMessages[status] || fallbackMessage,
+    data,
   }
 }
 
-// Store user session in localStorage
-export const setSession = (sessionData, loginType = 'all') => {
-  if (sessionData?.session?.access_token) {
-    localStorage.setItem('access_token', sessionData.session.access_token)
-    localStorage.setItem('refresh_token', sessionData.session.refresh_token)
-    localStorage.setItem('user', JSON.stringify(sessionData.user))
-    localStorage.setItem('session', JSON.stringify(sessionData.session))
-    localStorage.setItem('loginType', loginType)
-  }
+export const buildQueryParams = (filters = {}) => {
+  return Object.entries(filters).reduce((params, [key, value]) => {
+    if (value === undefined || value === null) {
+      return params
+    }
+
+    if (typeof value === 'string' && value.trim() === '') {
+      return params
+    }
+
+    if (Array.isArray(value) && value.length === 0) {
+      return params
+    }
+
+    params[key] = Array.isArray(value) ? value.join(',') : value
+    return params
+  }, {})
 }
 
-// Get login type from localStorage
 export const getLoginType = () => {
   return localStorage.getItem('loginType') || 'all'
 }
 
-// Get user from localStorage
 export const getUser = () => {
   const userStr = localStorage.getItem('user')
-  return userStr ? JSON.parse(userStr) : null
+  if (!userStr) {
+    return null
+  }
+
+  try {
+    return JSON.parse(userStr)
+  } catch {
+    return null
+  }
 }
 
-// Get access token from localStorage
 export const getAccessToken = () => {
   return localStorage.getItem('access_token')
 }
 
-// Get refresh token from localStorage
 export const getRefreshToken = () => {
   return localStorage.getItem('refresh_token')
 }
 
-// Refresh access token using refresh token
-export const refreshAccessToken = async () => {
-  try {
-    const refreshToken = getRefreshToken()
-    if (!refreshToken) {
-      throw new Error('No refresh token available')
-    }
+export const setSession = (sessionData, loginType = 'all') => {
+  const accessToken = sessionData?.session?.access_token || sessionData?.access_token
+  const refreshToken = sessionData?.session?.refresh_token || sessionData?.refresh_token
+  const user = sessionData?.user || null
 
-    const response = await api.post('/auth/refresh', {
-      refresh_token: refreshToken,
+  if (!accessToken || !user) {
+    return
+  }
+
+  localStorage.setItem('access_token', accessToken)
+  if (refreshToken) {
+    localStorage.setItem('refresh_token', refreshToken)
+  }
+
+  localStorage.setItem(
+    'session',
+    JSON.stringify({
+      access_token: accessToken,
+      refresh_token: refreshToken || '',
     })
-
-    if (response.data?.success && response.data?.session?.access_token) {
-      // Update tokens in localStorage
-      localStorage.setItem('access_token', response.data.session.access_token)
-      if (response.data.session.refresh_token) {
-        localStorage.setItem('refresh_token', response.data.session.refresh_token)
-      }
-      return response.data.session.access_token
-    }
-
-    throw new Error('Failed to refresh token')
-  } catch (error) {
-    // If refresh fails, clear session and redirect to login
-    clearSession()
-    // Redirect to login page
-    if (window.location.pathname !== '/login' && window.location.pathname !== '/student-login') {
-      window.location.href = '/login'
-    }
-    throw error.response?.data || error.message
-  }
+  )
+  localStorage.setItem('user', JSON.stringify(user))
+  localStorage.setItem('loginType', loginType)
 }
 
-// Logout API
-export const logout = async () => {
-  try {
-    const token = getAccessToken()
-    if (!token) {
-      // If no token, just clear local session
-      clearSession()
-      return { success: true, message: 'Logged out successfully' }
-    }
-
-    const response = await api.post(
-      '/auth/logout',
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-    return response.data
-  } catch (error) {
-    // Even if API call fails, clear local session
-    clearSession()
-    throw error.response?.data || error.message
-  }
-}
-
-// Save login credentials
-export const saveCredentials = (email, password) => {
-  const savedCredentials = getSavedCredentials()
-  // Check if email already exists
-  const existingIndex = savedCredentials.findIndex(cred => cred.email === email)
-  
-  if (existingIndex >= 0) {
-    // Update existing credentials
-    savedCredentials[existingIndex] = { email, password }
-  } else {
-    // Add new credentials
-    savedCredentials.push({ email, password })
-  }
-  
-  localStorage.setItem('savedCredentials', JSON.stringify(savedCredentials))
-}
-
-// Get saved credentials
-export const getSavedCredentials = () => {
-  const savedStr = localStorage.getItem('savedCredentials')
-  return savedStr ? JSON.parse(savedStr) : []
-}
-
-// Remove saved credentials
-export const removeSavedCredentials = (email) => {
-  const savedCredentials = getSavedCredentials()
-  const filtered = savedCredentials.filter(cred => cred.email !== email)
-  localStorage.setItem('savedCredentials', JSON.stringify(filtered))
-}
-
-// Clear session
 export const clearSession = () => {
   localStorage.removeItem('access_token')
   localStorage.removeItem('refresh_token')
@@ -169,7 +135,112 @@ export const clearSession = () => {
   localStorage.removeItem('loginType')
 }
 
-// Request interceptor to add token to all requests
+export const refreshAccessToken = async () => {
+  const refreshToken = getRefreshToken()
+  if (!refreshToken) {
+    throw normalizeApiError({ status: 401, message: 'No refresh token found' }, 'No refresh token found')
+  }
+
+  try {
+    const response = await publicApi.post('/api/auth/refresh', { refresh_token: refreshToken })
+    const newAccessToken = response.data?.session?.access_token || response.data?.access_token
+    const newRefreshToken = response.data?.session?.refresh_token || response.data?.refresh_token
+
+    if (!newAccessToken) {
+      throw new Error('Refresh response does not include access token')
+    }
+
+    localStorage.setItem('access_token', newAccessToken)
+    if (newRefreshToken) {
+      localStorage.setItem('refresh_token', newRefreshToken)
+    }
+
+    return newAccessToken
+  } catch (error) {
+    clearSession()
+    throw normalizeApiError(error, 'Session refresh failed')
+  }
+}
+
+export const login = async (email, password) => {
+  try {
+    const response = await publicApi.post('/api/auth/login', {
+      email,
+      password,
+    })
+    return response.data
+  } catch (error) {
+    throw normalizeApiError(error, 'Login failed')
+  }
+}
+
+export const createUser = async (payload) => {
+  try {
+    const response = await api.post('/api/auth/create-user', payload)
+    return response.data
+  } catch (error) {
+    throw normalizeApiError(error, 'Create user failed')
+  }
+}
+
+export const resetPassword = async (userId, payload) => {
+  try {
+    const response = await api.patch(`/api/auth/reset-password/${userId}`, payload)
+    return response.data
+  } catch (error) {
+    throw normalizeApiError(error, 'Reset password failed')
+  }
+}
+
+export const logout = async () => {
+  try {
+    const token = getAccessToken()
+    if (!token) {
+      clearSession()
+      return { success: true }
+    }
+
+    const response = await api.post('/api/auth/logout', {})
+    clearSession()
+    return response.data
+  } catch (error) {
+    clearSession()
+    throw normalizeApiError(error, 'Logout failed')
+  }
+}
+
+export const saveCredentials = (email, password) => {
+  const savedCredentials = getSavedCredentials()
+  const existingIndex = savedCredentials.findIndex((credential) => credential.email === email)
+
+  if (existingIndex >= 0) {
+    savedCredentials[existingIndex] = { email, password }
+  } else {
+    savedCredentials.push({ email, password })
+  }
+
+  localStorage.setItem('savedCredentials', JSON.stringify(savedCredentials))
+}
+
+export const getSavedCredentials = () => {
+  const raw = localStorage.getItem('savedCredentials')
+  if (!raw) {
+    return []
+  }
+
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return []
+  }
+}
+
+export const removeSavedCredentials = (email) => {
+  const savedCredentials = getSavedCredentials()
+  const filtered = savedCredentials.filter((credential) => credential.email !== email)
+  localStorage.setItem('savedCredentials', JSON.stringify(filtered))
+}
+
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken()
@@ -178,52 +249,66 @@ api.interceptors.request.use(
     }
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(normalizeApiError(error))
 )
 
-// Response interceptor to handle token refresh on 401 errors
 api.interceptors.response.use(
-  (response) => {
-    return response
-  },
+  (response) => response,
   async (error) => {
-    const originalRequest = error.config
+    const originalRequest = error?.config || {}
+    const status = error?.response?.status
+    const isAuthRequest =
+      originalRequest?.url?.includes('/api/auth/login') ||
+      originalRequest?.url?.includes('/api/auth/refresh') ||
+      originalRequest?.url?.includes('/api/auth/logout')
 
-    // If error is 401 and we haven't tried to refresh yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (status === 401 && !originalRequest._retry && !isAuthRequest) {
       if (isRefreshing) {
-        // If already refreshing, queue this request
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
         })
-          .then(token => {
+          .then((token) => {
             originalRequest.headers.Authorization = `Bearer ${token}`
             return api(originalRequest)
           })
-          .catch(err => {
-            return Promise.reject(err)
-          })
+          .catch((refreshError) => Promise.reject(normalizeApiError(refreshError)))
       }
 
       originalRequest._retry = true
       isRefreshing = true
 
       try {
-        const newToken = await refreshAccessToken()
-        processQueue(null, newToken)
-        originalRequest.headers.Authorization = `Bearer ${newToken}`
+        const token = await refreshAccessToken()
+        processQueue(null, token)
+        originalRequest.headers.Authorization = `Bearer ${token}`
         return api(originalRequest)
       } catch (refreshError) {
         processQueue(refreshError, null)
-        return Promise.reject(refreshError)
+        clearSession()
+        if (window.location.pathname !== '/login' && window.location.pathname !== '/student-login') {
+          window.location.href = '/login'
+        }
+        emitToast('error', 'Session expired. Please login again.', '401 Unauthorized')
+        return Promise.reject(normalizeApiError(refreshError))
       } finally {
         isRefreshing = false
       }
     }
 
-    return Promise.reject(error)
+    const normalizedError = normalizeApiError(error)
+    if ([400, 401, 405, 409, 500].includes(normalizedError.status)) {
+      const statusTitle = `${normalizedError.status} Error`
+      emitToast('error', normalizedError.message, statusTitle)
+    }
+
+    if (normalizedError.status === 401 && !isAuthRequest) {
+      clearSession()
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/student-login') {
+        window.location.href = '/login'
+      }
+    }
+
+    return Promise.reject(normalizedError)
   }
 )
 

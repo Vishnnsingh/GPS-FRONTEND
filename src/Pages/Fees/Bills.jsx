@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { generateBillsForClass, downloadBillsData, closeMonth } from '../../Api/fees';
+import { emitToast } from '../../Api/auth';
 import { Tabs, Tab } from '@mui/material';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -49,7 +50,9 @@ function Bills() {
       });
 
       if (response.bills && Array.isArray(response.bills)) {
-        setSuccess(response.message || `Bills generated successfully for Class ${formData.class}! ${response.bills.length} bills created.`);
+        const successMessage = response.message || `Bills generated successfully for Class ${formData.class}! ${response.bills.length} bills created.`
+        setSuccess(successMessage);
+        emitToast('success', successMessage, 'Bills');
         setFormData({ class: '', month: '' });
         setFeeOptions({
           include_exam_fee: true,
@@ -82,7 +85,9 @@ function Bills() {
     try {
       const response = await closeMonth(formData.month);
       if (response.success) {
-        setSuccess(response.message || `Month ${formData.month} closed successfully.`);
+        const successMessage = response.message || `Month ${formData.month} closed successfully.`
+        setSuccess(successMessage);
+        emitToast('success', successMessage, 'Close Month');
         setFormData({ ...formData, month: '' });
       } else {
         setError(response.message || 'Failed to close the month');
@@ -268,10 +273,15 @@ function Bills() {
     setBillsData(null);
 
     try {
-      const response = await downloadBillsData(formData.month, formData.class || "");
+      const response = await downloadBillsData({
+        month: formData.month,
+        class: formData.class || "",
+      });
       if (response && response.bills && Array.isArray(response.bills)) {
         setBillsData(response.bills);
-        setSuccess(`Found ${response.totalBills} bill(s)`);
+        const successMessage = `Found ${response.totalBills} bill(s)`
+        setSuccess(successMessage);
+        emitToast('success', successMessage, 'Bills Data');
         generateReceiptPDF(response.bills);
       } else {
         setError(response.message || "No bills found");
@@ -295,10 +305,14 @@ function Bills() {
     setLoading(true);
 
     try {
-      const response = await downloadBillsData(formData.month, formData.class || "");
+      const response = await downloadBillsData({
+        month: formData.month,
+        class: formData.class || "",
+      });
       if (response && response.bills && Array.isArray(response.bills)) {
         generateReceiptPDF(response.bills);
         setSuccess("All bills downloaded successfully");
+        emitToast('success', 'All bills downloaded successfully', 'Bills');
       } else {
         setError(response.message || "No bills found to download");
       }

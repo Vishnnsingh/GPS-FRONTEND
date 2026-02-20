@@ -1,48 +1,73 @@
-import api from './auth'
+import api, { buildQueryParams, normalizeApiError } from './auth'
 
-// Get all students
-export const getAllStudents = async (classFilter = '') => {
+const normalizeFiltersInput = (filtersOrClass = {}) => {
+  if (typeof filtersOrClass === 'string') {
+    return filtersOrClass ? { class: filtersOrClass } : {}
+  }
+  return filtersOrClass || {}
+}
+
+export const getAllStudents = async (filtersOrClass = {}) => {
   try {
-    const params = classFilter ? { class: classFilter } : {}
-    
-    const response = await api.get('/students/all', {
-      params,
-    })
+    const params = buildQueryParams(normalizeFiltersInput(filtersOrClass))
+    const response = await api.get('/api/students/all', { params })
     return response.data
   } catch (error) {
-    throw error.response?.data || error.message
+    throw normalizeApiError(error, 'Failed to fetch students')
   }
 }
 
-// Add new student
 export const addStudent = async (studentData) => {
   try {
-    const response = await api.post('/students/add', studentData)
+    const response = await api.post('/api/students/add', studentData)
     return response.data
   } catch (error) {
-    throw error.response?.data || error.message
+    throw normalizeApiError(error, 'Failed to add student')
   }
 }
 
-// Update student
 export const updateStudent = async (studentId, studentData) => {
   try {
-    const response = await api.put(`/students/edit/${studentId}`, studentData)
+    const response = await api.put(`/api/students/edit/${studentId}`, studentData)
     return response.data
   } catch (error) {
-    throw error.response?.data || error.message
+    throw normalizeApiError(error, 'Failed to update student')
   }
 }
 
-// Delete student
+export const leaveStudent = async (studentId, payload = {}) => {
+  try {
+    const response = await api.patch(`/api/students/${studentId}/leave`, payload)
+    return response.data
+  } catch (error) {
+    throw normalizeApiError(error, 'Failed to mark student as leave')
+  }
+}
+
+export const rejoinStudent = async (studentId, payload) => {
+  try {
+    const response = await api.patch(`/api/students/${studentId}/rejoin`, payload)
+    return response.data
+  } catch (error) {
+    throw normalizeApiError(error, 'Failed to rejoin student')
+  }
+}
+
 export const deleteStudent = async (studentId) => {
   try {
-    const response = await api.delete(`/students/${studentId}`)
+    const response = await api.delete(`/api/students/${studentId}`)
     return response.data
   } catch (error) {
-    throw error.response?.data || error.message
+    throw normalizeApiError(error, 'Failed to delete student')
   }
 }
 
-export default { getAllStudents, addStudent, updateStudent, deleteStudent }
+export default {
+  getAllStudents,
+  addStudent,
+  updateStudent,
+  leaveStudent,
+  rejoinStudent,
+  deleteStudent,
+}
 

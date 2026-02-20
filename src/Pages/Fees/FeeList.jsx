@@ -55,7 +55,11 @@ function FeeList({ onViewInvoice }) {
       });
 
       // Fetch fee list data
-      const feeListResponse = await getFeeList(classFilter, sectionFilter, monthFilter);
+      const feeListResponse = await getFeeList({
+        class: classFilter,
+        section: sectionFilter,
+        month: monthFilter,
+      });
       let feeList = [];
 
       if (feeListResponse.success) {
@@ -71,7 +75,11 @@ function FeeList({ onViewInvoice }) {
       }
 
       // Fetch bills data
-      const billsResponse = await downloadBillsData(monthFilter, classFilter);
+      const billsResponse = await downloadBillsData({
+        month: monthFilter,
+        class: classFilter,
+        section: sectionFilter,
+      });
       let bills = [];
 
       if (billsResponse && billsResponse.bills && Array.isArray(billsResponse.bills)) {
@@ -441,8 +449,10 @@ function FeeList({ onViewInvoice }) {
 
       {/* Table */}
       {loading ? (
-        <div className="flex items-center justify-center py-8">
-          <span className="material-symbols-outlined animate-spin text-3xl text-[#137fec]">sync</span>
+        <div className="space-y-2 py-2">
+          {[1, 2, 3, 4].map((row) => (
+            <div key={row} className="h-10 rounded-lg bg-slate-200 dark:bg-slate-700 animate-pulse"></div>
+          ))}
         </div>
       ) : filteredFeeList.length === 0 && feeList.length > 0 ? (
         <p className="text-center text-slate-500 dark:text-slate-400 py-8 text-sm">
