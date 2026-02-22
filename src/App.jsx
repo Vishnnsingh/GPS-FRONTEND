@@ -113,6 +113,15 @@ function App() {
         >
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/admin/class-promotion" element={<Dashboard initialView="classPromotion" />} />
+        </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

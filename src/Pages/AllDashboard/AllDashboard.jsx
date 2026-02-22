@@ -6,6 +6,7 @@ import Student from './Student'
 import StudentLifecycle from './StudentLifecycle'
 import Subject from './Subject'
 import UploadMarks from './UploadMarks'
+import ClassPromotion from './ClassPromotion'
 import UploadPhoto from '../../Components/UploadPhoto/UploadPhoto'
 import FeeManager from '../Fees/FeeManager'
 import { getUser, getLoginType } from '../../Api/auth'
@@ -13,7 +14,7 @@ import { getAllStudents } from '../../Api/students'
 import { getAllSubjects } from '../../Api/subjects'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
-function Dashboard() {
+function Dashboard({ initialView = 'dashboard' }) {
   const navigate = useNavigate()
   const { sidebarOpen, setSidebarOpen } = useOutletContext()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -44,10 +45,10 @@ function Dashboard() {
       if (loginTypeFromStorage === 'student') {
         setActiveView('result')
       } else {
-        setActiveView('dashboard')
+        setActiveView(initialView || 'dashboard')
       }
     }
-  }, [navigate])
+  }, [navigate, initialView])
 
   useEffect(() => {
     if (loginType !== 'student' && activeView === 'dashboard') {
@@ -344,6 +345,8 @@ function Dashboard() {
             {activeView === 'uploadPhoto' && <UploadPhoto />}
 
             {activeView === 'fees' && <FeeManager />}
+
+            {activeView === 'classPromotion' && <ClassPromotion />}
           </div>
         </main>
     </>

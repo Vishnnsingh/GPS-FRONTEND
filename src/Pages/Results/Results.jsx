@@ -7,6 +7,13 @@ import schoolLogo from '../../assets/logo.jpeg'
 import '../../styles/print.css'
 
 const SUMMARY_TERMINALS = ['First', 'Second', 'Third', 'Annual']
+const getCumulativeTerminals = (selectedTerminal) => {
+  const terminalIndex = SUMMARY_TERMINALS.indexOf(selectedTerminal)
+  if (terminalIndex >= 0) {
+    return SUMMARY_TERMINALS.slice(0, terminalIndex + 1)
+  }
+  return selectedTerminal ? [selectedTerminal] : []
+}
 
 const getStudentId = (row) => (
   row?.student_id ||
@@ -81,7 +88,8 @@ function Results() {
     const roll = searchParams.get('roll') || ''
     const terminal = searchParams.get('terminal') || ''
     const section = searchParams.get('section') || ''
-    return { classValue, roll, terminal, section }
+    const session = searchParams.get('session') || ''
+    return { classValue, roll, terminal, section, session }
   }, [searchParams])
 
   const [loading, setLoading] = useState(false)
@@ -108,6 +116,7 @@ function Results() {
       setClassSectionRanks({})
 
       const terminalsToFetch = [...new Set([...SUMMARY_TERMINALS, params.terminal])]
+      const cumulativeTerminals = getCumulativeTerminals(params.terminal)
 
       try {
         const responses = await Promise.all(terminalsToFetch.map(async (t) => {
@@ -132,7 +141,7 @@ function Results() {
         const currentData = responseByTerminal[params.terminal] || null
 
         setTermSummaries(summaries)
-        setVisibleTerminals(SUMMARY_TERMINALS)
+        setVisibleTerminals(cumulativeTerminals)
 
         if (currentData) {
           setData(currentData)
@@ -367,6 +376,7 @@ function Results() {
   const sessionLabel = toDisplayValue(
     student?.academic_year ||
     currentSummary?.academic_year ||
+    params.session ||
     `${new Date().getFullYear()}-${String(new Date().getFullYear() + 1).slice(-2)}`
   )
 
@@ -398,6 +408,7 @@ function Results() {
     if (normalized.includes('class')) return 'school'
     if (normalized.includes('roll')) return 'badge'
     if (normalized.includes('section')) return 'grid_view'
+    if (normalized.includes('session')) return 'schedule'
     if (normalized.includes('terminal')) return 'event'
     return 'info'
   }
@@ -468,6 +479,12 @@ function Results() {
           toDisplayValue(student?.class ?? params.classValue),
           'Current Terminal',
           toDisplayValue(data?.terminal || params.terminal),
+        ],
+        [
+          'Session',
+          toDisplayValue(sessionLabel),
+          '',
+          '',
         ],
       ]
 
@@ -661,6 +678,12 @@ function Results() {
                     <>
                       {' '}
                       | Section: <span className="font-bold">{params.section}</span>
+                    </>
+                  ) : null}
+                  {params.session ? (
+                    <>
+                      {' '}
+                      | Session: <span className="font-bold">{params.session}</span>
                     </>
                   ) : null}
                 </p>

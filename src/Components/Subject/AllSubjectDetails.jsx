@@ -10,7 +10,6 @@ function AllSubjectDetails() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [selectedClass, setSelectedClass] = useState('')
-  const [selectedSection, setSelectedSection] = useState('')
   const [expandedClasses, setExpandedClasses] = useState(new Set())
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -23,20 +22,18 @@ function AllSubjectDetails() {
   const fetchSubjects = async () => {
     setLoading(true)
     setError('')
+
     try {
       const [subjectsResponse, classesResponse] = await Promise.all([
         getAllSubjects(),
         getAllClasses()
       ])
-      
-      // Ensure we have classes data - use from classesResponse if subjectsResponse doesn't have it
+
       let finalData = { ...subjectsResponse }
-      
+
       if (classesResponse && classesResponse.length > 0) {
-        // If getAllClasses returns data, ensure it's in the subjects response structure
         if (!finalData.classes || finalData.classes.length === 0) {
-          finalData.classes = classesResponse.map(cls => {
-            // Handle both string and object formats
+          finalData.classes = classesResponse.map((cls) => {
             if (typeof cls === 'string') {
               return { class: cls, sections: [], subjects: [] }
             }
@@ -44,10 +41,9 @@ function AllSubjectDetails() {
           })
         }
       }
-      
+
       setData(finalData)
-      
-      // Expand first class by default
+
       if (finalData.classes && finalData.classes.length > 0) {
         setExpandedClasses(new Set([finalData.classes[0].class]))
       }
@@ -68,45 +64,41 @@ function AllSubjectDetails() {
     setExpandedClasses(newExpanded)
   }
 
-  // Get all unique sections from all classes
-  const getAllSections = () => {
-    if (!data?.classes) return []
-    const sections = new Set()
-    data.classes.forEach(cls => {
-      if (cls.sections && cls.sections.length > 0) {
-        cls.sections.forEach(sec => {
-          sections.add(sec.section)
-        })
-      }
+  const getClassSubjects = (classData) => {
+    const sectionSubjects = Array.isArray(classData?.sections)
+      ? classData.sections.flatMap((sec) => (Array.isArray(sec?.subjects) ? sec.subjects : []))
+      : []
+    const classSubjects = Array.isArray(classData?.subjects) ? classData.subjects : []
+    const merged = [...sectionSubjects, ...classSubjects]
+    const uniqueByKey = new Map()
+
+    merged.forEach((subject, index) => {
+      const key =
+        String(subject?.id || '').trim() ||
+        `${String(subject?.subject_name || '').trim().toLowerCase()}-${String(subject?.subject_code || '').trim().toLowerCase()}-${index}`
+      if (!uniqueByKey.has(key)) uniqueByKey.set(key, subject)
     })
-    return Array.from(sections).sort()
+
+    return Array.from(uniqueByKey.values()).sort((a, b) => {
+      const seqA = Number(a?.sequence)
+      const seqB = Number(b?.sequence)
+      const hasSeqA = Number.isFinite(seqA)
+      const hasSeqB = Number.isFinite(seqB)
+      if (hasSeqA && hasSeqB) return seqA - seqB
+      if (hasSeqA) return -1
+      if (hasSeqB) return 1
+      return String(a?.subject_name || '').localeCompare(String(b?.subject_name || ''))
+    })
   }
 
-  // Filter classes based on selected filters
-  const filteredClasses = data?.classes?.filter(cls => {
-    // Class filter
-    if (selectedClass && cls.class !== selectedClass) return false
-
-    // Section filter - check if class has the selected section
-    if (selectedSection) {
-      const hasSection = cls.sections?.some(sec => sec.section === selectedSection)
-      if (!hasSection) return false
-    }
-
-    return true
-  }) || []
-
-  // Filter sections within a class based on selected section
-  const filterSections = (sections) => {
-    if (!selectedSection) return sections
-    return sections.filter(sec => sec.section === selectedSection)
-  }
-
-  const uniqueSections = getAllSections()
+  const filteredClasses =
+    data?.classes?.filter((cls) => {
+      if (selectedClass && cls.class !== selectedClass) return false
+      return true
+    }) || []
 
   return (
     <div className="space-y-3 sm:space-y-4" style={{ fontFamily: "'Lexend', sans-serif" }}>
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#0d141b] dark:text-white">All Subject Details</h2>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -136,21 +128,18 @@ function AllSubjectDetails() {
         </div>
       </div>
 
-      {/* Error Message */}
       {error && (
         <div className="p-2.5 sm:p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
           <p className="text-xs sm:text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
-      {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center py-12">
           <span className="material-symbols-outlined animate-spin text-3xl sm:text-4xl text-[#137fec]">sync</span>
         </div>
       )}
 
-      {/* Summary Cards */}
       {!loading && !error && data?.summary && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
@@ -185,15 +174,11 @@ function AllSubjectDetails() {
         </div>
       )}
 
-      {/* Filters */}
       {!loading && !error && data?.classes && (
         <div className="bg-white dark:bg-slate-800 rounded-xl p-3 sm:p-4 shadow-sm border border-slate-200 dark:border-slate-700">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            {/* Filter by Class */}
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Filter by Class
-              </label>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Filter by Class</label>
               <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
                 <span className="material-symbols-outlined pl-2 sm:pl-3 text-slate-500 dark:text-slate-400 text-base">class</span>
                 <select
@@ -214,150 +199,81 @@ function AllSubjectDetails() {
                 </select>
               </div>
             </div>
-
-            {/* Filter by Section */}
-            <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Filter by Section
-              </label>
-              <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
-                <span className="material-symbols-outlined pl-2 sm:pl-3 text-slate-500 dark:text-slate-400 text-base">category</span>
-                <select
-                  value={selectedSection}
-                  onChange={(e) => setSelectedSection(e.target.value)}
-                  className="w-full bg-transparent border-none focus:ring-0 py-2 sm:py-2.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white"
-                >
-                  <option value="">All Sections</option>
-                  {uniqueSections.map((section) => (
-                    <option key={section} value={section}>
-                      Section {section}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
           </div>
         </div>
       )}
 
-      {/* Classes List */}
       {!loading && !error && filteredClasses.length > 0 && (
         <div className="space-y-2.5 sm:space-y-3">
-          {filteredClasses.map((classData) => (
-            <div
-              key={classData.class}
-              className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow"
-            >
-              {/* Class Header */}
-              <button
-                onClick={() => toggleClass(classData.class)}
-                className="w-full flex items-center justify-between p-3 sm:p-5 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 hover:from-slate-100 hover:to-slate-200 dark:hover:from-slate-600 dark:hover:to-slate-700 transition-all"
-              >
-                <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#137fec] text-white flex items-center justify-center font-bold flex-shrink-0">
-                    <span className="material-symbols-outlined text-base sm:text-lg">
-                      {expandedClasses.has(classData.class) ? 'expand_less' : 'expand_more'}
-                    </span>
-                  </div>
-                  <div className="text-left min-w-0">
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">Class {classData.class}</h3>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">
-                      {classData.total_subjects} Subjects • {classData.total_sections} Sections
-                    </p>
-                  </div>
-                </div>
-                <div className="hidden sm:flex items-center gap-6 flex-shrink-0">
-                  <div className="text-right">
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Subjects</p>
-                    <p className="text-2xl font-black text-slate-900 dark:text-white">{classData.total_subjects}</p>
-                  </div>
-                </div>
-              </button>
+          {filteredClasses.map((classData) => {
+            const classSubjects = getClassSubjects(classData)
 
-              {/* Class Content */}
-              {expandedClasses.has(classData.class) && (
-                <div className="p-3 sm:p-5 space-y-3 sm:space-y-4 bg-slate-50/50 dark:bg-slate-900/30">
-                  {/* Sections */}
-                  {classData.sections && classData.sections.length > 0 ? (
-                    <div className="space-y-3 sm:space-y-3">
-                      {filterSections(classData.sections).map((section, sectionIndex) => (
-                        <div
-                          key={`${classData.class}-${section.section}-${sectionIndex}`}
-                          className="bg-white dark:bg-slate-800 rounded-lg p-3 sm:p-4 border border-slate-200 dark:border-slate-700"
-                        >
-                          <div className="flex items-center justify-between mb-3 pb-2 sm:pb-3 border-b border-slate-200 dark:border-slate-700">
-                            <div className="flex items-center gap-2 min-w-0">
-                              <span className="material-symbols-outlined text-[#137fec] text-base sm:text-lg flex-shrink-0">category</span>
-                              <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                                Section {section.section}
-                              </h4>
-                            </div>
-                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full flex-shrink-0 whitespace-nowrap">
-                              {section.total_subjects} Subjects
-                            </span>
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
-                            {section.subjects.map((subject) => (
-                              <div
-                                key={subject.id}
-                                className="bg-gradient-to-br from-slate-50 to-white dark:from-slate-700 dark:to-slate-800 rounded-lg p-2.5 sm:p-3 border border-slate-200 dark:border-slate-600 hover:border-[#137fec] hover:shadow-md transition-all"
-                              >
-                                <div className="flex items-start justify-between gap-2">
-                                  <div className="flex-1 min-w-0">
-                                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mb-1 line-clamp-2">
-                                      {subject.subject_name}
-                                    </h5>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                                      <span className="font-medium text-slate-700 dark:text-slate-300">{subject.subject_code}</span>
-                                    </p>
-                                  </div>
-                                  <span className="flex-shrink-0 text-xs bg-[#137fec]/10 text-[#137fec] dark:bg-[#137fec]/20 dark:text-[#137fec] px-1.5 py-0.5 rounded font-medium whitespace-nowrap">
-                                    #{subject.sequence}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
+            return (
+              <div
+                key={classData.class}
+                className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <button
+                  onClick={() => toggleClass(classData.class)}
+                  className="w-full flex items-center justify-between p-3 sm:p-5 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 hover:from-slate-100 hover:to-slate-200 dark:hover:from-slate-600 dark:hover:to-slate-700 transition-all"
+                >
+                  <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#137fec] text-white flex items-center justify-center font-bold flex-shrink-0">
+                      <span className="material-symbols-outlined text-base sm:text-lg">
+                        {expandedClasses.has(classData.class) ? 'expand_less' : 'expand_more'}
+                      </span>
                     </div>
-                  ) : (
+                    <div className="text-left min-w-0">
+                      <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">Class {classData.class}</h3>
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">{classSubjects.length} Subjects</p>
+                    </div>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-6 flex-shrink-0">
+                    <div className="text-right">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Subjects</p>
+                      <p className="text-2xl font-black text-slate-900 dark:text-white">{classSubjects.length}</p>
+                    </div>
+                  </div>
+                </button>
+
+                {expandedClasses.has(classData.class) && (
+                  <div className="p-3 sm:p-5 bg-slate-50/50 dark:bg-slate-900/30">
                     <div className="bg-white dark:bg-slate-800 rounded-lg p-3 sm:p-4 border border-slate-200 dark:border-slate-700">
-                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-3 sm:mb-4">
-                        No sections defined. Showing all subjects for this class:
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
-                        {classData.subjects.map((subject) => (
-                          <div
-                            key={subject.id}
-                            className="bg-gradient-to-br from-slate-50 to-white dark:from-slate-700 dark:to-slate-800 rounded-lg p-2.5 sm:p-3 border border-slate-200 dark:border-slate-600 hover:border-[#137fec] hover:shadow-md transition-all"
-                          >
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex-1 min-w-0">
-                                <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mb-1 line-clamp-2">
-                                  {subject.subject_name}
-                                </h5>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                                  <span className="font-medium text-slate-700 dark:text-slate-300">{subject.subject_code}</span>
-                                </p>
+                      {classSubjects.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
+                          {classSubjects.map((subject, subjectIndex) => (
+                            <div
+                              key={subject.id || `${subject.subject_code}-${subjectIndex}`}
+                              className="bg-gradient-to-br from-slate-50 to-white dark:from-slate-700 dark:to-slate-800 rounded-lg p-2.5 sm:p-3 border border-slate-200 dark:border-slate-600 hover:border-[#137fec] hover:shadow-md transition-all"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mb-1 line-clamp-2">
+                                    {subject.subject_name}
+                                  </h5>
+                                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                    <span className="font-medium text-slate-700 dark:text-slate-300">{subject.subject_code}</span>
+                                  </p>
+                                </div>
+                                <span className="flex-shrink-0 text-xs bg-[#137fec]/10 text-[#137fec] dark:bg-[#137fec]/20 dark:text-[#137fec] px-1.5 py-0.5 rounded font-medium whitespace-nowrap">
+                                  #{subject.sequence}
+                                </span>
                               </div>
-                              <span className="flex-shrink-0 text-xs bg-[#137fec]/10 text-[#137fec] dark:bg-[#137fec]/20 dark:text-[#137fec] px-1.5 py-0.5 rounded font-medium whitespace-nowrap">
-                                #{subject.sequence}
-                              </span>
                             </div>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">No subjects found for this class</p>
+                      )}
                     </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
 
-      {/* No Data */}
       {!loading && !error && filteredClasses.length === 0 && (
         <div className="bg-white dark:bg-slate-800 rounded-lg p-6 sm:p-8 shadow-md border border-blue-200 dark:border-blue-800 text-center">
           <span className="material-symbols-outlined text-3xl sm:text-4xl text-slate-400 mb-2 block">book</span>
@@ -365,7 +281,6 @@ function AllSubjectDetails() {
         </div>
       )}
 
-      {/* Create Subject Modal */}
       <CreateSubject
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
@@ -374,18 +289,14 @@ function AllSubjectDetails() {
         }}
       />
 
-      {/* Add Subject to Class Modal */}
       <AddSubject
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSuccess={() => {
           fetchSubjects()
         }}
-        availableClasses={data?.classes?.map(cls => cls.class) || []}
-        availableSections={uniqueSections}
       />
 
-      {/* Delete Subject Modal */}
       <DeleteSubject
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

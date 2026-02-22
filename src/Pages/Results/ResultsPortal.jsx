@@ -11,6 +11,7 @@ function ResultsPortal() {
     roll: '',
     terminal: 'First',
     section: '',
+    session: '',
   })
 
   const [error, setError] = useState('')
@@ -36,6 +37,7 @@ function ResultsPortal() {
     params.set('roll', String(formData.roll).trim())
     params.set('terminal', String(formData.terminal).trim())
     if (String(formData.section).trim()) params.set('section', String(formData.section).trim())
+    if (String(formData.session).trim()) params.set('session', String(formData.session).trim())
 
     navigate(`/result?${params.toString()}`)
   }
@@ -158,6 +160,22 @@ function ResultsPortal() {
                     />
                   </div>
 
+                  {/* Session Input (Optional) */}
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                      <span className="material-symbols-outlined text-sm align-middle mr-1">calendar_month</span>
+                      Session <span className="text-xs text-slate-500 dark:text-slate-400">(Optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="session"
+                      value={formData.session}
+                      onChange={handleChange}
+                      placeholder="e.g., 2025-26"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#137fec] transition-all"
+                    />
+                  </div>
+
                   {/* Error Message */}
                   {error && (
                     <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 flex items-start gap-3">
@@ -239,7 +257,7 @@ function ResultsPortal() {
                 <li>Enter your class number exactly as provided in school records</li>
                 <li>Provide your roll number</li>
                 <li>Select the appropriate terminal/exam period</li>
-                <li>Section is optional - include only if applicable</li>
+                <li>Section and session are optional - include if applicable</li>
                 <li>Click "View My Result" to see your marks and performance</li>
               </ol>
             </div>

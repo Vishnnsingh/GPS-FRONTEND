@@ -45,6 +45,36 @@ function StudentLifecycle() {
     return Boolean(student.is_left || student.IsLeft || student.left || status === 'left' || status === 'inactive')
   }
 
+  const getStudentClass = (student) => {
+    const promotedClass =
+      student?.PromotedClass ??
+      student?.promotedClass ??
+      student?.promoted_class ??
+      student?.promoted_to_class ??
+      student?.new_class ??
+      student?.next_class ??
+      student?.CurrentClass ??
+      student?.current_class
+
+    const baseClass = student?.Class ?? student?.class
+    return (promotedClass ?? baseClass ?? '').toString().trim()
+  }
+
+  const getStudentSection = (student) => {
+    const promotedSection =
+      student?.PromotedSection ??
+      student?.promotedSection ??
+      student?.promoted_section ??
+      student?.promoted_to_section ??
+      student?.new_section ??
+      student?.next_section ??
+      student?.CurrentSection ??
+      student?.current_section
+
+    const baseSection = student?.Section ?? student?.section
+    return (promotedSection ?? baseSection ?? '').toString().trim()
+  }
+
   const fetchStudents = async () => {
     setLoading(true)
     setError('')
@@ -120,12 +150,16 @@ function StudentLifecycle() {
       const father = (student.Father || student.father_name || '').toLowerCase()
       const roll = (student.Roll || student.roll_no || '').toString().toLowerCase()
       const mobile = (student.Mobile || student.mobile || '').toLowerCase()
+      const studentClass = getStudentClass(student).toLowerCase()
+      const studentSection = getStudentSection(student).toLowerCase()
       return (
         id.includes(query) ||
         name.includes(query) ||
         father.includes(query) ||
         roll.includes(query) ||
-        mobile.includes(query)
+        mobile.includes(query) ||
+        studentClass.includes(query) ||
+        studentSection.includes(query)
       )
     })
   }
@@ -157,8 +191,8 @@ function StudentLifecycle() {
     setRejoinModal({
       open: true,
       student,
-      class: (student.Class || student.class || '').toString(),
-      section: (student.Section || student.section || '').toString(),
+      class: getStudentClass(student),
+      section: getStudentSection(student),
       roll_no: (student.Roll || student.roll_no || '').toString(),
       academic_year: (student.AcademicYear || student.academic_year || '').toString(),
     })
@@ -208,8 +242,8 @@ function StudentLifecycle() {
         const existingId = getStudentId(student)
         if (!existingId || existingId === studentId) return false
 
-        const existingClass = normalizeField(student.Class || student.class)
-        const existingSection = normalizeField(student.Section || student.section)
+        const existingClass = normalizeField(getStudentClass(student))
+        const existingSection = normalizeField(getStudentSection(student))
         const existingRoll = normalizeField(student.Roll || student.roll_no)
 
         return (
@@ -377,7 +411,7 @@ function StudentLifecycle() {
                     <div>
                       <p className="font-bold text-slate-900 dark:text-white text-sm">{student.Name || student.name || '--'}</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Roll: {student.Roll || student.roll_no || '--'} | Class: {student.Class || student.class || '--'}-{student.Section || student.section || '--'}
+                        Roll: {student.Roll || student.roll_no || '--'} | Class: {getStudentClass(student) || '--'}-{getStudentSection(student) || '--'}
                       </p>
                     </div>
                     {activeTab === 'active' ? (
@@ -455,8 +489,8 @@ function StudentLifecycle() {
                       <td className="px-3 py-2">{student.Roll || student.roll_no || '--'}</td>
                       <td className="px-3 py-2 font-medium">{student.Name || student.name || '--'}</td>
                       <td className="px-3 py-2">{student.Father || student.father_name || '--'}</td>
-                      <td className="px-3 py-2">{student.Class || student.class || '--'}</td>
-                      <td className="px-3 py-2">{student.Section || student.section || '--'}</td>
+                      <td className="px-3 py-2">{getStudentClass(student) || '--'}</td>
+                      <td className="px-3 py-2">{getStudentSection(student) || '--'}</td>
                       <td className="px-3 py-2">{student.Mobile || student.mobile || '--'}</td>
                       <td className="px-3 py-2">{student.AcademicYear || student.academic_year || '--'}</td>
                       <td className="px-3 py-2 text-center">

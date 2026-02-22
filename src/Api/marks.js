@@ -27,16 +27,17 @@ export const getMarks = async (classValue, section, terminal) => {
   }
 }
 
-// Public: Get student result by class, roll, terminal (and optional section)
-// Endpoint example: GET /marks/result?class=1&roll=1&terminal=First&section=A
+// Public: Get student result by class, roll, terminal (and optional section/session)
+// Endpoint example: GET /marks/result?class=1&roll=1&terminal=First&section=A&session=2025-26
 // Expected response includes: student, marks[], summary (total_max_marks, total_obtained, percentage, division, rank, published_date)
-export const getStudentResultPublic = async ({ classValue, roll, terminal, section }) => {
+export const getStudentResultPublic = async ({ classValue, roll, terminal, section, session }) => {
   try {
     const params = buildQueryParams({
       class: classValue,
       roll,
       terminal,
       section,
+      session,
     })
 
     const response = await publicApi.get('/api/marks/result', { params })

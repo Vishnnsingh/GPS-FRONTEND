@@ -19,6 +19,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
       { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
       { id: 'student', label: 'Student', icon: 'person_add' },
       { id: 'studentLifecycle', label: 'Leave/Rejoin', icon: 'sync_alt' },
+      { id: 'classPromotion', label: 'Class Promotion', icon: 'arrow_upward' },
       { id: 'subject', label: 'Subject', icon: 'book' },
       { id: 'fees', label: 'Fees', icon: 'payments' },
       { id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' },
@@ -132,6 +133,9 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
               <button
                 key={item.id}
                 onClick={() => {
+                  if (item.id === 'classPromotion') {
+                    navigate('/admin/class-promotion')
+                  }
                   setActiveView(item.id)
                   setIsOpen(false) // Close sidebar on mobile after selection
                 }}

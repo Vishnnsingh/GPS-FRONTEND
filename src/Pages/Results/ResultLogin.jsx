@@ -11,6 +11,7 @@ function ResultLogin() {
     roll: '',
     terminal: 'First',
     section: '',
+    session: '',
   })
 
   const [error, setError] = useState('')
@@ -34,6 +35,7 @@ function ResultLogin() {
     params.set('roll', String(formData.roll).trim())
     params.set('terminal', String(formData.terminal).trim())
     if (String(formData.section).trim()) params.set('section', String(formData.section).trim())
+    if (String(formData.session).trim()) params.set('session', String(formData.session).trim())
 
     navigate(`/result?${params.toString()}`)
   }
@@ -70,7 +72,7 @@ function ResultLogin() {
             </h1>
 
             <p className="text-white/80 text-sm leading-relaxed mb-4">
-              Enter your class, roll number, terminal and section to fetch the published result.
+              Enter your class, roll number, terminal, section and session to fetch the published result.
             </p>
 
             <div className="w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10">
@@ -188,6 +190,24 @@ function ResultLogin() {
                     onChange={handleChange}
                     className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
                     placeholder="e.g. A"
+                    type="text"
+                  />
+                </div>
+              </div>
+
+              {/* Session (optional) */}
+              <div className="relative group">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-0.5">
+                  Session (optional)
+                </label>
+                <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800/50 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
+                  <span className="material-symbols-outlined pl-2 text-slate-400 text-base">calendar_month</span>
+                  <input
+                    name="session"
+                    value={formData.session}
+                    onChange={handleChange}
+                    className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
+                    placeholder="e.g. 2025-26"
                     type="text"
                   />
                 </div>
