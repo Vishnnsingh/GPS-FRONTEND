@@ -14,7 +14,7 @@ export const publicApi = axios.create({
 
 let isRefreshing = false
 let failedQueue = []
-
+ 
 const processQueue = (error, token = null) => {
   failedQueue.forEach((request) => {
     if (error) {
@@ -180,6 +180,33 @@ export const createUser = async (payload) => {
     return response.data
   } catch (error) {
     throw normalizeApiError(error, 'Create user failed')
+  }
+}
+
+export const createTeacher = async (payload) => {
+  try {
+    const response = await api.post('/api/auth/teachers', payload)
+    return response.data
+  } catch (error) {
+    throw normalizeApiError(error, 'Create teacher failed')
+  }
+}
+
+export const getTeachers = async () => {
+  try {
+    const response = await api.get('/api/auth/teachers')
+    return response.data
+  } catch (error) {
+    throw normalizeApiError(error, 'Fetch teachers failed')
+  }
+}
+
+export const removeTeacher = async (teacherId) => {
+  try {
+    const response = await api.delete(`/api/auth/teachers/${teacherId}`)
+    return response.data
+  } catch (error) {
+    throw normalizeApiError(error, 'Remove teacher failed')
   }
 }
 

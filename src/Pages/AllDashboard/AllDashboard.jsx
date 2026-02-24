@@ -9,6 +9,7 @@ import UploadMarks from './UploadMarks'
 import ClassPromotion from './ClassPromotion'
 import UploadPhoto from '../../Components/UploadPhoto/UploadPhoto'
 import FeeManager from '../Fees/FeeManager'
+import TeacherManagement from './TeacherManagement'
 import { getUser, getLoginType } from '../../Api/auth'
 import { getAllStudents } from '../../Api/students'
 import { getAllSubjects } from '../../Api/subjects'
@@ -32,40 +33,7 @@ function Dashboard({ initialView = 'dashboard' }) {
   })
   const isTeacher = loginType !== 'student' && user?.role === 'teacher'
 
-  useEffect(() => {
-    const currentUser = getUser()
-    const loginTypeFromStorage = getLoginType()
-    
-    if (!currentUser) {
-      navigate('/login')
-    } else {
-      setUser(currentUser)
-      setLoginType(loginTypeFromStorage)
-      
-      // Set initial view based on login type
-      if (loginTypeFromStorage === 'student') {
-        setActiveView('result')
-      } else if (currentUser?.role === 'teacher') {
-        setActiveView('uploadMarks')
-      } else {
-        setActiveView(initialView || 'dashboard')
-      }
-    }
-  }, [navigate, initialView])
-
-  useEffect(() => {
-    if (loginType !== 'student' && !isTeacher && activeView === 'dashboard') {
-      fetchDashboardData()
-    }
-  }, [loginType, activeView, isTeacher])
-
-  useEffect(() => {
-    if (isTeacher && activeView !== 'uploadMarks') {
-      setActiveView('uploadMarks')
-    }
-  }, [isTeacher, activeView])
-
-  const fetchDashboardData = async () => {
+  async function fetchDashboardData() {
     setDashboardData(prev => ({ ...prev, loading: true }))
     try {
       // Fetch students data
@@ -136,6 +104,39 @@ function Dashboard({ initialView = 'dashboard' }) {
       setDashboardData(prev => ({ ...prev, loading: false }))
     }
   }
+
+  useEffect(() => {
+    const currentUser = getUser()
+    const loginTypeFromStorage = getLoginType()
+    
+    if (!currentUser) {
+      navigate('/login')
+    } else {
+      setUser(currentUser)
+      setLoginType(loginTypeFromStorage)
+      
+      // Set initial view based on login type
+      if (loginTypeFromStorage === 'student') {
+        setActiveView('result')
+      } else if (currentUser?.role === 'teacher') {
+        setActiveView('uploadMarks')
+      } else {
+        setActiveView(initialView || 'dashboard')
+      }
+    }
+  }, [navigate, initialView])
+
+  useEffect(() => {
+    if (loginType !== 'student' && !isTeacher && activeView === 'dashboard') {
+      fetchDashboardData()
+    }
+  }, [loginType, activeView, isTeacher])
+
+  useEffect(() => {
+    if (isTeacher && activeView !== 'uploadMarks') {
+      setActiveView('uploadMarks')
+    }
+  }, [isTeacher, activeView])
 
   return (
     <>
@@ -354,6 +355,8 @@ function Dashboard({ initialView = 'dashboard' }) {
             {!isTeacher && activeView === 'uploadPhoto' && <UploadPhoto />}
 
             {!isTeacher && activeView === 'fees' && <FeeManager />}
+
+            {!isTeacher && activeView === 'teachers' && <TeacherManagement />}
 
             {!isTeacher && activeView === 'classPromotion' && <ClassPromotion />}
           </div>
