@@ -1,368 +1,356 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 
 function Home() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const intervalRef = useRef(null)
+
+  const heroSlides = [
+    {
+      image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&q=80',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&q=80',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1200&q=80',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=1200&q=80',
+    },
+  ]
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
+  }
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)
+  }
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index)
+  }
+
+  useEffect(() => {
+    if (isAutoPlaying) {
+      intervalRef.current = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
+      }, 5000) // Auto-scroll every 5 seconds
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
+  }, [isAutoPlaying, heroSlides.length])
+
+  const handleMouseEnter = () => {
+    setIsAutoPlaying(false)
+  }
+
+  const handleMouseLeave = () => {
+    setIsAutoPlaying(true)
+  }
 
   return (
     <WebsiteLayout>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-br from-[#137fec]/15 via-transparent to-transparent pointer-events-none"></div>
-        <div className="max-w-6xl mx-auto px-4 py-12 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          <div>
-            <p className="inline-flex items-center gap-2 text-xs font-black px-3 py-1 rounded-full bg-[#137fec]/10 text-[#137fec]">
-              <span className="material-symbols-outlined text-sm">workspace_premium</span>
-              Admissions Open
-            </p>
-            <h1 className="mt-4 text-3xl md:text-4xl font-black leading-tight text-[#0d141b] dark:text-white">
-              Welcome to <span className="text-[#137fec]">{SCHOOL_NAME}</span>
+      {/* Hero Carousel - Full Width Images Only */}
+      <section
+        className="relative overflow-hidden w-full"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="relative w-full">
+          {/* School Name Overlay - Center (Top to Bottom) with Rainbow Gradient */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 text-center">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black rainbow-text text-shadow-subtle leading-tight">
+              {SCHOOL_NAME}
             </h1>
-            <p className="mt-3 text-sm md:text-base text-slate-600 dark:text-slate-300 max-w-xl">
-              A modern learning environment focused on academics, discipline and holistic development.
-              Explore our campus, facilities and student achievements.
-            </p>
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <Link
-                to="/about"
-                className="inline-flex items-center justify-center gap-2 font-black px-5 py-3 rounded-xl bg-[#137fec] text-white hover:bg-[#137fec]/90 shadow-lg shadow-[#137fec]/20"
-              >
-                <span className="material-symbols-outlined">info</span>
-                Learn More
-              </Link>
-              <Link
-                to="/contact"
-                className="inline-flex items-center justify-center gap-2 font-black px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-900"
-              >
-                <span className="material-symbols-outlined">call</span>
-                Contact Us
-              </Link>
-            </div>
+            <div className="mt-3 sm:mt-4 h-1 w-32 sm:w-40 md:w-48 mx-auto bg-linear-to-r from-[#ff6b6b] via-[#4ecdc4] to-[#45b7d1] rounded-full opacity-80"></div>
+          </div>
 
-            <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[
-                { label: 'Students', value: '1200+' },
-                { label: 'Teachers', value: '60+' },
-                { label: 'Years', value: '15+' },
-                { label: 'Activities', value: '30+' },
-              ].map((s) => (
+          {/* Carousel Container */}
+          <div className="relative overflow-hidden w-full">
+            <div
+              className="flex transition-transform duration-700 ease-in-out"
+              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+            >
+              {heroSlides.map((slide, index) => (
                 <div
-                  key={s.label}
-                  className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-3"
+                  key={index}
+                  className="min-w-full w-full relative"
                 >
-                  <p className="text-lg font-black">{s.value}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{s.label}</p>
+                  {/* Subtle overlay for better text readability */}
+                  <div className="absolute inset-0 bg-black/5 z-10"></div>
+                  <div
+                    className="w-full h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-[90vh] bg-cover bg-center bg-no-repeat"
+                    style={{ backgroundImage: `url('${slide.image}')` }}
+                  />
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="relative">
-            <div className="absolute -inset-6 bg-linear-to-r from-[#137fec]/20 to-transparent blur-3xl rounded-full"></div>
-            <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xl">
-              <div
-                className="w-full aspect-4/3 bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                    "url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&q=80')",
-                }}
+          {/* Navigation Buttons */}
+          <button
+            onClick={prevSlide}
+            className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-10 h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 shadow-lg hover:bg-white dark:hover:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-[#137fec] transition-all duration-200 hover:scale-110"
+            aria-label="Previous slide"
+          >
+            <span className="material-symbols-outlined text-2xl sm:text-3xl">chevron_left</span>
+          </button>
+
+          <button
+            onClick={nextSlide}
+            className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-10 h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 shadow-lg hover:bg-white dark:hover:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-[#137fec] transition-all duration-200 hover:scale-110"
+            aria-label="Next slide"
+          >
+            <span className="material-symbols-outlined text-2xl sm:text-3xl">chevron_right</span>
+          </button>
+
+          {/* Dots Indicator */}
+          <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`h-2.5 sm:h-3 rounded-full transition-all duration-300 ${
+                  currentSlide === index
+                    ? 'w-8 sm:w-10 bg-[#137fec] shadow-md shadow-[#137fec]/50'
+                    : 'w-2.5 sm:w-3 bg-white/60 dark:bg-slate-600/60 hover:bg-white/80 dark:hover:bg-slate-500/80'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
               />
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Facilities */}
-      <section className="max-w-6xl mx-auto px-4 pb-10">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-black text-[#137fec]">Why Choose Us</p>
-            <h2 className="text-2xl font-black text-[#0d141b] dark:text-white mt-1">
+      <section className="w-full bg-slate-50 dark:bg-slate-900 py-12 sm:py-16">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 sm:mb-12">
+            <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Why Choose Us</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0d141b] dark:text-white">
               Facilities & Strengths
             </h2>
+            <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              From smart classrooms to comprehensive programs, we provide everything for holistic student development.
+            </p>
           </div>
-          <Link to="/gallery" className="text-xs font-black text-[#137fec] hover:underline">
-            View Gallery
-          </Link>
-        </div>
 
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            { icon: 'menu_book', title: 'Strong Academics', desc: 'Smart classrooms and structured curriculum.' },
-            { icon: 'science', title: 'Labs & Practical', desc: 'Science & computer labs for hands-on learning.' },
-            { icon: 'sports_soccer', title: 'Sports', desc: 'Sports activities for fitness and teamwork.' },
-            { icon: 'security', title: 'Safe Campus', desc: 'Discipline, safety and student wellbeing focus.' },
-            { icon: 'groups', title: 'Co-curricular', desc: 'Clubs, events, competitions and creativity.' },
-            { icon: 'verified', title: 'Result Focus', desc: 'Transparent result portal and performance tracking.' },
-          ].map((f) => (
-            <div
-              key={f.title}
-              className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 hover:shadow-lg transition-shadow"
-            >
-              <div className="h-10 w-10 rounded-xl bg-[#137fec]/10 text-[#137fec] flex items-center justify-center">
-                <span className="material-symbols-outlined">{f.icon}</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+            {[
+              { icon: 'menu_book', title: 'Strong Academics', desc: 'Smart classrooms and structured curriculum.', stat: '40+', label: 'Smart Classes' },
+              { icon: 'science', title: 'Labs & Practical', desc: 'Science & computer labs for hands-on learning.', stat: '8+', label: 'Modern Labs' },
+              { icon: 'sports_soccer', title: 'Sports', desc: 'Sports activities for fitness and teamwork.', stat: '15+', label: 'Sports' },
+              { icon: 'security', title: 'Safe Campus', desc: 'Discipline, safety and student wellbeing focus.', stat: '100%', label: 'Safety' },
+              { icon: 'groups', title: 'Co-curricular', desc: 'Clubs, events, competitions and creativity.', stat: '12+', label: 'Clubs' },
+              { icon: 'verified', title: 'Result Focus', desc: 'Transparent result portal and performance tracking.', stat: '95%', label: 'Success' },
+            ].map((f) => (
+              <div
+                key={f.title}
+                className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 hover:shadow-lg hover:border-[#137fec]/30 dark:hover:border-[#137fec]/30 transition-all duration-300"
+              >
+                <div className="h-14 w-14 rounded-xl bg-[#137fec] flex items-center justify-center mb-5 shadow-sm">
+                  <span className="material-symbols-outlined text-white text-2xl">{f.icon}</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-[#0d141b] dark:text-white mb-3">{f.title}</h3>
+                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">{f.desc}</p>
+                <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                  <p className="text-2xl sm:text-3xl font-black text-[#137fec]">{f.stat}</p>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">{f.label}</p>
+                </div>
               </div>
-              <p className="mt-3 text-base font-black">{f.title}</p>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{f.desc}</p>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div className="text-center mt-10 sm:mt-12">
+            <Link
+              to="/gallery"
+              className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-[#137fec] hover:text-[#0f6dd4] transition-colors"
+            >
+              <span>View Gallery</span>
+              <span className="material-symbols-outlined text-lg">arrow_forward</span>
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Vision & Mission */}
-      <section className="max-w-6xl mx-auto px-4 pb-10">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-black text-[#137fec]">Our Foundation</p>
-            <h2 className="text-2xl font-black text-[#0d141b] dark:text-white mt-1">Vision & Mission</h2>
-          </div>
-          <Link to="/about" className="text-xs font-black text-[#137fec] hover:underline">
-            Read More
-          </Link>
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-            <div className="h-10 w-10 rounded-xl bg-[#137fec]/10 text-[#137fec] flex items-center justify-center">
-              <span className="material-symbols-outlined">visibility</span>
+      <section className="w-full bg-slate-50 dark:bg-slate-900 py-12 sm:py-16">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between gap-3 mb-8 sm:mb-10 max-w-7xl mx-auto">
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Our Foundation</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0d141b] dark:text-white">Vision & Mission</h2>
             </div>
-            <p className="mt-3 text-base font-black">Vision</p>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              To nurture responsible citizens with strong values, confidence, creativity and modern skills.
-            </p>
+            <Link to="/about" className="text-xs sm:text-sm font-semibold text-[#137fec] hover:text-[#0f6dd4] transition-colors">
+              Read More
+            </Link>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-            <div className="h-10 w-10 rounded-xl bg-[#137fec]/10 text-[#137fec] flex items-center justify-center">
-              <span className="material-symbols-outlined">target</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-7xl mx-auto">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 hover:shadow-lg hover:border-[#137fec]/30 transition-all duration-300">
+              <div className="h-16 w-16 rounded-xl bg-[#137fec] flex items-center justify-center mb-6 shadow-sm">
+                <span className="material-symbols-outlined text-white text-3xl">visibility</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-black text-[#0d141b] dark:text-white mb-4">Vision</h3>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                To nurture responsible citizens with strong values, confidence, creativity and modern skills.
+              </p>
             </div>
-            <p className="mt-3 text-base font-black">Mission</p>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              To provide quality education with discipline, strong academics, and holistic development through
-              supportive teachers and student-friendly learning.
-            </p>
+
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 hover:shadow-lg hover:border-[#137fec]/30 transition-all duration-300">
+              <div className="h-16 w-16 rounded-xl bg-[#137fec] flex items-center justify-center mb-6 shadow-sm">
+                <span className="material-symbols-outlined text-white text-3xl">target</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-black text-[#0d141b] dark:text-white mb-4">Mission</h3>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                To provide quality education with discipline, strong academics, and holistic development through
+                supportive teachers and student-friendly learning.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Our Team / Total Teachers */}
-      <section className="max-w-6xl mx-auto px-4 pb-10">
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 md:p-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <p className="text-xs font-black text-[#137fec]">Our Team</p>
-              <h2 className="text-2xl font-black text-[#0d141b] dark:text-white mt-1">Dedicated Teachers</h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
+      <section className="w-full bg-slate-50 dark:bg-slate-900 py-12 sm:py-16">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-10 sm:mb-12">
+              <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Our Team</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0d141b] dark:text-white mb-4">Dedicated Teachers</h2>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-3xl">
                 Experienced and supportive faculty to guide every student with personal attention and discipline.
               </p>
             </div>
-            <Link
-              to="/contact"
-              className="inline-flex items-center justify-center gap-2 font-black px-5 py-3 rounded-xl bg-[#137fec] text-white hover:bg-[#137fec]/90 shadow-lg shadow-[#137fec]/20"
-            >
-              <span className="material-symbols-outlined">call</span>
-              Contact School
-            </Link>
+
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 md:p-10">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
+                <div className="flex-1">
+                  <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Our experienced faculty members are committed to providing quality education and personal attention to every student.
+                  </p>
+                </div>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center justify-center gap-2 font-semibold px-6 py-3 rounded-xl bg-[#137fec] hover:bg-[#0f6dd4] text-white transition-colors shadow-lg shadow-[#137fec]/30"
+                >
+                  <span className="material-symbols-outlined">call</span>
+                  Contact School
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                {[
+                  { icon: 'groups', value: '60+', label: 'Total Teachers' },
+                  { icon: 'school', value: '1200+', label: 'Total Students' },
+                  { icon: 'psychology', value: '1:20', label: 'Student-Teacher Ratio' },
+                  { icon: 'workspace_premium', value: '10+', label: 'Top Mentors' },
+                ].map((c) => (
+                  <div
+                    key={c.label}
+                    className="bg-slate-50 dark:bg-slate-900 rounded-xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700 hover:border-[#137fec]/30 hover:shadow-md transition-all duration-300"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="h-12 w-12 rounded-xl bg-[#137fec] flex items-center justify-center shadow-sm">
+                        <span className="material-symbols-outlined text-white text-xl">{c.icon}</span>
+                      </div>
+                      <p className="text-2xl sm:text-3xl font-black text-[#137fec]">{c.value}</p>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wider">{c.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="w-full bg-slate-50 dark:bg-slate-900 py-12 sm:py-16">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 sm:mb-12 max-w-7xl mx-auto">
+            <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Parents & Students</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0d141b] dark:text-white">Testimonials</h2>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
             {[
-              { icon: 'groups', value: '60+', label: 'Total Teachers' },
-              { icon: 'school', value: '1200+', label: 'Total Students' },
-              { icon: 'psychology', value: '1:20', label: 'Student-Teacher Ratio' },
-              { icon: 'workspace_premium', value: '10+', label: 'Top Mentors' },
-            ].map((c) => (
+              {
+                name: 'Dr. Rajesh Kumar',
+                title: 'Principal',
+                organization: 'Gyanoday Public School, New Delhi',
+                text: 'Teachers are supportive and the school focuses on discipline along with studies. The strategic planning and staff training have made a remarkable difference in student engagement.',
+                metric: '85% student satisfaction increase',
+              },
+              {
+                name: 'Prof. Anjali Mehta',
+                title: 'Parent',
+                organization: 'Gyanoday Public School',
+                text: 'The school provides excellent education with modern facilities. We have seen significant improvement in our child\'s academic performance and overall development.',
+                metric: '40% academic improvement',
+              },
+              {
+                name: 'Dr. Priya Sharma',
+                title: 'Student',
+                organization: 'Gyanoday Public School',
+                text: 'Classes are interactive and activities help us build confidence and teamwork. The teachers are dedicated and provide personal attention to every student.',
+                metric: '100% student engagement',
+              },
+            ].map((t, idx) => (
               <div
-                key={c.label}
-                className="rounded-2xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-900/40"
+                key={idx}
+                className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 hover:shadow-lg transition-all duration-300"
               >
-                <div className="flex items-center justify-between">
-                  <div className="h-10 w-10 rounded-xl bg-[#137fec]/10 text-[#137fec] flex items-center justify-center">
-                    <span className="material-symbols-outlined">{c.icon}</span>
-                  </div>
-                  <p className="text-xl font-black text-slate-900 dark:text-white">{c.value}</p>
+                {/* Star Rating */}
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="material-symbols-outlined text-[#137fec] text-xl">
+                      star
+                    </span>
+                  ))}
                 </div>
-                <p className="mt-2 text-xs font-bold text-slate-500 dark:text-slate-400">{c.label}</p>
+
+                {/* Testimonial Text */}
+                <p className="text-sm sm:text-base text-slate-700 dark:text-slate-200 italic leading-relaxed mb-6">
+                  "{t.text}"
+                </p>
+
+                {/* Reviewer Info */}
+                <div className="mb-4">
+                  <p className="text-base sm:text-lg font-black text-[#0d141b] dark:text-white">{t.name}</p>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">{t.title}</p>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-500 mt-1">{t.organization}</p>
+                </div>
+
+                {/* Metric Tag */}
+                <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#137fec]/10 border border-[#137fec]/20">
+                    <span className="material-symbols-outlined text-[#137fec] text-sm">trending_up</span>
+                    <span className="text-xs sm:text-sm font-semibold text-[#137fec]">{t.metric}</span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Notices / Announcements */}
-      <section className="max-w-6xl mx-auto px-4 pb-10">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-black text-[#137fec]">Updates</p>
-            <h2 className="text-2xl font-black text-[#0d141b] dark:text-white mt-1">Notices & Announcements</h2>
-          </div>
-          <Link to="/contact" className="text-xs font-black text-[#137fec] hover:underline">
-            Ask a Query
-          </Link>
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {[
-            {
-              tag: 'Admissions',
-              title: 'New Admission Enquiry Window',
-              desc: 'Submit your details on contact page for admission counselling and required documents list.',
-              icon: 'how_to_reg',
-            },
-            {
-              tag: 'Exams',
-              title: 'Terminal Exam Schedule',
-              desc: 'Please confirm class/terminal details before checking results. Published results are available on Result Portal.',
-              icon: 'event_note',
-            },
-            {
-              tag: 'Activities',
-              title: 'Sports & Co-curricular Week',
-              desc: 'Inter-house competitions, art & craft, and stage performances. Participation encouraged.',
-              icon: 'sports',
-            },
-          ].map((n) => (
-            <div
-              key={n.title}
-              className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <span className="inline-flex items-center gap-1 text-xs font-black px-2.5 py-1 rounded-full bg-[#137fec]/10 text-[#137fec]">
-                  <span className="material-symbols-outlined text-sm">{n.icon}</span>
-                  {n.tag}
-                </span>
-                <span className="material-symbols-outlined text-slate-400">chevron_right</span>
-              </div>
-              <p className="mt-3 text-base font-black">{n.title}</p>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{n.desc}</p>
-              <div className="mt-4 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                <span className="inline-flex items-center gap-1">
-                  <span className="material-symbols-outlined text-sm">schedule</span>
-                  Updated recently
-                </span>
-                <Link to="/contact" className="font-black text-[#137fec] hover:underline">
-                  Contact
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Testimonials + Achievements */}
-      <section className="max-w-6xl mx-auto px-4 pb-10">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-          <div className="lg:col-span-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-black text-[#137fec]">Parents & Students</p>
-                <h2 className="text-2xl font-black text-[#0d141b] dark:text-white mt-1">Testimonials</h2>
-              </div>
-              <Link to="/about" className="text-xs font-black text-[#137fec] hover:underline">
-                Know More
-              </Link>
-            </div>
-
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                {
-                  name: 'Parent',
-                  text: 'Teachers are supportive and the school focuses on discipline along with studies.',
-                },
-                {
-                  name: 'Student',
-                  text: 'Classes are interactive and activities help us build confidence and teamwork.',
-                },
-              ].map((t, idx) => (
-                <div
-                  key={`${t.name}-${idx}`}
-                  className="rounded-2xl border border-slate-200 dark:border-slate-700 p-5 bg-slate-50 dark:bg-slate-900/40"
-                >
-                  <span className="material-symbols-outlined text-[#137fec]">format_quote</span>
-                  <p className="mt-2 text-sm text-slate-700 dark:text-slate-200">{t.text}</p>
-                  <p className="mt-4 text-xs font-black text-slate-500 dark:text-slate-400">— {t.name}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="lg:col-span-2 rounded-2xl bg-linear-to-br from-[#137fec] to-[#0d5bb8] text-white p-6 shadow-lg">
-            <p className="text-xs opacity-90">Achievements</p>
-            <p className="text-2xl font-black mt-1">Performance Highlights</p>
-            <p className="text-sm opacity-90 mt-1">Academic results, competitions and awards.</p>
-
-            <div className="mt-5 space-y-3">
-              {[
-                { icon: 'emoji_events', title: 'Board / Terminal Results', desc: 'Consistent performance & improvement.' },
-                { icon: 'military_tech', title: 'Competitions', desc: 'Inter-school quiz, sports and arts.' },
-                { icon: 'workspace_premium', title: 'Discipline & Attendance', desc: 'Regularity and school values.' },
-              ].map((a) => (
-                <div key={a.title} className="flex items-start gap-3 rounded-2xl bg-white/10 p-4">
-                  <span className="material-symbols-outlined">{a.icon}</span>
-                  <div>
-                    <p className="text-sm font-black">{a.title}</p>
-                    <p className="text-xs opacity-90">{a.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6">
-              <Link
-                to="/gallery"
-                className="inline-flex items-center justify-center gap-2 font-black px-5 py-3 rounded-xl bg-white text-[#0d141b] hover:bg-white/90 w-full"
-              >
-                <span className="material-symbols-outlined">photo_library</span>
-                View Gallery
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Results Portal CTA */}
-      <section className="max-w-6xl mx-auto px-4 pb-12">
-        <div className="rounded-2xl bg-linear-to-r from-green-500 to-emerald-600 text-white p-6 md:p-8 shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <p className="text-xs opacity-90 flex items-center gap-2">
-                <span className="material-symbols-outlined text-sm">verified_user</span>
-                For Students & Parents
-              </p>
-              <p className="text-2xl font-black mt-1">Check Your Results Instantly</p>
-              <p className="text-sm opacity-90 mt-1">Access your academic performance, marks, and division anytime.</p>
-            </div>
-            <Link
-              to="/results-portal"
-              className="inline-flex items-center justify-center gap-2 font-black px-5 py-3 rounded-xl bg-white text-green-600 hover:bg-white/90 whitespace-nowrap"
-            >
-              <span className="material-symbols-outlined">trending_up</span>
-              View Results
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="max-w-6xl mx-auto px-4 pb-12">
-        <div className="rounded-2xl bg-linear-to-r from-[#137fec] to-[#0d5bb8] text-white p-6 md:p-8 shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <p className="text-xs opacity-90">For Admin/Teacher</p>
-              <p className="text-2xl font-black mt-1">Manage school data on Dashboard</p>
-              <p className="text-sm opacity-90 mt-1">Use Admin Login to access dashboard modules.</p>
-            </div>
-            <Link
-              to="/login"
-              className="inline-flex items-center justify-center gap-2 font-black px-5 py-3 rounded-xl bg-white text-[#0d141b] hover:bg-white/90"
-            >
-              <span className="material-symbols-outlined">admin_panel_settings</span>
-              Admin Login
-            </Link>
-          </div>
-        </div>
-      </section>
     </WebsiteLayout>
   )
 }
