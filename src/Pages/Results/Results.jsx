@@ -4,6 +4,7 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import { getMarks, getStudentResultPublic } from '../../Api/marks'
 import schoolLogo from '../../assets/logo.jpeg'
+import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 import '../../styles/print.css'
 
 const SUMMARY_TERMINALS = ['First', 'Second', 'Third', 'Annual']
@@ -371,8 +372,6 @@ function Results() {
   }, [marks])
 
   const todayLabel = useMemo(() => new Date().toLocaleDateString('en-IN'), [])
-  const year = useMemo(() => new Date().getFullYear(), [])
-
   const sessionLabel = toDisplayValue(
     student?.academic_year ||
     currentSummary?.academic_year ||
@@ -615,8 +614,9 @@ function Results() {
   }
 
   return (
-    <div className="min-h-screen bg-[#edf2fb] dark:bg-[#0f1724] text-slate-900 dark:text-slate-100 overflow-x-hidden" style={{ fontFamily: "'Lexend', sans-serif" }}>
-      <header className="no-print border-b border-slate-200 dark:border-slate-800 bg-gradient-to-r from-white/95 via-white/85 to-[#dbeafe]/75 dark:from-[#0f1724]/95 dark:via-[#0f1724]/85 dark:to-[#17233a]/75 backdrop-blur">
+    <WebsiteLayout>
+      <div className="bg-[#edf2fb] dark:bg-[#0f1724] text-slate-900 dark:text-slate-100 overflow-x-hidden" style={{ fontFamily: "'Lexend', sans-serif" }}>
+        <header className="no-print border-b border-slate-200 dark:border-slate-800 bg-gradient-to-r from-white/95 via-white/85 to-[#dbeafe]/75 dark:from-[#0f1724]/95 dark:via-[#0f1724]/85 dark:to-[#17233a]/75 backdrop-blur">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <div className="h-11 w-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white flex items-center justify-center overflow-hidden">
@@ -665,7 +665,7 @@ function Results() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+        <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
         <div className="bg-gradient-to-r from-white to-[#eef4ff] dark:from-slate-800 dark:to-slate-800/90 rounded-2xl border border-[#d4deee] dark:border-slate-700 shadow-[0_10px_30px_rgba(15,23,42,0.08)] p-4 no-print">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -949,21 +949,11 @@ function Results() {
                 </div>
               </div>
             </div>
-
-            <footer className="no-print rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/85 dark:bg-slate-800/80 px-4 py-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs">
-                <p className="text-slate-600 dark:text-slate-300">(c) {year} {SCHOOL_NAME}. All rights reserved.</p>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Link to="/results-portal" className="font-bold text-[#137fec] hover:underline">Result Portal</Link>
-                  <Link to="/contact" className="font-bold text-[#137fec] hover:underline">Contact</Link>
-                  <Link to="/" className="font-bold text-[#137fec] hover:underline">Website</Link>
-                </div>
-              </div>
-            </footer>
           </>
         )}
-      </main>
-    </div>
+        </main>
+      </div>
+    </WebsiteLayout>
   )
 }
 

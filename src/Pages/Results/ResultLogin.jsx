@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 
 function ResultLogin() {
   const navigate = useNavigate()
@@ -41,11 +42,12 @@ function ResultLogin() {
   }
 
   return (
-    <div
-      className="min-h-screen bg-slate-50 dark:bg-[#101922] text-slate-900 dark:text-slate-100"
-      style={{ fontFamily: "'Lexend', sans-serif" }}
-    >
-      <div className="flex min-h-screen w-full flex-col lg:flex-row">
+    <WebsiteLayout>
+      <div
+        className="bg-slate-50 dark:bg-[#101922] text-slate-900 dark:text-slate-100"
+        style={{ fontFamily: "'Lexend', sans-serif" }}
+      >
+        <div className="flex w-full flex-col lg:flex-row">
         {/* Left Side */}
         <div className="relative hidden lg:flex lg:w-5/12 xl:w-1/2 bg-[#137fec] items-center justify-center p-6 overflow-hidden">
           <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -234,10 +236,11 @@ function ResultLogin() {
             </form>
           </div>
 
-          <div className="mt-4 text-slate-400 text-xs">© 2024 EduPortal School Management System.</div>
+          <div className="mt-4 text-slate-400 text-xs">(c) 2024 EduPortal School Management System.</div>
         </div>
       </div>
-    </div>
+      </div>
+    </WebsiteLayout>
   )
 }
 

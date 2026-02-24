@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
+import { aboutPhotos } from '../../assets/websiteImages'
 
 function About() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
@@ -25,12 +26,17 @@ function About() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div className="relative">
                 <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xl">
-                  <div
-                    className="w-full aspect-4/3 bg-cover bg-center"
-                    style={{
-                      backgroundImage:
-                        "url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80')",
-                    }}
+                  <img
+                    src={aboutPhotos.hero}
+                    alt="School campus overview"
+                    className="w-full aspect-4/3 object-cover"
+                  />
+                </div>
+                <div className="hidden sm:block absolute -bottom-6 -right-6 w-44 h-44 rounded-2xl overflow-hidden border-4 border-white dark:border-slate-900 shadow-xl">
+                  <img
+                    src={aboutPhotos.secondary}
+                    alt="Students in classroom"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </div>
@@ -153,9 +159,23 @@ function About() {
                   commitment to nurturing young minds. We take pride in our alumni who have excelled in various fields
                   and continue to make us proud.
                 </p>
+                <div className="mt-6 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-md">
+                  <img
+                    src={aboutPhotos.journey}
+                    alt="School journey highlights"
+                    className="w-full h-52 sm:h-64 object-cover"
+                  />
+                </div>
               </div>
 
               <div>
+                <div className="mb-6 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-md">
+                  <img
+                    src={aboutPhotos.achievements}
+                    alt="School achievements and events"
+                    className="w-full h-52 sm:h-64 object-cover"
+                  />
+                </div>
                 <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Recognition</p>
                 <h2 className="text-3xl sm:text-4xl font-black text-[#0d141b] dark:text-white mb-6">
                   Key Achievements
@@ -205,8 +225,12 @@ function About() {
                 preparing them for the challenges of tomorrow."
               </p>
               <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-[#137fec] flex items-center justify-center">
-                  <span className="material-symbols-outlined text-white">person</span>
+                <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-[#137fec]/30">
+                  <img
+                    src={aboutPhotos.principal}
+                    alt="Principal portrait"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div>
                   <p className="text-base font-black text-[#0d141b] dark:text-white">Principal</p>

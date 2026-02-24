@@ -30,6 +30,7 @@ function Dashboard({ initialView = 'dashboard' }) {
     subjectsPerClass: [],
     loading: true
   })
+  const isTeacher = loginType !== 'student' && user?.role === 'teacher'
 
   useEffect(() => {
     const currentUser = getUser()
@@ -44,6 +45,8 @@ function Dashboard({ initialView = 'dashboard' }) {
       // Set initial view based on login type
       if (loginTypeFromStorage === 'student') {
         setActiveView('result')
+      } else if (currentUser?.role === 'teacher') {
+        setActiveView('uploadMarks')
       } else {
         setActiveView(initialView || 'dashboard')
       }
@@ -51,10 +54,16 @@ function Dashboard({ initialView = 'dashboard' }) {
   }, [navigate, initialView])
 
   useEffect(() => {
-    if (loginType !== 'student' && activeView === 'dashboard') {
+    if (loginType !== 'student' && !isTeacher && activeView === 'dashboard') {
       fetchDashboardData()
     }
-  }, [loginType, activeView])
+  }, [loginType, activeView, isTeacher])
+
+  useEffect(() => {
+    if (isTeacher && activeView !== 'uploadMarks') {
+      setActiveView('uploadMarks')
+    }
+  }, [isTeacher, activeView])
 
   const fetchDashboardData = async () => {
     setDashboardData(prev => ({ ...prev, loading: true }))
@@ -142,7 +151,7 @@ function Dashboard({ initialView = 'dashboard' }) {
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto w-full">
           <div className="p-3 sm:p-4 lg:p-6 w-full max-w-full">
-            {loginType !== 'student' && activeView === 'dashboard' && (
+            {loginType !== 'student' && !isTeacher && activeView === 'dashboard' && (
               <div className="space-y-4 sm:space-y-6" style={{ fontFamily: "'Lexend', sans-serif" }}>
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#0d141b] dark:text-white">Dashboard</h2>
                 
@@ -332,21 +341,21 @@ function Dashboard({ initialView = 'dashboard' }) {
               </div>
             )}
 
-            {(loginType === 'student' || activeView === 'result') && <ResultView />}
+            {!isTeacher && (loginType === 'student' || activeView === 'result') && <ResultView />}
             
-            {activeView === 'student' && <Student />}
+            {!isTeacher && activeView === 'student' && <Student />}
 
-            {activeView === 'studentLifecycle' && <StudentLifecycle />}
+            {!isTeacher && activeView === 'studentLifecycle' && <StudentLifecycle />}
             
-            {activeView === 'subject' && <Subject />}
+            {!isTeacher && activeView === 'subject' && <Subject />}
             
             {activeView === 'uploadMarks' && <UploadMarks />}
 
-            {activeView === 'uploadPhoto' && <UploadPhoto />}
+            {!isTeacher && activeView === 'uploadPhoto' && <UploadPhoto />}
 
-            {activeView === 'fees' && <FeeManager />}
+            {!isTeacher && activeView === 'fees' && <FeeManager />}
 
-            {activeView === 'classPromotion' && <ClassPromotion />}
+            {!isTeacher && activeView === 'classPromotion' && <ClassPromotion />}
           </div>
         </main>
     </>

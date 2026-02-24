@@ -31,7 +31,7 @@ function ViewMarks() {
   const [publishData, setPublishData] = useState(null)
   const [publishing, setPublishing] = useState(false)
 
-  const terminals = ['First', 'Second', 'Third', 'Final']
+  const terminals = ['First', 'Second', 'Third', 'Annual']
 
   useEffect(() => {
     fetchSubjects()

@@ -2,6 +2,23 @@ import { Component, StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import schoolLogo from './assets/logo.jpeg'
+
+const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
+
+document.title = SCHOOL_NAME
+
+const faviconElement =
+  document.querySelector("link[rel='icon']") ||
+  (() => {
+    const link = document.createElement('link')
+    link.rel = 'icon'
+    document.head.appendChild(link)
+    return link
+  })()
+
+faviconElement.type = 'image/jpeg'
+faviconElement.href = schoolLogo
 
 class AppErrorBoundary extends Component {
   constructor(props) {

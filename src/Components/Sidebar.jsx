@@ -26,10 +26,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
       { id: 'uploadPhoto', label: 'Upload Photo', icon: 'photo_camera' }
     ],
     teacher: [
-      { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-      { id: 'studentLifecycle', label: 'Leave/Rejoin', icon: 'sync_alt' },
-      { id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' },
-      { id: 'uploadPhoto', label: 'Upload Photo', icon: 'photo_camera' }
+      { id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' }
     ],
     student: [
       { id: 'result', label: 'Result View', icon: 'assessment' },

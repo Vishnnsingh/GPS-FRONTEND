@@ -5,6 +5,7 @@ import FeeList from './FeeList'
 import PayFees from './PayFees'
 import Invoice from './Invoice'
 import Bills from './Bills'
+import OpeningBalanceMigration from './OpeningBalanceMigration'
 
 function FeeManager() {
   const [activeTab, setActiveTab] = useState('structure')
@@ -16,7 +17,8 @@ function FeeManager() {
     { id: 'list', label: 'Fee List', icon: 'list' },
     { id: 'pay', label: 'Pay Fees', icon: 'payments' },
     { id: 'invoice', label: 'Invoice', icon: 'description' },
-    { id: 'bills', label: 'Bills', icon: 'print' }
+    { id: 'bills', label: 'Bills', icon: 'print' },
+    { id: 'migration', label: 'Migration Setup', icon: 'sync_saved_locally' },
   ]
 
   return (
@@ -54,6 +56,7 @@ function FeeManager() {
         {activeTab === 'pay' && <PayFees />}
         {activeTab === 'invoice' && <Invoice billId={invoiceBillId} onBillIdChange={setInvoiceBillId} />}
         {activeTab === 'bills' && <Bills />}
+        {activeTab === 'migration' && <OpeningBalanceMigration />}
       </div>
     </div>
   )

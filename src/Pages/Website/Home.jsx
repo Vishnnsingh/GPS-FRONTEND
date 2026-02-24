@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
+import { homeFeaturePhotos, homeHeroSlides } from '../../assets/websiteImages'
 
 function Home() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
@@ -8,23 +9,7 @@ function Home() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const intervalRef = useRef(null)
 
-  const heroSlides = [
-    {
-      image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&q=80',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&q=80',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1200&q=80',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=1200&q=80',
-    },
-  ]
+  const heroSlides = homeHeroSlides.map((image) => ({ image }))
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
@@ -66,74 +51,123 @@ function Home() {
 
   return (
     <WebsiteLayout>
-      {/* Hero Carousel - Full Width Images Only */}
-      <section
-        className="relative overflow-hidden w-full"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        <div className="relative w-full">
-          {/* School Name Overlay - Center (Top to Bottom) with Rainbow Gradient */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 text-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black rainbow-text text-shadow-subtle leading-tight">
-              {SCHOOL_NAME}
-            </h1>
-            <div className="mt-3 sm:mt-4 h-1 w-32 sm:w-40 md:w-48 mx-auto bg-linear-to-r from-[#ff6b6b] via-[#4ecdc4] to-[#45b7d1] rounded-full opacity-80"></div>
-          </div>
-
-          {/* Carousel Container */}
-          <div className="relative overflow-hidden w-full">
-            <div
-              className="flex transition-transform duration-700 ease-in-out"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
-              {heroSlides.map((slide, index) => (
-                <div
-                  key={index}
-                  className="min-w-full w-full relative"
+      {/* Hero Header */}
+      <section className="w-full bg-slate-50 dark:bg-slate-900 py-8 sm:py-10 lg:py-12">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 items-stretch">
+            <div className="order-2 lg:order-1 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
+              <p className="text-xs sm:text-sm font-semibold text-[#137fec] uppercase tracking-wider mb-3">
+                Welcome to
+              </p>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-[#0d141b] dark:text-white">
+                {SCHOOL_NAME}
+              </h1>
+              <div className="mt-4 h-1 w-28 sm:w-32 bg-linear-to-r from-[#137fec] via-[#4ecdc4] to-[#45b7d1] rounded-full"></div>
+              <p className="mt-5 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl">
+                Inspiring students with quality education, discipline, and all-round development in a safe and modern learning environment.
+              </p>
+              <div className="mt-7 flex flex-wrap items-center gap-3">
+                <Link
+                  to="/about"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-[#137fec] hover:bg-[#0f6dd4] text-white text-sm font-semibold transition-colors"
                 >
-                  {/* Subtle overlay for better text readability */}
-                  <div className="absolute inset-0 bg-black/5 z-10"></div>
-                  <div
-                    className="w-full h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-[90vh] bg-cover bg-center bg-no-repeat"
-                    style={{ backgroundImage: `url('${slide.image}')` }}
+                  <span>Know More</span>
+                  <span className="material-symbols-outlined text-base">arrow_forward</span>
+                </Link>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors"
+                >
+                  Contact School
+                </Link>
+              </div>
+            </div>
+
+            <div
+              className="order-1 lg:order-2 relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-300/20 dark:shadow-black/20"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <div className="relative overflow-hidden h-[260px] sm:h-[320px] md:h-[380px] lg:h-full min-h-[320px]">
+                <div
+                  className="flex h-full transition-transform duration-700 ease-in-out"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                >
+                  {heroSlides.map((slide, index) => (
+                    <div key={index} className="min-w-full w-full h-full relative">
+                      <div className="absolute inset-0 bg-black/10 z-10"></div>
+                      <div
+                        className="w-full h-full bg-cover bg-center bg-no-repeat"
+                        style={{ backgroundImage: `url('${slide.image}')` }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={prevSlide}
+                className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 shadow-md hover:bg-white dark:hover:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-[#137fec] transition-all duration-200"
+                aria-label="Previous slide"
+              >
+                <span className="material-symbols-outlined text-2xl">chevron_left</span>
+              </button>
+
+              <button
+                onClick={nextSlide}
+                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 shadow-md hover:bg-white dark:hover:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-[#137fec] transition-all duration-200"
+                aria-label="Next slide"
+              >
+                <span className="material-symbols-outlined text-2xl">chevron_right</span>
+              </button>
+
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+                {heroSlides.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    className={`h-2.5 rounded-full transition-all duration-300 ${
+                      currentSlide === index
+                        ? 'w-8 bg-[#137fec] shadow-md shadow-[#137fec]/50'
+                        : 'w-2.5 bg-white/70 dark:bg-slate-500/70 hover:bg-white'
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
                   />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Campus Highlights */}
+      <section className="w-full bg-white dark:bg-slate-800 py-12 sm:py-16">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-8 sm:mb-10">
+              <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Campus Life</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0d141b] dark:text-white">Daily School Moments</h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+              {homeFeaturePhotos.map((photo, index) => (
+                <div
+                  key={`feature-photo-${index}`}
+                  className="group rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-lg transition-all"
+                >
+                  <img
+                    src={photo}
+                    alt={`Campus highlight ${index + 1}`}
+                    className="w-full h-64 sm:h-72 object-cover group-hover:scale-[1.03] transition-transform duration-300"
+                  />
+                  <div className="px-4 py-3 bg-white dark:bg-slate-800">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                      {index === 0 ? 'Office view' : index === 1 ? 'Principal Office' : 'Student Participation'}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Navigation Buttons */}
-          <button
-            onClick={prevSlide}
-            className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-10 h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 shadow-lg hover:bg-white dark:hover:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-[#137fec] transition-all duration-200 hover:scale-110"
-            aria-label="Previous slide"
-          >
-            <span className="material-symbols-outlined text-2xl sm:text-3xl">chevron_left</span>
-          </button>
-
-          <button
-            onClick={nextSlide}
-            className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-10 h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 shadow-lg hover:bg-white dark:hover:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-[#137fec] transition-all duration-200 hover:scale-110"
-            aria-label="Next slide"
-          >
-            <span className="material-symbols-outlined text-2xl sm:text-3xl">chevron_right</span>
-          </button>
-
-          {/* Dots Indicator */}
-          <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
-            {heroSlides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`h-2.5 sm:h-3 rounded-full transition-all duration-300 ${
-                  currentSlide === index
-                    ? 'w-8 sm:w-10 bg-[#137fec] shadow-md shadow-[#137fec]/50'
-                    : 'w-2.5 sm:w-3 bg-white/60 dark:bg-slate-600/60 hover:bg-white/80 dark:hover:bg-slate-500/80'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
           </div>
         </div>
       </section>
@@ -257,10 +291,10 @@ function Home() {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                 {[
-                  { icon: 'groups', value: '60+', label: 'Total Teachers' },
-                  { icon: 'school', value: '1200+', label: 'Total Students' },
+                  { icon: 'groups', value: '15+', label: 'Total Teachers' },
+                  { icon: 'school', value: '400+', label: 'Total Students' },
                   { icon: 'psychology', value: '1:20', label: 'Student-Teacher Ratio' },
-                  { icon: 'workspace_premium', value: '10+', label: 'Top Mentors' },
+                  { icon: 'workspace_premium', value: '15+', label: 'Top Mentors' },
                 ].map((c) => (
                   <div
                     key={c.label}

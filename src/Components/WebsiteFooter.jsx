@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { sharedImages } from '../assets/websiteImages'
 
 function WebsiteFooter() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
@@ -23,13 +24,17 @@ function WebsiteFooter() {
           {/* School Info */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <div className="h-12 w-12 rounded-xl bg-linear-to-br from-[#137fec] to-[#0d5bb8] flex items-center justify-center shadow-lg shadow-[#137fec]/30">
-                <span className="material-symbols-outlined text-white text-xl">school</span>
+              <div className="h-12 w-12 rounded-xl overflow-hidden border border-white/20 bg-white shadow-lg shadow-[#137fec]/30">
+                <img
+                  src={sharedImages.schoolLogo}
+                  alt={`${SCHOOL_NAME} logo`}
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div>
                 <h3 className="text-lg sm:text-xl font-black leading-tight text-white">{SCHOOL_NAME}</h3>
                 <p className="text-xs sm:text-sm text-white/70 leading-tight font-medium">
-                  Learning • Discipline • Growth
+                  Learning | Discipline | Growth
                 </p>
               </div>
             </div>
@@ -123,11 +128,14 @@ function WebsiteFooter() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-xs sm:text-sm text-white/60 text-center sm:text-left">
-              © {year} <span className="font-semibold">{SCHOOL_NAME}</span>. All rights reserved.
+              (c) {year} <span className="font-semibold">{SCHOOL_NAME}</span>. All rights reserved.
             </p>
-            <p className="text-xs sm:text-sm text-white/60 text-center sm:text-right">
-              Powered by <span className="font-semibold text-white/80">EduPortal</span>
-            </p>
+            <div className="text-xs sm:text-sm text-white/60 text-center sm:text-right inline-flex items-center gap-1.5">
+              <img src={sharedImages.websiteTechIcon} alt="Technology" className="h-4 w-4 opacity-90" />
+              <span>
+                Powered by <span className="font-semibold text-white/80">EduPortal</span>
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -136,5 +144,7 @@ function WebsiteFooter() {
 }
 
 export default WebsiteFooter
+
+
 
 

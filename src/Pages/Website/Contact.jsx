@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
+import { contactPhotos } from '../../assets/websiteImages'
 
 function Contact() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
@@ -53,6 +54,14 @@ function Contact() {
                   We're available during school hours and always happy to assist with any questions about admissions,
                   academics, facilities, or general inquiries.
                 </p>
+
+                <div className="mb-8 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <img
+                    src={contactPhotos.hero}
+                    alt="Campus contact support"
+                    className="w-full h-48 sm:h-56 object-cover"
+                  />
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {[
@@ -193,12 +202,17 @@ function Contact() {
               <h2 className="text-2xl sm:text-3xl font-black text-[#0d141b] dark:text-white">School Location</h2>
             </div>
             <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
-              <div className="w-full h-64 sm:h-80 md:h-96 bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="material-symbols-outlined text-6xl text-slate-400 dark:text-slate-500 mb-4">
-                    map
-                  </span>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Map integration can be added here</p>
+              <div className="relative w-full h-64 sm:h-80 md:h-96">
+                <img
+                  src={contactPhotos.map}
+                  alt="School location and campus route"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/35 flex items-end">
+                  <div className="p-4 sm:p-6">
+                    <p className="text-white text-lg sm:text-xl font-bold">Visit Our Campus</p>
+                    <p className="text-white/90 text-sm">School Road, Your City, State - 000000</p>
+                  </div>
                 </div>
               </div>
             </div>

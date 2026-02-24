@@ -25,7 +25,7 @@ function SubmitMarks() {
   const [success, setSuccess] = useState(false)
   const [markFieldErrors, setMarkFieldErrors] = useState({})
 
-  const terminals = ['First', 'Second', 'Third', 'Final']
+  const terminals = ['First', 'Second', 'Third', 'Annual']
 
   const getNonEmptyString = (...values) => {
     for (const value of values) {

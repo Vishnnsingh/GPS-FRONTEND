@@ -1,10 +1,29 @@
 import api, { buildQueryParams, normalizeApiError } from './auth'
 import publicApi from './publicApi'
 
+const TERMINAL_ALIASES = {
+  first: 'First',
+  second: 'Second',
+  third: 'Third',
+  final: 'Annual',
+  annual: 'Annual',
+}
+
+const normalizeTerminal = (terminal) => {
+  const value = String(terminal || '').trim()
+  if (!value) return value
+  return TERMINAL_ALIASES[value.toLowerCase()] || value
+}
+
 // Submit marks
 export const submitMarks = async (marksData) => {
   try {
-    const response = await api.post('/api/marks/submit', marksData)
+    const payload = {
+      ...marksData,
+      terminal: normalizeTerminal(marksData?.terminal),
+    }
+
+    const response = await api.post('/api/marks/submit', payload)
     return response.data
   } catch (error) {
     throw normalizeApiError(error, 'Failed to submit marks')
@@ -16,7 +35,7 @@ export const getMarks = async (classValue, section, terminal) => {
   try {
     const params = buildQueryParams({
       class: classValue,
-      terminal,
+      terminal: normalizeTerminal(terminal),
       section,
     })
 
@@ -35,7 +54,7 @@ export const getStudentResultPublic = async ({ classValue, roll, terminal, secti
     const params = buildQueryParams({
       class: classValue,
       roll,
-      terminal,
+      terminal: normalizeTerminal(terminal),
       section,
       session,
     })
@@ -57,7 +76,7 @@ export const publishResults = async (classValue, section, terminal) => {
     const response = await api.post('/api/marks/publish', {
       class: classValue,
       section: section || undefined,
-      terminal: terminal
+      terminal: normalizeTerminal(terminal),
     })
     return response.data
   } catch (error) {
