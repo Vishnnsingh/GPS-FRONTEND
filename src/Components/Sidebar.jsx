@@ -21,6 +21,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
       { id: 'studentLifecycle', label: 'Leave/Rejoin', icon: 'sync_alt' },
       { id: 'classPromotion', label: 'Class Promotion', icon: 'arrow_upward' },
       { id: 'subject', label: 'Subject', icon: 'book' },
+      { id: 'teachers', label: 'Teachers', icon: 'groups' },
       { id: 'fees', label: 'Fees', icon: 'payments' },
       { id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' },
       { id: 'uploadPhoto', label: 'Upload Photo', icon: 'photo_camera' }
