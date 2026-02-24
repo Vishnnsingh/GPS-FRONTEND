@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { getMarks, publishResults } from '../../Api/marks'
+import { getSubjectsForClass } from '../../Api/subjects'
 import { getAllSubjects } from '../../Api/subjects'
+import { getAllClasses } from '../../Api/classes'
+import { getAllStudents } from '../../Api/students'
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
   PieChart, Pie, Cell, AreaChart, Area, LineChart, Line, ScatterChart, Scatter
 } from 'recharts'
+
+// Enhanced View Marks Component - Fully responsive and modern UI
 
 function ViewMarks() {
   const [filters, setFilters] = useState({
@@ -26,7 +31,7 @@ function ViewMarks() {
   const [publishData, setPublishData] = useState(null)
   const [publishing, setPublishing] = useState(false)
 
-  const terminals = ['First', 'Second', 'Third', 'Final']
+  const terminals = ['First', 'Second', 'Third', 'Annual']
 
   useEffect(() => {
     fetchSubjects()
@@ -68,16 +73,26 @@ function ViewMarks() {
     setLoadingSubjects(true)
     setError('')
     try {
-      const response = await getAllSubjects()
-      if (response.success) {
-        setSubjectsData(response)
-        if (response.classes) {
-          const classes = response.classes.map(cls => cls.class)
-          setAvailableClasses([...new Set(classes)].sort())
-        }
+      const [subjectsResponse, classesResponse] = await Promise.all([
+        getAllSubjects(),
+        getAllClasses()
+      ])
+      
+      if (subjectsResponse.success) {
+        setSubjectsData(subjectsResponse)
+      }
+      
+      if (classesResponse && classesResponse.length > 0) {
+        // Sort by class property (numeric sort)
+        const sorted = classesResponse.sort((a, b) => {
+          const classA = typeof a === 'string' ? a : a.class;
+          const classB = typeof b === 'string' ? b : b.class;
+          return parseInt(classA) - parseInt(classB);
+        });
+        setAvailableClasses(sorted)
       }
     } catch (err) {
-      setError(err?.message || 'Failed to fetch subjects')
+      setError(err?.message || 'Failed to fetch classes')
     } finally {
       setLoadingSubjects(false)
     }
@@ -291,7 +306,7 @@ function ViewMarks() {
                 >
                   <option value="">Select Class</option>
                   {availableClasses.map((cls) => (
-                    <option key={cls} value={cls}>Class {cls}</option>
+                    <option key={cls.class || cls} value={cls.class || cls}>Class {cls.class || cls}</option>
                   ))}
                 </select>
               )}

@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
+import logo from '../assets/logo.jpeg';
 
 function WebsiteHeader() {
-  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'GJ Public School'
+  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
   const location = useLocation()
   const [open, setOpen] = useState(false)
 
@@ -22,108 +23,135 @@ function WebsiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-40">
+    <header className="sticky top-0 z-50">
       {/* Top Bar */}
-      <div className="bg-[#0d141b] text-white">
-        <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-4 text-xs text-white/80">
-            <span className="hidden sm:inline-flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm">call</span>
-              +91 00000 00000
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm">mail</span>
-              info@school.edu
-            </span>
-          </div>
+      <div className="bg-[#0d141b] text-white border-b border-white/5">
+        <div className="w-full">
+          <div className="flex items-center justify-between h-10 gap-4 px-4 sm:px-6 lg:px-8">
+            {/* Contact Info */}
+            <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm">
+              <a
+                href="tel:+910000000000"
+                className="hidden sm:inline-flex items-center gap-1.5 text-white/70 hover:text-white/90 transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">call</span>
+                <span className="font-normal">+91 00000 00000</span>
+              </a>
+              <a
+                href="mailto:info@school.edu"
+                className="inline-flex items-center gap-1.5 text-white/70 hover:text-white/90 transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">mail</span>
+                <span className="font-normal hidden sm:inline">info@school.edu</span>
+                <span className="font-normal sm:hidden">Email</span>
+              </a>
+            </div>
 
-          <div className="flex items-center gap-3">
-            <Link
-              to="/result-login"
-              className="inline-flex items-center gap-1 text-xs font-bold text-white/90 hover:text-white"
-            >
-              <span className="material-symbols-outlined text-sm">award_star</span>
-              Result Portal
-            </Link>
+            {/* Quick Links */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Link
+                to="/result-login"
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-white/80 hover:text-white px-2.5 sm:px-3 py-1 rounded-md hover:bg-white/5 transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">award_star</span>
+                <span className="hidden sm:inline">Result Portal</span>
+                <span className="sm:hidden">Results</span>
+              </Link>
 
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-1 text-xs font-black px-3 py-1 rounded-full bg-[#137fec] hover:bg-[#137fec]/90 transition-colors"
-            >
-              <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
-              Admin Login
-            </Link>
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-md bg-[#137fec]/80 hover:bg-[#137fec] text-white transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
+                <span className="hidden sm:inline">Admin Login</span>
+                <span className="sm:hidden">Admin</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Nav */}
-      <div className="bg-white/85 dark:bg-[#101922]/85 backdrop-blur border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          <Link to="/" className="flex items-center gap-2 min-w-0">
-            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-[#137fec] to-[#0d5bb8] text-white flex items-center justify-center shadow-sm">
-              <span className="material-symbols-outlined">school</span>
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-black leading-tight truncate">{SCHOOL_NAME}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-tight truncate">
-                School Website
-              </p>
-            </div>
-          </Link>
+      {/* Main Navigation */}
+      <div className="bg-white dark:bg-[#101922] border-b border-slate-200 dark:border-slate-800">
+        <div className="w-full">
+          <div className="flex items-center justify-between h-16 gap-4 px-4 sm:px-6 lg:px-8">
+            {/* Logo & School Name */}
+            <Link
+              to="/"
+              className="flex items-center gap-3 min-w-0"
+            >
+              <img
+                src={logo}
+                alt={`${SCHOOL_NAME} Logo`}
+                className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-lg bg-white dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-700"
+              />
 
-          {/* Desktop links */}
-          <nav className="hidden md:flex items-center gap-1">
-            {links.map((l) => (
-              <NavLink
-                key={l.to}
-                to={l.to}
-                className={`text-sm font-bold px-3 py-2 rounded-lg transition-colors ${
-                  isActive(l.to)
-                    ? 'bg-[#137fec]/10 text-[#137fec]'
-                    : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-                }`}
-              >
-                {l.label}
-              </NavLink>
-            ))}
-          </nav>
+              <div className="min-w-0 hidden sm:block">
+                <h1 className="text-base sm:text-lg font-bold leading-tight text-[#0d141b] dark:text-white truncate">
+                  {SCHOOL_NAME}
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-tight truncate">
+                  School Website
+                </p>
+              </div>
+            </Link>
 
-          {/* Mobile menu button */}
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
-            aria-label="Toggle menu"
-          >
-            <span className="material-symbols-outlined">{open ? 'close' : 'menu'}</span>
-          </button>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-1">
+              {links.map((l) => (
+                <NavLink
+                  key={l.to}
+                  to={l.to}
+                  className={`text-sm font-medium px-4 py-2 rounded-md transition-colors ${
+                    isActive(l.to)
+                      ? 'text-[#137fec] dark:text-[#4da3ff]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  }`}
+                >
+                  {l.label}
+                </NavLink>
+              ))}
+            </nav>
+
+            {/* Mobile Menu Button */}
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              aria-label="Toggle menu"
+              aria-expanded={open}
+            >
+              <span className="material-symbols-outlined text-slate-700 dark:text-slate-300">
+                {open ? 'close' : 'menu'}
+              </span>
+            </button>
+          </div>
         </div>
 
-        {/* Mobile dropdown */}
-        {open ? (
+        {/* Mobile Dropdown Menu */}
+        {open && (
           <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#101922]">
-            <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-1">
+            <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-1">
               {links.map((l) => (
                 <Link
                   key={l.to}
                   to={l.to}
                   onClick={() => setOpen(false)}
-                  className={`text-sm font-bold px-3 py-2 rounded-lg ${
+                  className={`block text-sm font-medium px-4 py-2.5 rounded-md transition-colors ${
                     isActive(l.to)
-                      ? 'bg-[#137fec]/10 text-[#137fec]'
-                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      ? 'text-[#137fec] dark:text-[#4da3ff]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                   }`}
                 >
                   {l.label}
                 </Link>
               ))}
 
-              <div className="pt-2 flex items-center gap-2">
+              <div className="pt-3 mt-3 border-t border-slate-200 dark:border-slate-800">
                 <Link
                   to="/login"
                   onClick={() => setOpen(false)}
-                  className="w-full inline-flex items-center justify-center gap-2 text-sm font-black px-3 py-2 rounded-lg bg-[#137fec] text-white hover:bg-[#137fec]/90"
+                  className="w-full inline-flex items-center justify-center gap-2 text-sm font-medium px-4 py-2.5 rounded-md bg-[#137fec] text-white hover:bg-[#137fec]/90 transition-colors"
                 >
                   <span className="material-symbols-outlined text-base">admin_panel_settings</span>
                   Admin Login
@@ -131,7 +159,7 @@ function WebsiteHeader() {
               </div>
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     </header>
   )

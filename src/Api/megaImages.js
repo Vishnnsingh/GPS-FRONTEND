@@ -20,7 +20,7 @@ export const uploadSingleImage = async (file, { isPublic = false } = {}) => {
     const formData = new FormData()
     formData.append('image', file)
 
-    const response = await api.post('/mega/images', formData, {
+    const response = await api.post('/api/mega/images', formData, {
       params: { public: isPublic ? 'true' : 'false' },
     })
     return response.data
@@ -34,7 +34,7 @@ export const uploadBulkImages = async (files, { isPublic = false } = {}) => {
     const formData = new FormData()
     Array.from(files || []).forEach((f) => formData.append('images', f))
 
-    const response = await api.post('/mega/images/bulk', formData, {
+    const response = await api.post('/api/mega/images/bulk', formData, {
       params: { public: isPublic ? 'true' : 'false' },
     })
     return response.data
@@ -45,7 +45,7 @@ export const uploadBulkImages = async (files, { isPublic = false } = {}) => {
 
 export const listImages = async ({ isPublic = false, includeLinks = true } = {}) => {
   try {
-    const response = await api.get('/mega/images', {
+    const response = await api.get('/api/mega/images', {
       params: { public: isPublic ? 'true' : 'false', includeLinks: includeLinks ? 'true' : 'false' },
     })
     return response.data
@@ -56,7 +56,7 @@ export const listImages = async ({ isPublic = false, includeLinks = true } = {})
 
 export const deleteImage = async (nodeId) => {
   try {
-    const response = await api.delete(`/mega/images/${nodeId}`)
+    const response = await api.delete(`/api/mega/images/${nodeId}`)
     return response.data
   } catch (error) {
     throw toMessage(error)

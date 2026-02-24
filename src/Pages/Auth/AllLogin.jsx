@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { login, setSession, saveCredentials, getSavedCredentials } from '../../Api/auth'
+import { login, setSession, saveCredentials, getSavedCredentials, emitToast } from '../../Api/auth'
 
 function AllLogin() {
   const navigate = useNavigate()
@@ -49,9 +49,12 @@ function AllLogin() {
       setSavedCreds(getSavedCredentials())
       
       // Navigate to dashboard for all users
+      emitToast('success', 'Login successful', 'Welcome')
       navigate('/dashboard')
     } catch (err) {
-      setError(err?.message || 'Login failed. Please check your credentials.')
+      const message = err?.message || 'Login failed. Please check your credentials.'
+      setError(message)
+      emitToast('error', message, 'Login Failed')
     } finally {
       setLoading(false)
     }

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { getAllSubjects } from '../../Api/subjects'
+import { getAllSubjects, getSubjectsForClass } from '../../Api/subjects'
+import { getAllClasses } from '../../Api/classes'
 import { submitMarks } from '../../Api/marks'
+import { getAllStudents } from '../../Api/students'
 
 function SubmitMarks() {
   const [formData, setFormData] = useState({
@@ -16,10 +18,124 @@ function SubmitMarks() {
   const [availableSections, setAvailableSections] = useState([])
   const [loading, setLoading] = useState(false)
   const [loadingSubjects, setLoadingSubjects] = useState(false)
+  const [loadingSections, setLoadingSections] = useState(false)
+  const [loadingStudentPreview, setLoadingStudentPreview] = useState(false)
+  const [studentPreview, setStudentPreview] = useState(null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [markFieldErrors, setMarkFieldErrors] = useState({})
 
-  const terminals = ['First', 'Second', 'Third', 'Final']
+  const terminals = ['First', 'Second', 'Third', 'Annual']
+
+  const getNonEmptyString = (...values) => {
+    for (const value of values) {
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim()
+      }
+    }
+    return ''
+  }
+
+  const getSubjectId = (subject) => {
+    return (
+      subject?.subject_id ||
+      subject?.subjectId ||
+      subject?.id ||
+      subject?._id ||
+      subject?.subject?.id ||
+      subject?.subject?._id ||
+      ''
+    )
+  }
+
+  const buildSubjectLookup = () => {
+    const allSubjects = subjectsData?.all_subjects || subjectsData?.subjects || []
+    if (!Array.isArray(allSubjects) || allSubjects.length === 0) return {}
+
+    return allSubjects.reduce((acc, subject) => {
+      const id =
+        subject?.id ||
+        subject?._id ||
+        subject?.subject_id ||
+        subject?.subjectId
+      if (id) {
+        acc[String(id)] = subject
+      }
+      return acc
+    }, {})
+  }
+
+  const normalizeSubject = (subject, index = 0, subjectLookup = {}) => {
+    if (typeof subject === 'string') {
+      return {
+        raw_subject: subject,
+        subject_id: '',
+        subject_name: getNonEmptyString(subject) || `Subject ${index + 1}`,
+        subject_code: '',
+        subject_label: `Subject ${index + 1}`,
+      }
+    }
+
+    const subjectId = getSubjectId(subject)
+    const linkedSubject = subjectId ? subjectLookup[String(subjectId)] : null
+
+    const subjectName =
+      getNonEmptyString(
+        subject?.subject_name,
+        subject?.name,
+        subject?.subjectName,
+        subject?.title,
+        subject?.subject?.subject_name,
+        subject?.subject?.name,
+        linkedSubject?.subject_name,
+        linkedSubject?.name
+      ) || `Subject ${index + 1}`
+
+    const subjectCode = getNonEmptyString(
+      subject?.subject_code,
+      subject?.code,
+      subject?.subjectCode,
+      subject?.subject?.subject_code,
+      subject?.subject?.code,
+      linkedSubject?.subject_code,
+      linkedSubject?.code
+    )
+
+    return {
+      ...(subject || {}),
+      subject_id: subjectId || '',
+      subject_name: subjectName,
+      subject_code: subjectCode,
+      subject_label: `Subject ${index + 1}`,
+    }
+  }
+
+  const isDrawingSubject = (subjectName = '') => {
+    const normalizedName = String(subjectName).trim().toLowerCase()
+    return normalizedName.includes('drawing')
+  }
+
+  const getSubjectRules = (subjectName = '') => {
+    const drawing = isDrawingSubject(subjectName)
+    return {
+      isDrawing: drawing,
+      externalMax: drawing ? 50 : 80,
+      internalMax: 20,
+      internalAllowed: !drawing,
+    }
+  }
+
+  const getSubjectNameByIndex = (index) => {
+    const mark = formData.marks[index]
+    const subject = availableSubjects[index]
+    return (
+      getNonEmptyString(
+        mark?.subject_name,
+        subject?.subject_name,
+        subject?.name
+      ) || `Subject ${index + 1}`
+    )
+  }
 
   useEffect(() => {
     fetchSubjects()
@@ -31,97 +147,161 @@ function SubmitMarks() {
     } else {
       setAvailableSections([])
       setAvailableSubjects([])
+      setMarkFieldErrors({})
       setFormData(prev => ({ ...prev, section: '', marks: [] }))
     }
-  }, [formData.class])
+  }, [formData.class, subjectsData])
 
   useEffect(() => {
     if (formData.class && formData.section) {
       loadSubjectsForClassSection()
     } else {
       setAvailableSubjects([])
+      setMarkFieldErrors({})
       setFormData(prev => ({ ...prev, marks: [] }))
     }
-  }, [formData.section])
+  }, [formData.class, formData.section, subjectsData])
+
+  useEffect(() => {
+    if (formData.class && formData.section && formData.roll_no) {
+      loadStudentPreview()
+    } else {
+      setStudentPreview(null)
+    }
+  }, [formData.class, formData.section, formData.roll_no])
 
   const fetchSubjects = async () => {
     setLoadingSubjects(true)
     setError('')
     try {
-      const response = await getAllSubjects()
-      if (response.success) {
-        setSubjectsData(response)
-        // Extract unique classes
-        if (response.classes) {
-          const classes = response.classes.map(cls => cls.class)
-          setAvailableClasses([...new Set(classes)].sort())
-        }
+      const [subjectsResponse, classesResponse] = await Promise.all([
+        getAllSubjects(),
+        getAllClasses()
+      ])
+      
+      if (subjectsResponse.success) {
+        setSubjectsData(subjectsResponse)
+      }
+      
+      if (classesResponse && classesResponse.length > 0) {
+        // Sort by class property (numeric sort)
+        const sorted = classesResponse.sort((a, b) => {
+          const classA = typeof a === 'string' ? a : a.class;
+          const classB = typeof b === 'string' ? b : b.class;
+          return parseInt(classA) - parseInt(classB);
+        });
+        setAvailableClasses(sorted)
       }
     } catch (err) {
-      setError(err?.message || 'Failed to fetch subjects')
+      setError(err?.message || 'Failed to fetch subjects and classes')
     } finally {
       setLoadingSubjects(false)
     }
   }
 
-  const loadSectionsForClass = () => {
-    if (!subjectsData?.classes) return
+  const loadSectionsForClass = async () => {
+    if (!formData.class) return
 
-    // Find the selected class
-    const selectedClassData = subjectsData.classes.find(cls => cls.class === formData.class)
-    if (!selectedClassData) {
+    setLoadingSections(true)
+    try {
+      const sections = []
+
+      if (subjectsData?.classes) {
+        const selectedClassData = subjectsData.classes.find(cls => cls.class === formData.class)
+        if (selectedClassData?.sections && selectedClassData.sections.length > 0) {
+          selectedClassData.sections.forEach(sec => {
+            if (sec?.section) sections.push(sec.section)
+          })
+        }
+      }
+
+      // Fallback: section list from students so marks flow can remain class+section based.
+      if (sections.length === 0) {
+        const studentsResponse = await getAllStudents({ class: formData.class })
+        const studentsList = studentsResponse?.students || studentsResponse?.data || []
+        studentsList.forEach(student => {
+          const section = student.Section || student.section
+          if (section) sections.push(section)
+        })
+      }
+
+      const uniqueSections = [...new Set(sections)].sort()
+      setAvailableSections(uniqueSections)
+
+      if (formData.section && !uniqueSections.includes(formData.section)) {
+        setFormData(prev => ({ ...prev, section: '', marks: [] }))
+      }
+    } catch {
       setAvailableSections([])
-      return
-    }
-
-    // Get sections for the selected class
-    const sections = []
-    if (selectedClassData.sections && selectedClassData.sections.length > 0) {
-      selectedClassData.sections.forEach(sec => {
-        sections.push(sec.section)
-      })
-    }
-    setAvailableSections([...new Set(sections)].sort())
-    
-    // If no sections, clear section selection
-    if (sections.length === 0) {
-      setFormData(prev => ({ ...prev, section: '' }))
+    } finally {
+      setLoadingSections(false)
     }
   }
 
-  const loadSubjectsForClassSection = () => {
-    if (!subjectsData?.classes) return
-
-    // Find the selected class
-    const selectedClassData = subjectsData.classes.find(cls => cls.class === formData.class)
-    if (!selectedClassData) {
-      setAvailableSubjects([])
-      setFormData(prev => ({ ...prev, marks: [] }))
-      return
+  const extractSubjects = (response, selectedSection) => {
+    if (Array.isArray(response?.subjects)) return response.subjects
+    if (Array.isArray(response?.data?.subjects)) return response.data.subjects
+    if (Array.isArray(response?.class?.subjects)) return response.class.subjects
+    if (Array.isArray(response?.section?.subjects)) return response.section.subjects
+    if (Array.isArray(response?.sections) && selectedSection) {
+      const sectionRow = response.sections.find(sec => sec?.section === selectedSection)
+      if (Array.isArray(sectionRow?.subjects)) return sectionRow.subjects
     }
+    return []
+  }
 
-    // Get subjects for the selected class and section
+  const loadSubjectsForClassSection = async () => {
+    if (!formData.class || !formData.section) return
+
     let subjects = []
-    if (selectedClassData.sections && selectedClassData.sections.length > 0) {
-      // Find the section
-      const selectedSectionData = selectedClassData.sections.find(sec => sec.section === formData.section)
-      if (selectedSectionData && selectedSectionData.subjects) {
-        subjects = selectedSectionData.subjects
-      }
-    } else {
-      // If no sections, use class-level subjects
-      if (selectedClassData.subjects) {
-        subjects = selectedClassData.subjects
+
+    // 1) Try section-specific fetch
+    try {
+      const sectionResponse = await getSubjectsForClass(formData.class, formData.section)
+      subjects = extractSubjects(sectionResponse, formData.section)
+    } catch {
+      subjects = []
+    }
+
+    // 2) Fallback to class-level subjects if section-specific is empty
+    if (!subjects || subjects.length === 0) {
+      try {
+        const classOnlyResponse = await getSubjectsForClass(formData.class)
+        subjects = extractSubjects(classOnlyResponse, formData.section)
+      } catch {
+        subjects = []
       }
     }
 
-    // Set available subjects and initialize marks
-    setAvailableSubjects(subjects)
+    // 3) Final fallback using cached subjectsData already loaded on page
+    if ((!subjects || subjects.length === 0) && subjectsData?.classes) {
+      const selectedClassData = subjectsData.classes.find(cls => cls.class === formData.class)
+      if (selectedClassData) {
+        if (selectedClassData.sections?.length > 0) {
+          const selectedSectionData = selectedClassData.sections.find(sec => sec.section === formData.section)
+          if (selectedSectionData?.subjects?.length > 0) {
+            subjects = selectedSectionData.subjects
+          }
+        }
+
+        if ((!subjects || subjects.length === 0) && selectedClassData.subjects?.length > 0) {
+          subjects = selectedClassData.subjects
+        }
+      }
+    }
+
+    const subjectLookup = buildSubjectLookup()
+    const normalizedSubjects = (subjects || []).map((subject, index) =>
+      normalizeSubject(subject, index, subjectLookup)
+    )
+    setAvailableSubjects(normalizedSubjects)
+    setMarkFieldErrors({})
     setFormData(prev => ({
       ...prev,
-      marks: subjects.map(subject => ({
+      marks: normalizedSubjects.map((subject, index) => ({
         subject_name: subject.subject_name || '',
-        subject_code: subject.subject_code || '',
+        subject_id: subject.subject_id || '',
+        subject_label: `Subject ${index + 1}`,
         external_marks: '',
         internal_marks: ''
       }))
@@ -135,18 +315,147 @@ function SubmitMarks() {
       [name]: value
     }))
     setError('')
+    if (success) {
+      setSuccess(false)
+    }
   }
 
-  const handleMarksChange = (index, field, value) => {
+  const handleMarksChange = (index, field, value, subjectName) => {
+    const fieldKey = `${index}_${field}`
+    const rules = getSubjectRules(subjectName)
+
+    if (field === 'internal_marks' && !rules.internalAllowed) {
+      setMarkFieldErrors(prev => ({
+        ...prev,
+        [fieldKey]: `${subjectName}: internal marks allowed nahi hain.`
+      }))
+      return
+    }
+
+    if (value === '') {
+      setMarkFieldErrors(prev => {
+        const nextErrors = { ...prev }
+        delete nextErrors[fieldKey]
+        return nextErrors
+      })
+
+      const newMarks = [...formData.marks]
+      newMarks[index] = {
+        ...newMarks[index],
+        [field]: ''
+      }
+      setFormData(prev => ({
+        ...prev,
+        marks: newMarks
+      }))
+      return
+    }
+
+    const parsedValue = Number(value)
+    if (Number.isNaN(parsedValue)) return
+
+    const maxAllowed = field === 'external_marks' ? rules.externalMax : rules.internalMax
+    if (parsedValue < 0) {
+      setMarkFieldErrors(prev => ({
+        ...prev,
+        [fieldKey]: `${subjectName}: minimum marks 0 hona chahiye.`
+      }))
+      return
+    }
+
+    if (parsedValue > maxAllowed) {
+      setMarkFieldErrors(prev => ({
+        ...prev,
+        [fieldKey]: `${subjectName}: ${field === 'external_marks' ? 'external' : 'internal'} marks ${maxAllowed} se zyada allowed nahi hain.`
+      }))
+      return
+    }
+
+    setMarkFieldErrors(prev => {
+      const nextErrors = { ...prev }
+      delete nextErrors[fieldKey]
+      return nextErrors
+    })
+
     const newMarks = [...formData.marks]
     newMarks[index] = {
       ...newMarks[index],
-      [field]: value === '' ? '' : parseFloat(value) || 0
+      [field]: parsedValue
     }
     setFormData(prev => ({
       ...prev,
       marks: newMarks
     }))
+  }
+
+  const validateMarksBeforeSubmit = () => {
+    const nextFieldErrors = {}
+
+    formData.marks.forEach((mark, index) => {
+      const subjectName = getSubjectNameByIndex(index)
+      const rules = getSubjectRules(subjectName)
+
+      const externalValue = mark.external_marks === '' ? '' : Number(mark.external_marks)
+      const internalValue = mark.internal_marks === '' ? '' : Number(mark.internal_marks)
+
+      if (externalValue !== '') {
+        if (Number.isNaN(externalValue) || externalValue < 0 || externalValue > rules.externalMax) {
+          nextFieldErrors[`${index}_external_marks`] = `${subjectName}: external marks 0 se ${rules.externalMax} ke beech hone chahiye.`
+        }
+      }
+
+      if (rules.internalAllowed) {
+        if (internalValue !== '') {
+          if (Number.isNaN(internalValue) || internalValue < 0 || internalValue > rules.internalMax) {
+            nextFieldErrors[`${index}_internal_marks`] = `${subjectName}: internal marks 0 se ${rules.internalMax} ke beech hone chahiye.`
+          }
+        }
+      } else if (internalValue !== '' && !Number.isNaN(internalValue) && internalValue > 0) {
+        nextFieldErrors[`${index}_internal_marks`] = `${subjectName}: Drawing subject me internal marks allowed nahi hain.`
+      }
+    })
+
+    setMarkFieldErrors(nextFieldErrors)
+
+    if (Object.keys(nextFieldErrors).length > 0) {
+      setError(Object.values(nextFieldErrors)[0])
+      return false
+    }
+    return true
+  }
+
+  const getStudentPreviewId = (student) => {
+    return student?.ID || student?._id || student?.id || student?.Id || student?.student_id || student?.StudentId || '--'
+  }
+
+  const loadStudentPreview = async () => {
+    const parsedRollNo = parseInt(formData.roll_no)
+    if (!formData.class || !formData.section || !parsedRollNo || parsedRollNo < 1) {
+      setStudentPreview(null)
+      return
+    }
+
+    setLoadingStudentPreview(true)
+    try {
+      const response = await getAllStudents({
+        class: formData.class,
+        section: formData.section,
+        roll_no: parsedRollNo,
+        status: 'active',
+      })
+      const studentsList = response?.students || response?.data || []
+      const matchedStudent = (Array.isArray(studentsList) ? studentsList : []).find((student) => {
+        const studentRoll = parseInt(student?.Roll || student?.roll_no)
+        const studentSection = (student?.Section || student?.section || '').toString().toLowerCase()
+        return studentRoll === parsedRollNo && studentSection === formData.section.toLowerCase()
+      })
+
+      setStudentPreview(matchedStudent || null)
+    } catch {
+      setStudentPreview(null)
+    } finally {
+      setLoadingStudentPreview(false)
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -162,23 +471,42 @@ function SubmitMarks() {
         return
       }
 
+      const parsedRollNo = parseInt(formData.roll_no)
+      if (!parsedRollNo || parsedRollNo < 1) {
+        setError('Please enter a valid roll number')
+        setLoading(false)
+        return
+      }
+
+      if (!studentPreview) {
+        setError('Student not found for selected Class, Section and Roll Number. Please verify details first.')
+        setLoading(false)
+        return
+      }
+
       if (!formData.marks || formData.marks.length === 0) {
         setError('No subjects found for the selected class and section')
         setLoading(false)
         return
       }
 
-      // Prepare marks data - use subject_name or subject_code based on what's available
-      const marksData = formData.marks.map(mark => {
+      if (!validateMarksBeforeSubmit()) {
+        setLoading(false)
+        return
+      }
+
+      // Prepare marks data - submit with subject_name only
+      const marksData = formData.marks.map((mark, index) => {
+        const subjectName = getSubjectNameByIndex(index)
+        const rules = getSubjectRules(subjectName)
         const markObj = {}
         if (mark.subject_name) {
           markObj.subject_name = mark.subject_name
         }
-        if (mark.subject_code) {
-          markObj.subject_code = mark.subject_code
+        markObj.external_marks = Number(mark.external_marks) || 0
+        if (rules.internalAllowed) {
+          markObj.internal_marks = Number(mark.internal_marks) || 0
         }
-        markObj.external_marks = parseFloat(mark.external_marks) || 0
-        markObj.internal_marks = parseFloat(mark.internal_marks) || 0
         return markObj
       }).filter(mark => mark.external_marks > 0 || mark.internal_marks > 0) // Only include marks that have values
 
@@ -192,7 +520,7 @@ function SubmitMarks() {
         class: formData.class,
         section: formData.section,
         terminal: formData.terminal,
-        roll_no: parseInt(formData.roll_no) || 0,
+        roll_no: parsedRollNo,
         marks: marksData
       }
 
@@ -209,6 +537,7 @@ function SubmitMarks() {
           roll_no: '',
           marks: []
         })
+        setMarkFieldErrors({})
         setAvailableSubjects([])
         setTimeout(() => {
           setSuccess(false)
@@ -216,7 +545,13 @@ function SubmitMarks() {
       }
     } catch (err) {
       let errorMessage = 'Failed to submit marks'
-      if (err?.message) {
+      if (err?.status === 409) {
+        errorMessage =
+          err?.message ||
+          `Marks already exist for Class ${formData.class}, Section ${formData.section}, Roll ${formData.roll_no}, Terminal ${formData.terminal}.`
+      } else if (Array.isArray(err?.data?.errors) && err.data.errors.length > 0) {
+        errorMessage = err.data.errors[0]
+      } else if (err?.message) {
         errorMessage = err.message
       } else if (err?.error) {
         errorMessage = err.error
@@ -276,8 +611,8 @@ function SubmitMarks() {
                 >
                   <option value="">Select Class</option>
                   {availableClasses.map((cls) => (
-                    <option key={cls} value={cls}>
-                      Class {cls}
+                    <option key={cls.class || cls} value={cls.class || cls}>
+                      Class {cls.class || cls}
                     </option>
                   ))}
                 </select>
@@ -298,9 +633,11 @@ function SubmitMarks() {
                 onChange={handleChange}
                 className="w-full bg-transparent border-none focus:ring-0 py-2.5 px-2 text-sm text-slate-900 dark:text-white"
                 required
-                disabled={!formData.class}
+                disabled={!formData.class || loadingSections}
               >
-                <option value="">Select Section</option>
+                <option value="">
+                  {loadingSections ? 'Loading sections...' : 'Select Section'}
+                </option>
                 {availableSections.map((section) => (
                   <option key={section} value={section}>
                     Section {section}
@@ -308,6 +645,11 @@ function SubmitMarks() {
                 ))}
               </select>
             </div>
+            {formData.class && !loadingSections && availableSections.length === 0 && (
+              <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                No section found for this class. Please ensure students exist with section values.
+              </p>
+            )}
           </div>
 
           {/* Terminal */}
@@ -356,6 +698,60 @@ function SubmitMarks() {
         </div>
 
         {/* Subjects and Marks */}
+        {formData.class && formData.section && formData.roll_no && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Student Verification</h3>
+              {studentPreview && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                  Verified
+                </span>
+              )}
+            </div>
+
+            {loadingStudentPreview ? (
+              <div className="space-y-2">
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+              </div>
+            ) : studentPreview ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs sm:text-sm">
+                <div>
+                  <p className="text-slate-500 dark:text-slate-400">Name</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">{studentPreview.Name || studentPreview.name || '--'}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 dark:text-slate-400">Father</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">{studentPreview.Father || studentPreview.father_name || '--'}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 dark:text-slate-400">UUID</p>
+                  <p className="font-semibold text-slate-900 dark:text-white break-all">{getStudentPreviewId(studentPreview)}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 dark:text-slate-400">Class-Section</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">
+                    {studentPreview.Class || studentPreview.class || '--'} - {studentPreview.Section || studentPreview.section || '--'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-slate-500 dark:text-slate-400">Roll No</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">{studentPreview.Roll || studentPreview.roll_no || '--'}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 dark:text-slate-400">Mobile</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">{studentPreview.Mobile || studentPreview.mobile || '--'}</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs sm:text-sm text-amber-700 dark:text-amber-300">
+                No active student found for selected Class, Section and Roll Number.
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Subjects and Marks */}
         {formData.class && formData.section && availableSubjects.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700">
@@ -367,23 +763,50 @@ function SubmitMarks() {
               </span>
             </div>
 
+            <div className="rounded-xl border border-sky-200 dark:border-sky-800 bg-gradient-to-r from-sky-50 via-cyan-50 to-indigo-50 dark:from-sky-900/20 dark:via-cyan-900/20 dark:to-indigo-900/20 px-4 py-3">
+              <p className="text-xs sm:text-sm font-semibold text-sky-900 dark:text-sky-200">
+                Rules: External max 80, Internal max 20, Drawing subject me sirf External allowed (max 50). Negative marks allowed nahi hain.
+              </p>
+            </div>
+
             <div className="space-y-3">
               {formData.marks.map((mark, index) => {
                 const subject = availableSubjects[index]
+                const subjectName =
+                  getNonEmptyString(
+                    mark.subject_name,
+                    subject?.subject_name,
+                    subject?.name
+                  ) || `Subject ${index + 1}`
+                const rules = getSubjectRules(subjectName)
+                const externalError = markFieldErrors[`${index}_external_marks`]
+                const internalError = markFieldErrors[`${index}_internal_marks`]
                 return (
                   <div
                     key={index}
-                    className="bg-gradient-to-br from-slate-50 to-white dark:from-slate-700 dark:to-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-600"
+                    className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-700 dark:to-slate-800 rounded-xl p-4 sm:p-5 border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-all"
                   >
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                       <div>
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                          {subject.subject_name}
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                          {mark.subject_label || `Subject ${index + 1}`}
+                        </p>
+                        <h4 className="text-base font-bold text-slate-900 dark:text-white">
+                          {subjectName}
                         </h4>
-                        {subject.subject_code && (
-                          <p className="text-xs text-slate-500 dark:text-slate-400">
-                            Code: {subject.subject_code}
-                          </p>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="inline-flex items-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-0.5 text-[11px] font-bold">
+                          Ext Max {rules.externalMax}
+                        </span>
+                        {rules.internalAllowed ? (
+                          <span className="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 px-2 py-0.5 text-[11px] font-bold">
+                            Int Max {rules.internalMax}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 px-2 py-0.5 text-[11px] font-bold">
+                            Drawing Rule
+                          </span>
                         )}
                       </div>
                     </div>
@@ -399,35 +822,54 @@ function SubmitMarks() {
                           <input
                             type="number"
                             value={mark.external_marks || ''}
-                            onChange={(e) => handleMarksChange(index, 'external_marks', e.target.value)}
+                            onChange={(e) => handleMarksChange(index, 'external_marks', e.target.value, subjectName)}
                             className="w-full bg-transparent border-none focus:ring-0 py-2 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
-                            placeholder="Enter external marks"
+                            placeholder={`0 to ${rules.externalMax}`}
                             min="0"
-                            max="100"
+                            max={rules.externalMax}
                             step="0.01"
                           />
                         </div>
+                        {externalError && (
+                          <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                            {externalError}
+                          </p>
+                        )}
                       </div>
 
                       {/* Internal Marks */}
-                      <div>
-                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                          Internal Marks
-                        </label>
-                        <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
-                          <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">grade</span>
-                          <input
-                            type="number"
-                            value={mark.internal_marks || ''}
-                            onChange={(e) => handleMarksChange(index, 'internal_marks', e.target.value)}
-                            className="w-full bg-transparent border-none focus:ring-0 py-2 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
-                            placeholder="Enter internal marks"
-                            min="0"
-                            max="100"
-                            step="0.01"
-                          />
+                      {rules.internalAllowed ? (
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                            Internal Marks
+                          </label>
+                          <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
+                            <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">grade</span>
+                            <input
+                              type="number"
+                              value={mark.internal_marks || ''}
+                              onChange={(e) => handleMarksChange(index, 'internal_marks', e.target.value, subjectName)}
+                              className="w-full bg-transparent border-none focus:ring-0 py-2 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
+                              placeholder={`0 to ${rules.internalMax}`}
+                              min="0"
+                              max={rules.internalMax}
+                              step="0.01"
+                            />
+                          </div>
+                          {internalError && (
+                            <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                              {internalError}
+                            </p>
+                          )}
                         </div>
-                      </div>
+                      ) : (
+                        <div className="rounded-lg border border-dashed border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 px-3 py-2.5 flex items-center gap-2">
+                          <span className="material-symbols-outlined text-amber-600 dark:text-amber-300 text-base">info</span>
+                          <p className="text-xs sm:text-sm font-medium text-amber-700 dark:text-amber-300">
+                            Drawing subject me internal marks nahi hote. Sirf external (max 50) enter karein.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )
@@ -450,7 +892,17 @@ function SubmitMarks() {
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
           <button
             type="submit"
-            disabled={loading || !formData.class || !formData.section || !formData.terminal || !formData.roll_no || availableSubjects.length === 0}
+            disabled={
+              loading ||
+              loadingStudentPreview ||
+              !formData.class ||
+              !formData.section ||
+              !formData.terminal ||
+              !formData.roll_no ||
+              !studentPreview ||
+              availableSubjects.length === 0 ||
+              Object.keys(markFieldErrors).length > 0
+            }
             className="px-6 py-2.5 text-sm font-bold text-white bg-[#137fec] hover:bg-[#137fec]/90 rounded-lg shadow-lg shadow-[#137fec]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {loading ? (

@@ -1,0 +1,128 @@
+/* Print Styles for Results Card - Card Only */
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: auto;
+    background: #fff !important;
+    font-family: 'Lexend', Arial, sans-serif;
+    color: #000 !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .print-card-only,
+  .print-card-only * {
+    visibility: visible !important;
+  }
+
+  .print-card-only {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .no-print,
+  .no-print * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  .print-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border: 1.4px solid #000 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    background: #fff !important;
+  }
+
+  .print-card * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    color: #000 !important;
+    border-color: #000 !important;
+  }
+
+  .material-symbols-outlined {
+    display: none !important;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: avoid;
+  }
+
+  th,
+  td {
+    border: 1px solid #000 !important;
+    font-size: 9.5px !important;
+    padding: 4px 3px !important;
+    line-height: 1.25 !important;
+    text-align: left;
+  }
+
+  th {
+    background: #e9edf5 !important;
+    font-weight: 700 !important;
+  }
+
+  h1 {
+    font-size: 18px !important;
+  }
+
+  h2,
+  h3 {
+    font-size: 12px !important;
+  }
+
+  p,
+  li {
+    font-size: 9.5px !important;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 15px;
+  }
+
+  .text-green-600,
+  .text-green-400 {
+    color: #008000 !important;
+  }
+
+  .text-blue-600,
+  .text-blue-400 {
+    color: #002b8a !important;
+  }
+
+  .text-purple-600,
+  .text-purple-400 {
+    color: #5d1a7a !important;
+  }
+}
+
+@media screen {
+  .result-print {
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  .print-only {
+    display: none;
+  }
+}
