@@ -43,20 +43,36 @@ function About() {
 
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { label: 'Smart Classes', value: '40+', icon: 'menu_book' },
-                  { label: 'Computer Lab', value: '8+', icon: 'computer' },
-                  { label: 'Library', value: '5000+', icon: 'library_books' },
-                  { label: 'Transport', value: 'Available', icon: 'directions_bus' },
+                  {
+                    title: 'Smart Classes',
+                    desc: 'Digital classroom tools and interactive teaching support for better learning.',
+                    icon: 'menu_book',
+                  },
+                  {
+                    title: 'Computer Lab',
+                    desc: 'Practical computer sessions with guided digital literacy activities.',
+                    icon: 'computer',
+                  },
+                  {
+                    title: 'Library',
+                    desc: 'A reading-friendly environment that encourages research and regular study habits.',
+                    icon: 'library_books',
+                  },
+                  {
+                    title: 'Transport',
+                    desc: 'Safe and convenient school transport support for students.',
+                    icon: 'directions_bus',
+                  },
                 ].map((i) => (
                   <div
-                    key={i.label}
+                    key={i.title}
                     className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:shadow-lg transition-shadow"
                   >
                     <div className="h-10 w-10 rounded-xl bg-[#137fec] flex items-center justify-center mb-3">
                       <span className="material-symbols-outlined text-white">{i.icon}</span>
                     </div>
-                    <p className="text-xl font-black text-[#137fec]">{i.value}</p>
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">{i.label}</p>
+                    <p className="text-lg sm:text-xl font-black text-[#137fec]">{i.title}</p>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{i.desc}</p>
                   </div>
                 ))}
               </div>
