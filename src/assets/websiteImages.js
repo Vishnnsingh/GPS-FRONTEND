@@ -60,6 +60,6 @@ export const aboutPhotos = {
 
 export const contactPhotos = {
   hero: img0008,
-  map: img0017,
+  location: img0017,
 }
 

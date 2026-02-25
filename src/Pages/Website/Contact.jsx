@@ -151,12 +151,23 @@ function Contact() {
         <div className="ryme-shell">
           <div className="ryme-card overflow-hidden">
             <div className="relative h-72 sm:h-96">
-              <img src={contactPhotos.map} alt="School map" className="h-full w-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#031223] via-[#031223]/35 to-transparent"></div>
+              <img src={contactPhotos.location} alt="School campus location" className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#031223] via-[#031223]/58 to-[#031223]/15"></div>
               <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7">
                 <p className="text-xs uppercase tracking-[0.14em] text-cyan-100/90">Visit us</p>
-                <p className="mt-1 text-2xl font-bold text-white">School Campus Location</p>
-                <p className="mt-1 text-sm text-slate-100/95">Belaspur Dainmanwa Road, Harinagar, West Champaran, Bihar</p>
+                <p className="mt-1 text-2xl font-bold text-white sm:text-4xl">School Campus Location</p>
+                <p className="mt-1 max-w-3xl text-sm text-slate-100/95 sm:text-lg">
+                  Belaspur Dainmanwa Road, Harinagar, West Champaran, Bihar
+                </p>
+                <a
+                  href="https://maps.google.com/?q=Belaspur+Dainmanwa+Road+Harinagar+West+Champaran+Bihar"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-cyan-200/35 bg-cyan-400/15 px-4 py-2 text-sm font-semibold text-cyan-50 backdrop-blur-sm hover:bg-cyan-300/20"
+                >
+                  <span className="material-symbols-outlined text-base">near_me</span>
+                  Open Directions
+                </a>
               </div>
             </div>
           </div>
