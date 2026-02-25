@@ -2,79 +2,132 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
-import { getMarks, getStudentResultPublic } from '../../Api/marks'
+import { getStudentResultPublic } from '../../Api/marks'
 import schoolLogo from '../../assets/logo.jpeg'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 import '../../styles/print.css'
 
 const SUMMARY_TERMINALS = ['First', 'Second', 'Third', 'Annual']
-const getCumulativeTerminals = (selectedTerminal) => {
-  const terminalIndex = SUMMARY_TERMINALS.indexOf(selectedTerminal)
-  if (terminalIndex >= 0) {
-    return SUMMARY_TERMINALS.slice(0, terminalIndex + 1)
+const TERMINAL_ALIAS_MAP = {
+  first: 'First',
+  second: 'Second',
+  third: 'Third',
+  annual: 'Annual',
+  final: 'Annual',
+}
+const SUMMARY_REPORT_KEY_MAP = {
+  First: 'first_term',
+  Second: 'second_term',
+  Third: 'third_term',
+  Annual: 'annual_term',
+}
+
+const normalizeTerminalLabel = (value) => {
+  const normalized = String(value || '').trim()
+  if (!normalized) return ''
+  return TERMINAL_ALIAS_MAP[normalized.toLowerCase()] || normalized
+}
+
+const getCumulativeTerminals = (terminalValue) => {
+  const normalizedTerminal = normalizeTerminalLabel(terminalValue)
+  if (!normalizedTerminal) return []
+
+  const terminalIndex = SUMMARY_TERMINALS.indexOf(normalizedTerminal)
+  if (terminalIndex === -1) return [normalizedTerminal]
+
+  return SUMMARY_TERMINALS.slice(0, terminalIndex + 1)
+}
+
+const hasMeaningfulValue = (value) => {
+  if (value === undefined || value === null) return false
+  if (typeof value === 'string' && value.trim() === '') return false
+  return true
+}
+
+const normalizeSummaryRow = (summaryRow) => {
+  if (!summaryRow || typeof summaryRow !== 'object') return null
+
+  const normalizedRank = (
+    summaryRow?.rank ??
+    summaryRow?.class_section_rank ??
+    summaryRow?.section_rank ??
+    summaryRow?.rank_in_section ??
+    summaryRow?.classSectionRank ??
+    summaryRow?.sectionRank ??
+    summaryRow?.section_position ??
+    null
+  )
+
+  const normalizedPublishedDate = (
+    summaryRow?.published_date ??
+    summaryRow?.publish_date ??
+    summaryRow?.publishedDate ??
+    summaryRow?.published_at ??
+    summaryRow?.publishedAt ??
+    summaryRow?.result_published_date ??
+    null
+  )
+
+  return {
+    ...summaryRow,
+    rank: normalizedRank,
+    published_date: normalizedPublishedDate,
   }
-  return selectedTerminal ? [selectedTerminal] : []
 }
 
-const getStudentId = (row) => (
-  row?.student_id ||
-  row?.studentId ||
-  row?.id ||
-  row?._id ||
-  row?.ID ||
-  ''
-)
+const mergeSummaryRows = (baseSummary, incomingSummary) => {
+  const base = normalizeSummaryRow(baseSummary) || {}
+  const incoming = normalizeSummaryRow(incomingSummary) || {}
+  const merged = { ...base }
 
-const calculateTotalFromMarks = (marksList = []) => {
-  return marksList.reduce((sum, mark) => {
-    if (typeof mark?.total_obtained === 'number') return sum + mark.total_obtained
-    const external = Number(mark?.external_marks)
-    const internal = Number(mark?.internal_marks)
-    const extValue = Number.isFinite(external) ? external : 0
-    const intValue = Number.isFinite(internal) ? internal : 0
-    return sum + extValue + intValue
-  }, 0)
-}
-
-const computeClassSectionRank = ({ students = [], targetRoll, targetId }) => {
-  const parsed = students.map((studentRow) => {
-    const total = calculateTotalFromMarks(studentRow?.marks || [])
-    const rollValue = Number(studentRow?.roll_no ?? studentRow?.Roll)
-    return {
-      id: String(getStudentId(studentRow)),
-      roll: Number.isFinite(rollValue) ? rollValue : null,
-      total,
+  Object.entries(incoming).forEach(([key, value]) => {
+    if (hasMeaningfulValue(value)) {
+      merged[key] = value
+    } else if (!(key in merged)) {
+      merged[key] = value
     }
   })
 
-  const sorted = parsed.sort((a, b) => {
-    if (b.total !== a.total) return b.total - a.total
-    if (a.roll !== null && b.roll !== null) return a.roll - b.roll
-    return 0
+  return Object.keys(merged).length > 0 ? merged : null
+}
+
+const buildSummaryFromSummaryReport = (summaryReport, terminalLabel) => {
+  const reportKey = SUMMARY_REPORT_KEY_MAP[terminalLabel]
+  if (!reportKey || !summaryReport || typeof summaryReport !== 'object') return null
+
+  const totalMarks = summaryReport?.total_marks?.[reportKey]
+  const marksObtained = summaryReport?.marks_obtained?.[reportKey]
+  const percentage = summaryReport?.percentage?.[reportKey]
+  const division = summaryReport?.division?.[reportKey]
+  const rank = summaryReport?.rank?.[reportKey]
+  const publishedDate = summaryReport?.published_date?.[reportKey]
+
+  const hasValue = [
+    totalMarks,
+    marksObtained,
+    percentage,
+    division,
+    rank,
+    publishedDate,
+  ].some((value) => value !== undefined && value !== null && value !== '')
+
+  if (!hasValue) return null
+
+  return normalizeSummaryRow({
+    total_max_marks: totalMarks ?? null,
+    total_obtained: marksObtained ?? null,
+    percentage: percentage ?? null,
+    division: division ?? null,
+    rank: rank ?? null,
+    published_date: publishedDate ?? null,
   })
+}
 
-  let rank = 0
-  let prevTotal = null
-  let position = 0
-
-  const ranked = sorted.map((item) => {
-    position += 1
-    if (prevTotal === null || item.total !== prevTotal) {
-      rank = position
-    }
-    prevTotal = item.total
-    return { ...item, rank }
-  })
-
-  const targetById = targetId ? ranked.find((item) => item.id && item.id === String(targetId)) : null
-  if (targetById) return targetById.rank
-
-  if (targetRoll !== null && targetRoll !== undefined) {
-    const targetByRoll = ranked.find((item) => item.roll === Number(targetRoll))
-    if (targetByRoll) return targetByRoll.rank
-  }
-
-  return null
+const getOrderedTerminalKeys = (keys = []) => {
+  const uniqueKeys = [...new Set(keys.filter(Boolean))]
+  const knownTerminals = SUMMARY_TERMINALS.filter((terminal) => uniqueKeys.includes(terminal))
+  const customTerminals = uniqueKeys.filter((terminal) => !SUMMARY_TERMINALS.includes(terminal))
+  return [...knownTerminals, ...customTerminals]
 }
 
 function Results() {
@@ -92,114 +145,114 @@ function Results() {
     const session = searchParams.get('session') || ''
     return { classValue, roll, terminal, section, session }
   }, [searchParams])
+  const { classValue, roll, terminal, section, session } = params
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [data, setData] = useState(null)
   const [termSummaries, setTermSummaries] = useState({})
   const [visibleTerminals, setVisibleTerminals] = useState([])
-  const [classSectionRanks, setClassSectionRanks] = useState({})
 
   useEffect(() => {
+    let isActive = true
+
     const run = async () => {
       setError('')
 
-      if (!params.classValue || !params.roll || !params.terminal) {
+      if (!classValue || !roll || !terminal) {
         setData(null)
         setTermSummaries({})
         setVisibleTerminals([])
-        setClassSectionRanks({})
         setError('Missing params. Please go back and fill Class, Roll and Terminal.')
         return
       }
 
       setLoading(true)
-      setClassSectionRanks({})
-
-      const terminalsToFetch = [...new Set([...SUMMARY_TERMINALS, params.terminal])]
-      const cumulativeTerminals = getCumulativeTerminals(params.terminal)
 
       try {
-        const responses = await Promise.all(terminalsToFetch.map(async (t) => {
-          try {
-            const res = await getStudentResultPublic({ ...params, terminal: t })
-            return { terminal: t, data: res }
-          } catch {
-            return { terminal: t, data: null }
-          }
-        }))
+        const selectedTerminal = normalizeTerminalLabel(terminal)
+        const summaryTerminals = getCumulativeTerminals(selectedTerminal)
 
-        const responseByTerminal = responses.reduce((acc, row) => {
-          acc[row.terminal] = row.data
-          return acc
-        }, {})
+        const currentData = await getStudentResultPublic({
+          classValue,
+          roll,
+          terminal: selectedTerminal || terminal,
+          section,
+          session,
+        })
+        if (!isActive) return
 
-        const summaries = SUMMARY_TERMINALS.reduce((acc, terminal) => {
-          acc[terminal] = responseByTerminal[terminal]?.summary || null
-          return acc
-        }, {})
-
-        const currentData = responseByTerminal[params.terminal] || null
-
-        setTermSummaries(summaries)
-        setVisibleTerminals(cumulativeTerminals)
-
-        if (currentData) {
-          setData(currentData)
-
-          const accessToken = localStorage.getItem('access_token')
-          const effectiveSection =
-            params.section ||
-            currentData?.student?.section ||
-            currentData?.student?.Section ||
-            ''
-
-          if (accessToken && params.classValue && effectiveSection) {
-            const targetRoll = Number(currentData?.student?.roll_no ?? params.roll)
-            const targetId = getStudentId(currentData?.student)
-
-            const rankRows = await Promise.all(
-              SUMMARY_TERMINALS.map(async (t) => {
-                try {
-                  const marksResponse = await getMarks(params.classValue, effectiveSection, t)
-                  const studentsList = marksResponse?.students || marksResponse?.data?.students || []
-                  const rankValue = computeClassSectionRank({
-                    students: Array.isArray(studentsList) ? studentsList : [],
-                    targetRoll: Number.isFinite(targetRoll) ? targetRoll : null,
-                    targetId,
-                  })
-                  return [t, rankValue]
-                } catch {
-                  return [t, null]
-                }
-              })
-            )
-
-            const computedRanks = rankRows.reduce((acc, [terminalKey, rankValue]) => {
-              if (rankValue !== null && rankValue !== undefined) {
-                acc[terminalKey] = rankValue
-              }
-              return acc
-            }, {})
-            setClassSectionRanks(computedRanks)
-          }
-        } else {
+        if (!currentData) {
           setData(null)
+          setTermSummaries({})
+          setVisibleTerminals([])
           setError('Result for this terminal is not available or not published yet.')
+          return
         }
+
+        const currentTerminal = normalizeTerminalLabel(
+          currentData?.resolved_terminal || currentData?.terminal || selectedTerminal || terminal
+        )
+        const nextSummaries = {}
+
+        if (Array.isArray(currentData?.terminals)) {
+          currentData.terminals.forEach((terminalRow) => {
+            const terminalLabel = normalizeTerminalLabel(terminalRow?.terminal)
+            if (!terminalLabel) return
+            nextSummaries[terminalLabel] = normalizeSummaryRow(terminalRow?.summary)
+          })
+        }
+
+        summaryTerminals.forEach((terminalLabel) => {
+          if (nextSummaries[terminalLabel]) return
+          const summaryFromReport = buildSummaryFromSummaryReport(currentData?.summary_report, terminalLabel)
+          if (summaryFromReport) {
+            nextSummaries[terminalLabel] = summaryFromReport
+          }
+        })
+
+        if (currentTerminal) {
+          const currentSummary = normalizeSummaryRow(currentData?.summary)
+          if (currentSummary) {
+            nextSummaries[currentTerminal] = mergeSummaryRows(nextSummaries[currentTerminal], currentSummary)
+          } else if (!(currentTerminal in nextSummaries)) {
+            nextSummaries[currentTerminal] = null
+          }
+        }
+
+        const requestedTerminals = summaryTerminals.length > 0
+          ? summaryTerminals
+          : (currentTerminal ? [currentTerminal] : [])
+        const fallbackTerminals = getOrderedTerminalKeys(Object.keys(nextSummaries))
+        const nextVisibleTerminals = requestedTerminals.length > 0 ? requestedTerminals : fallbackTerminals
+        const normalizedSummaries = nextVisibleTerminals.reduce((acc, terminalLabel) => {
+          acc[terminalLabel] = nextSummaries[terminalLabel] || null
+          return acc
+        }, {})
+
+        setData(currentData)
+        setVisibleTerminals(nextVisibleTerminals)
+        setTermSummaries(normalizedSummaries)
+
       } catch (err) {
+        if (!isActive) return
         setData(null)
         setTermSummaries({})
         setVisibleTerminals([])
-        setClassSectionRanks({})
-        setError(err?.message || 'Failed to fetch result')
+        setError(err?.data?.message || err?.message || 'Failed to fetch result')
       } finally {
-        setLoading(false)
+        if (isActive) {
+          setLoading(false)
+        }
       }
     }
 
     run()
-  }, [params])
+
+    return () => {
+      isActive = false
+    }
+  }, [classValue, roll, terminal, section, session])
 
   const student = data?.student
   const marks = useMemo(() => (
@@ -212,7 +265,6 @@ function Results() {
   }
 
   const handlePrint = () => {
-    if (!cardRef.current) return
     window.print()
   }
 
@@ -260,6 +312,7 @@ function Results() {
   const getSectionRankFromSummary = (summaryRow) => {
     if (!summaryRow) return null
     return (
+      summaryRow?.rank ??
       summaryRow?.class_section_rank ??
       summaryRow?.section_rank ??
       summaryRow?.rank_in_section ??
@@ -280,15 +333,21 @@ function Results() {
     return value
   }
 
-  const getDisplayRank = (terminalKey) => {
-    if (!isTermAvailable(terminalKey) && (classSectionRanks[terminalKey] === undefined || classSectionRanks[terminalKey] === null)) {
-      return 'Result Not Found'
-    }
+  const getPublishedDateFromSummary = (summaryRow) => {
+    if (!summaryRow) return null
+    return (
+      summaryRow?.published_date ??
+      summaryRow?.publish_date ??
+      summaryRow?.publishedDate ??
+      summaryRow?.published_at ??
+      summaryRow?.publishedAt ??
+      summaryRow?.result_published_date ??
+      null
+    )
+  }
 
-    const computedRank = classSectionRanks[terminalKey]
-    if (typeof computedRank === 'number' && Number.isFinite(computedRank)) {
-      return `${computedRank}${getRankSuffixFor(computedRank)}`
-    }
+  const getDisplayRank = (terminalKey) => {
+    if (!isTermAvailable(terminalKey)) return 'Result Not Found'
 
     const summaryRank = getSectionRankFromSummary(termSummaries[terminalKey])
     if (typeof summaryRank === 'number' && Number.isFinite(summaryRank)) {
@@ -301,10 +360,10 @@ function Results() {
       }
       return summaryRank
     }
-    return isTermAvailable(terminalKey) ? '--' : 'Result Not Found'
+    return '--'
   }
 
-  const currentSummary = termSummaries[params.terminal] ?? summary
+  const currentSummary = termSummaries[normalizeTerminalLabel(params.terminal) || params.terminal] ?? summary
 
   const processedMarks = useMemo(() => {
     return marks.map((mark, idx) => {
@@ -555,12 +614,15 @@ function Results() {
         ['Class & Section Rank', ...visibleTerminals.map((t) => String(getDisplayRank(t)))],
         [
           'Published Date',
-          ...visibleTerminals.map((t) => String(getSummaryCellValue(
-            t,
-            termSummaries[t]?.published_date
-              ? new Date(termSummaries[t].published_date).toLocaleDateString('en-IN')
+          ...visibleTerminals.map((t) => {
+            const publishedDate = getPublishedDateFromSummary(termSummaries[t])
+            if (!isTermAvailable(t)) {
+              return 'Result Not Found'
+            }
+            return publishedDate
+              ? new Date(publishedDate).toLocaleDateString('en-IN')
               : '--'
-          ))),
+          }),
         ],
       ]
 
@@ -610,25 +672,20 @@ function Results() {
     } catch (err) {
       console.error('Failed to download result card PDF:', err)
       fireToast('error', 'Download', 'Unable to download result card PDF.')
+      window.print()
     }
   }
 
   return (
     <WebsiteLayout>
       <div className="bg-[#edf2fb] dark:bg-[#0f1724] text-slate-900 dark:text-slate-100 overflow-x-hidden" style={{ fontFamily: "'Lexend', sans-serif" }}>
-        <header className="no-print border-b border-slate-200 dark:border-slate-800 bg-gradient-to-r from-white/95 via-white/85 to-[#dbeafe]/75 dark:from-[#0f1724]/95 dark:via-[#0f1724]/85 dark:to-[#17233a]/75 backdrop-blur">
+        <header className="no-print relative z-30 border-b border-slate-200 dark:border-slate-800 bg-gradient-to-r from-white/95 via-white/85 to-[#dbeafe]/75 dark:from-[#0f1724]/95 dark:via-[#0f1724]/85 dark:to-[#17233a]/75 backdrop-blur">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="h-11 w-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white flex items-center justify-center overflow-hidden">
-              <img src={schoolLogo} alt="School logo" className="h-full w-full object-cover" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm sm:text-base font-bold leading-tight truncate">{SCHOOL_NAME}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Student Result Card Portal</p>
-            </div>
+           
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="relative z-40 flex flex-wrap items-center gap-2 pointer-events-auto">
             <Link
               to="/results-portal"
               className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -639,28 +696,33 @@ function Results() {
             {data ? (
               <>
                 <button
-                  onClick={handlePrint}
-                  className="inline-flex items-center gap-1 rounded-lg bg-[#137fec] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#137fec]/90"
+                  type="button"
+                  onClick={(event) => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    handlePrint()
+                  }}
+                  className="inline-flex items-center gap-1 rounded-lg bg-[#137fec] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#137fec]/90 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-sm">print</span>
                   Print Card
                 </button>
                 <button
-                  onClick={handleDownloadPdf}
-                  className="inline-flex items-center gap-1 rounded-lg bg-[#0f766e] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#0f766e]/90"
+                  type="button"
+                  onClick={(event) => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    handleDownloadPdf()
+                  }}
+                  className="inline-flex items-center gap-1 rounded-lg bg-[#0f766e] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#0f766e]/90 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-sm">download</span>
                   Download PDF
                 </button>
               </>
             ) : null}
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
-              Admin Login
-            </Link>
+           
+            
           </div>
         </div>
       </header>
@@ -898,16 +960,20 @@ function Results() {
                             </tr>
                             <tr className="bg-[#f9fbff] dark:bg-slate-800/40 hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
                               <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Published Date</td>
-                              {visibleTerminals.map((t) => (
-                                <td key={t} className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-medium text-[#2a3d59] dark:text-slate-300">
-                                  {getSummaryCellValue(
-                                    t,
-                                    termSummaries[t]?.published_date
-                                      ? new Date(termSummaries[t].published_date).toLocaleDateString('en-IN')
-                                      : '--'
-                                  )}
-                                </td>
-                              ))}
+                              {visibleTerminals.map((t) => {
+                                const publishedDate = getPublishedDateFromSummary(termSummaries[t])
+                                return (
+                                  <td key={t} className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-medium text-[#2a3d59] dark:text-slate-300">
+                                    {isTermAvailable(t) ? (
+                                      publishedDate 
+                                        ? new Date(publishedDate).toLocaleDateString('en-IN')
+                                        : '--'
+                                    ) : (
+                                      'Result Not Found'
+                                    )}
+                                  </td>
+                                )
+                              })}
                             </tr>
                           </tbody>
                         </table>

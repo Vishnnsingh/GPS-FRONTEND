@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { login, setSession, saveCredentials, getSavedCredentials, emitToast } from '../../Api/auth'
+import WebsiteHeader from '../../Components/WebsiteHeader'
+import WebsiteFooter from '../../Components/WebsiteFooter'
 
 function AllLogin() {
   const navigate = useNavigate()
@@ -61,8 +63,10 @@ function AllLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#101922] text-slate-900 dark:text-slate-100" style={{ fontFamily: "'Lexend', sans-serif" }}>
-      <div className="flex min-h-screen w-full flex-col lg:flex-row">
+    <div style={{ fontFamily: "'Lexend', sans-serif" }}>
+      <WebsiteHeader />
+      <div className="min-h-screen bg-slate-50 dark:bg-[#101922] text-slate-900 dark:text-slate-100">
+        <div className="flex min-h-[calc(100vh-120px)] w-full flex-col lg:flex-row">
         {/* Left Side: Visual Anchor */}
         <div className="relative hidden lg:flex lg:w-5/12 xl:w-1/2 bg-[#137fec] items-center justify-center p-6 overflow-hidden">
           {/* Decorative Background Pattern */}
@@ -249,6 +253,8 @@ function AllLogin() {
           </div>
         </div>
       </div>
+      </div>
+      <WebsiteFooter />
     </div>
   )
 }

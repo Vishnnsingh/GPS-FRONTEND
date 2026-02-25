@@ -24,30 +24,31 @@ function WebsiteHeader() {
 
   return (
     <header className="sticky top-0 z-50">
-      {/* Top Bar */}
+      
+      {/* ================= TOP BAR ================= */}
       <div className="bg-[#0d141b] text-white border-b border-white/5">
         <div className="w-full">
           <div className="flex items-center justify-between h-10 gap-4 px-4 sm:px-6 lg:px-8">
-            {/* Contact Info */}
+            
             <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm">
               <a
-                href="tel:+910000000000"
+                href="tel:+91 7870225302"
                 className="hidden sm:inline-flex items-center gap-1.5 text-white/70 hover:text-white/90 transition-colors"
               >
                 <span className="material-symbols-outlined text-sm">call</span>
-                <span className="font-normal">+91 00000 00000</span>
+                <span>+91 7870225302</span>
               </a>
+
               <a
-                href="mailto:info@school.edu"
+                href="mailto:gpschool2025@gmail.com"
                 className="inline-flex items-center gap-1.5 text-white/70 hover:text-white/90 transition-colors"
               >
                 <span className="material-symbols-outlined text-sm">mail</span>
-                <span className="font-normal hidden sm:inline">info@school.edu</span>
-                <span className="font-normal sm:hidden">Email</span>
+                <span className="hidden sm:inline">gpschool2025@gmail.com</span>
+                <span className="sm:hidden">Email</span>
               </a>
             </div>
 
-            {/* Quick Links */}
             <div className="flex items-center gap-2 sm:gap-3">
               <Link
                 to="/result-login"
@@ -71,14 +72,15 @@ function WebsiteHeader() {
         </div>
       </div>
 
-      {/* Main Navigation */}
+      {/* ================= MAIN NAVIGATION ================= */}
       <div className="bg-white dark:bg-[#101922] border-b border-slate-200 dark:border-slate-800">
         <div className="w-full">
           <div className="flex items-center justify-between h-16 gap-4 px-4 sm:px-6 lg:px-8">
+            
             {/* Logo & School Name */}
             <Link
               to="/"
-              className="flex items-center gap-3 min-w-0"
+              className="flex items-center gap-3 min-w-0 flex-1"
             >
               <img
                 src={logo}
@@ -86,12 +88,15 @@ function WebsiteHeader() {
                 className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-lg bg-white dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-700"
               />
 
-              <div className="min-w-0 hidden sm:block">
-                <h1 className="text-base sm:text-lg font-bold leading-tight text-[#0d141b] dark:text-white truncate">
+              {/* ✅ FIXED PART: School Name visible on mobile */}
+              <div className="min-w-0">
+                <h1 className="text-sm sm:text-lg font-bold leading-tight text-[#0d141b] dark:text-white truncate">
                   {SCHOOL_NAME}
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-tight truncate">
-                  School Website
+
+                {/* Hide subtitle on mobile */}
+                <p className="hidden sm:block text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-tight truncate">
+                  Your growth, our commitment.
                 </p>
               </div>
             </Link>
@@ -128,7 +133,7 @@ function WebsiteHeader() {
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Dropdown */}
         {open && (
           <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#101922]">
             <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-1">
@@ -166,5 +171,3 @@ function WebsiteHeader() {
 }
 
 export default WebsiteHeader
-
-

@@ -96,27 +96,27 @@ function WebsiteFooter() {
                   location_on
                 </span>
                 <span className="leading-relaxed">
-                  School Road, Your City,<br />
-                  State - 000000
+                  Blaspur Dainmanwa Road, Harinagar (W. Champaran)-845103<br />
+                  State - Bihar,India
                 </span>
               </a>
               <a
-                href="tel:+910000000000"
+                href="tel:+91 7870225302"
                 className="flex items-center gap-3 hover:text-white transition-colors duration-200 group"
               >
                 <span className="material-symbols-outlined text-lg text-[#137fec] group-hover:scale-110 transition-transform">
                   call
                 </span>
-                <span>+91 00000 00000</span>
+                <span>+91 7870225302</span>
               </a>
               <a
-                href="mailto:info@school.edu"
+                href="mailto:gpschool2025@gmail.com"
                 className="flex items-center gap-3 hover:text-white transition-colors duration-200 group"
               >
                 <span className="material-symbols-outlined text-lg text-[#137fec] group-hover:scale-110 transition-transform">
                   mail
                 </span>
-                <span>info@school.edu</span>
+                <span>gpschool2025@gmail.com</span>
               </a>
             </div>
           </div>
