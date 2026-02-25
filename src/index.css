@@ -1,12 +1,60 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    --font-body: "Manrope", sans-serif;
+    --font-heading: "Sora", sans-serif;
+    --ry-bg: #050c16;
+    --ry-bg-soft: #0a1525;
+    --ry-surface: #0f2239;
+    --ry-surface-alt: #122b47;
+    --ry-border: #264e78;
+    --ry-text: #e8f1ff;
+    --ry-muted: #bfd3ee;
+    --ry-brand: #40d4ff;
+    --ry-brand-strong: #00a9f5;
+    --ry-success: #34d399;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   html,
   body,
   #root {
     width: 100%;
     min-height: 100%;
     overflow-x: hidden;
+    font-family: var(--font-body);
+  }
+
+  body {
+    color: var(--ry-text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.55;
+    background:
+      radial-gradient(circle at 10% -5%, rgba(64, 212, 255, 0.28), transparent 40%),
+      radial-gradient(circle at 88% 12%, rgba(0, 169, 245, 0.18), transparent 44%),
+      linear-gradient(160deg, #050c16 0%, #081326 40%, #050b15 100%);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+  }
+
+  a,
+  button {
+    transition: all 0.22s ease;
   }
 
   img,
@@ -18,8 +66,369 @@
   }
 }
 
+@layer components {
+  .ryme-page {
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 90% 5%, rgba(64, 212, 255, 0.15), transparent 30%),
+      radial-gradient(circle at 5% 95%, rgba(26, 122, 212, 0.12), transparent 42%);
+  }
+
+  .ryme-shell {
+    width: min(1220px, calc(100% - 2rem));
+    margin-inline: auto;
+  }
+
+  .ryme-grid {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.6rem);
+  }
+
+  .ryme-card {
+    border-radius: 1.35rem;
+    border: 1px solid rgba(110, 203, 255, 0.3);
+    background: linear-gradient(155deg, rgba(15, 41, 67, 0.93), rgba(10, 26, 46, 0.95));
+    box-shadow:
+      0 18px 40px rgba(2, 8, 20, 0.5),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  .ryme-card-soft {
+    border-radius: 1.1rem;
+    border: 1px solid rgba(176, 205, 236, 0.28);
+    background: rgba(19, 41, 67, 0.78);
+    backdrop-filter: blur(12px);
+  }
+
+  .ryme-glass {
+    border: 1px solid rgba(143, 180, 227, 0.24);
+    background: rgba(7, 20, 36, 0.72);
+    backdrop-filter: blur(14px);
+  }
+
+  .ryme-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.38rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(64, 212, 255, 0.3);
+    background: rgba(64, 212, 255, 0.12);
+    color: #cdf3ff;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .ryme-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border-radius: 0.9rem;
+    padding: 0.72rem 1.2rem;
+    font-weight: 700;
+    color: #031423;
+    background: linear-gradient(135deg, #53ddff 0%, #00a9f5 100%);
+    box-shadow: 0 12px 30px rgba(0, 169, 245, 0.34);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+  }
+
+  .ryme-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 15px 34px rgba(0, 169, 245, 0.42);
+    filter: brightness(1.03);
+  }
+
+  .ryme-button-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border-radius: 0.9rem;
+    padding: 0.68rem 1.15rem;
+    font-weight: 700;
+    color: var(--ry-text);
+    border: 1px solid rgba(143, 180, 227, 0.36);
+    background: rgba(9, 26, 45, 0.6);
+  }
+
+  .ryme-button-ghost:hover {
+    border-color: rgba(64, 212, 255, 0.5);
+    background: rgba(9, 33, 59, 0.75);
+  }
+
+  .ryme-input {
+    width: 100%;
+    border-radius: 0.82rem;
+    border: 1px solid rgba(158, 184, 218, 0.35);
+    background: rgba(10, 26, 44, 0.82);
+    color: #f4f8ff;
+    padding: 0.7rem 0.9rem;
+    outline: none;
+    font-size: 0.92rem;
+  }
+
+  .ryme-input::placeholder {
+    color: #8ea8c8;
+  }
+
+  .ryme-input:focus {
+    border-color: rgba(64, 212, 255, 0.78);
+    box-shadow: 0 0 0 4px rgba(64, 212, 255, 0.15);
+  }
+
+  .ryme-section {
+    padding-block: clamp(2.8rem, 5vw, 5.4rem);
+  }
+
+  .ryme-section-title {
+    font-size: clamp(1.75rem, 4vw, 3.1rem);
+    line-height: 1.07;
+    font-weight: 800;
+    color: #f7fbff;
+    text-wrap: balance;
+  }
+
+  .ryme-kpi-card {
+    border-radius: 1rem;
+    border: 1px solid rgba(64, 212, 255, 0.2);
+    background: linear-gradient(145deg, rgba(13, 34, 57, 0.96), rgba(8, 22, 38, 0.95));
+    box-shadow: 0 14px 34px rgba(1, 8, 20, 0.45);
+  }
+
+  .app-shell {
+    background:
+      radial-gradient(circle at 8% 2%, rgba(64, 212, 255, 0.2), transparent 30%),
+      linear-gradient(160deg, #071120 0%, #081a2f 55%, #06101d 100%);
+    color: #dfedff;
+  }
+
+  .app-shell [class~="text-[#0d141b]"],
+  .app-shell .text-slate-900 {
+    color: #ecf5ff !important;
+  }
+
+  .app-shell .text-slate-800 {
+    color: #e1edff !important;
+  }
+
+  .app-shell .text-slate-700 {
+    color: #d3e2f8 !important;
+  }
+
+  .app-shell .text-slate-600 {
+    color: #b9cde7 !important;
+  }
+
+  .app-shell .text-slate-500 {
+    color: #98b1cf !important;
+  }
+
+  .app-shell .bg-white,
+  .app-shell .bg-slate-50,
+  .app-shell .bg-slate-100 {
+    background: linear-gradient(150deg, rgba(16, 38, 62, 0.93), rgba(8, 22, 40, 0.94)) !important;
+  }
+
+  .app-shell .from-white {
+    --tw-gradient-from: rgba(14, 37, 61, 0.96) var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgba(14, 37, 61, 0) var(--tw-gradient-to-position) !important;
+  }
+
+  .app-shell .to-slate-50,
+  .app-shell .to-slate-100 {
+    --tw-gradient-to: rgba(8, 22, 40, 0.94) var(--tw-gradient-to-position) !important;
+  }
+
+  .app-shell .from-slate-50,
+  .app-shell .from-slate-100 {
+    --tw-gradient-from: rgba(17, 41, 67, 0.95) var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgba(17, 41, 67, 0) var(--tw-gradient-to-position) !important;
+  }
+
+  .app-shell .to-white {
+    --tw-gradient-to: rgba(7, 21, 38, 0.94) var(--tw-gradient-to-position) !important;
+  }
+
+  .app-shell .bg-blue-50 {
+    background: rgba(32, 90, 142, 0.24) !important;
+  }
+
+  .app-shell .bg-green-50 {
+    background: rgba(24, 120, 94, 0.24) !important;
+  }
+
+  .app-shell .bg-amber-50 {
+    background: rgba(150, 104, 26, 0.24) !important;
+  }
+
+  .app-shell .bg-red-50 {
+    background: rgba(146, 45, 67, 0.24) !important;
+  }
+
+  .app-shell .bg-purple-50 {
+    background: rgba(84, 68, 171, 0.23) !important;
+  }
+
+  .app-shell .bg-orange-50 {
+    background: rgba(158, 88, 38, 0.23) !important;
+  }
+
+  .app-shell .border-slate-200,
+  .app-shell .border-slate-300 {
+    border-color: rgba(130, 165, 202, 0.34) !important;
+  }
+
+  .app-shell .border-blue-200 {
+    border-color: rgba(81, 175, 243, 0.45) !important;
+  }
+
+  .app-shell .border-green-200 {
+    border-color: rgba(74, 211, 155, 0.42) !important;
+  }
+
+  .app-shell .border-amber-200 {
+    border-color: rgba(245, 183, 82, 0.4) !important;
+  }
+
+  .app-shell .border-red-200 {
+    border-color: rgba(239, 106, 132, 0.4) !important;
+  }
+
+  .app-shell .text-blue-700,
+  .app-shell .text-blue-800 {
+    color: #90d0ff !important;
+  }
+
+  .app-shell .text-green-700,
+  .app-shell .text-green-800 {
+    color: #8ef0c8 !important;
+  }
+
+  .app-shell .text-amber-700,
+  .app-shell .text-amber-800 {
+    color: #ffd797 !important;
+  }
+
+  .app-shell .text-red-700,
+  .app-shell .text-red-800 {
+    color: #ffb3c8 !important;
+  }
+
+  .app-shell .shadow-sm,
+  .app-shell .shadow-md,
+  .app-shell .shadow-lg,
+  .app-shell .shadow-xl {
+    box-shadow: 0 16px 34px rgba(1, 8, 20, 0.34) !important;
+  }
+
+  .app-shell table thead tr {
+    background: linear-gradient(135deg, #00a9f5, #2bd8ff) !important;
+  }
+
+  .app-shell table th {
+    color: #021527 !important;
+    font-weight: 700 !important;
+  }
+
+  .app-shell table td {
+    color: #d5e7ff !important;
+  }
+
+  .app-shell table tbody tr:hover {
+    background: rgba(64, 212, 255, 0.1) !important;
+  }
+
+  .app-shell input,
+  .app-shell select,
+  .app-shell textarea {
+    border-color: rgba(143, 180, 227, 0.35) !important;
+    background: rgba(10, 26, 44, 0.82) !important;
+    color: #f4f8ff !important;
+  }
+
+  .app-shell input::placeholder,
+  .app-shell textarea::placeholder {
+    color: #8ea8c8 !important;
+  }
+
+  .sidebar-scroll {
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(173, 209, 243, 0.55) rgba(11, 31, 53, 0.55);
+  }
+
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-track {
+    border-radius: 999px;
+    background: rgba(11, 31, 53, 0.55);
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: rgba(173, 209, 243, 0.55);
+    background-clip: content-box;
+  }
+}
+
 @layer utilities {
-  /* Animated Rainbow Gradient for School Name */
+  .text-gradient-brand {
+    background: linear-gradient(100deg, #d6f6ff 0%, #76e9ff 30%, #00b9ff 70%, #7fd3ff 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .bg-grid-fade {
+    background-image:
+      linear-gradient(rgba(118, 180, 245, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(118, 180, 245, 0.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .glow-ring {
+    box-shadow:
+      0 0 0 1px rgba(64, 212, 255, 0.18),
+      0 0 32px rgba(64, 212, 255, 0.22);
+  }
+
+  .reveal-up {
+    animation: reveal-up 0.7s cubic-bezier(0.2, 0.65, 0.3, 1) both;
+  }
+
+  .float-soft {
+    animation: float-soft 6s ease-in-out infinite;
+  }
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float-soft {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
   .rainbow-text {
     background: linear-gradient(
       90deg,
@@ -48,7 +457,6 @@
     }
   }
 
-  /* Subtle text shadow for readability */
   .text-shadow-subtle {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }

@@ -97,17 +97,17 @@ function ClassPromotion() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-5" style={{ fontFamily: "'Lexend', sans-serif" }}>
+    <div className="space-y-4 sm:space-y-5">
       <div>
-        <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Class Promotion</h2>
-        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+        <h2 className="text-2xl sm:text-3xl font-black text-white">Class Promotion</h2>
+        <p className="text-xs sm:text-sm text-slate-300 mt-1">
           Promote an entire class to next academic session with server-side validation.
         </p>
       </div>
 
-      <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-3 sm:p-4">
-        <p className="text-xs sm:text-sm font-semibold text-amber-800 dark:text-amber-300 mb-2">Promotion Rules</p>
-        <ul className="space-y-1 text-xs sm:text-sm text-amber-700 dark:text-amber-200">
+      <div className="rounded-xl border border-amber-300/40 bg-amber-400/15 p-3 sm:p-4">
+        <p className="text-xs sm:text-sm font-semibold text-amber-100 mb-2">Promotion Rules</p>
+        <ul className="space-y-1 text-xs sm:text-sm text-amber-100/95">
           {helperNotes.map((note) => (
             <li key={note} className="flex items-start gap-2">
               <span className="mt-0.5">-</span>
@@ -118,18 +118,18 @@ function ClassPromotion() {
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-red-700 dark:text-red-300">{error}</p>
+        <div className="rounded-xl border border-red-300/40 bg-red-400/15 p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-red-100">{error}</p>
         </div>
       )}
 
       {successData && (
-        <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-3 sm:p-4">
-          <p className="text-sm font-semibold text-green-800 dark:text-green-300">{successData.message}</p>
-          <p className="text-xs sm:text-sm text-green-700 dark:text-green-200 mt-1">
+        <div className="rounded-xl border border-emerald-300/40 bg-emerald-400/15 p-3 sm:p-4">
+          <p className="text-sm font-semibold text-emerald-100">{successData.message}</p>
+          <p className="text-xs sm:text-sm text-emerald-100 mt-1">
             Promoted students: <span className="font-bold">{successData.promoted_count}</span>
           </p>
-          <p className="text-xs sm:text-sm text-green-700 dark:text-green-200 mt-1">
+          <p className="text-xs sm:text-sm text-emerald-100 mt-1">
             From Class {successData.from_class} ({successData.current_session}) to session {successData.new_session}
           </p>
         </div>
@@ -137,7 +137,7 @@ function ClassPromotion() {
 
       <form
         onSubmit={handleOpenConfirm}
-        className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-5 space-y-4"
+        className="ryme-card rounded-xl border border-slate-200 p-4 sm:p-5 space-y-4"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <div>
@@ -199,7 +199,7 @@ function ClassPromotion() {
           <button
             type="submit"
             disabled={isSubmitDisabled}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#137fec] text-white text-sm font-bold hover:bg-[#137fec]/90 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="ryme-button inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {submitting ? (
               <>
@@ -225,9 +225,9 @@ function ClassPromotion() {
               }
             }}
         >
-          <div className="w-full max-w-lg rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 sm:p-5 shadow-xl">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Confirm Class Promotion</h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+          <div className="w-full max-w-lg rounded-xl border border-slate-200 ryme-card p-4 sm:p-5 shadow-xl">
+            <h3 className="text-lg font-bold text-white">Confirm Class Promotion</h3>
+            <p className="text-xs sm:text-sm text-slate-300 mt-1">
               Please verify details before final submit.
             </p>
 
@@ -255,7 +255,7 @@ function ClassPromotion() {
                 type="button"
                 disabled={submitting}
                 onClick={() => setShowConfirmModal(false)}
-                className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-700 dark:text-slate-300"
+                className="px-4 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-slate-200"
               >
                 Cancel
               </button>

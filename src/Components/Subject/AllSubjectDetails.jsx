@@ -98,9 +98,9 @@ function AllSubjectDetails() {
     }) || []
 
   return (
-    <div className="space-y-3 sm:space-y-4" style={{ fontFamily: "'Lexend', sans-serif" }}>
+    <div className="space-y-3 sm:space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#0d141b] dark:text-white">All Subject Details</h2>
+        <h2 className="text-2xl sm:text-3xl font-black text-white">All Subject Details</h2>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <button
             onClick={() => setIsCreateModalOpen(true)}
@@ -142,43 +142,43 @@ function AllSubjectDetails() {
 
       {!loading && !error && data?.summary && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
+          <div className="ryme-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">Total Classes</span>
+              <span className="text-xs sm:text-sm font-medium text-slate-300">Total Classes</span>
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#137fec]/10 flex items-center justify-center flex-shrink-0">
                 <span className="material-symbols-outlined text-[#137fec] text-base sm:text-lg">class</span>
               </div>
             </div>
-            <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{data.summary.total_classes}</p>
+            <p className="text-2xl sm:text-3xl font-black text-white">{data.summary.total_classes}</p>
           </div>
 
-          <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
+          <div className="ryme-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">Mappings</span>
+              <span className="text-xs sm:text-sm font-medium text-slate-300">Mappings</span>
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#137fec]/10 flex items-center justify-center flex-shrink-0">
                 <span className="material-symbols-outlined text-[#137fec] text-base sm:text-lg">link</span>
               </div>
             </div>
-            <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{data.summary.total_subject_mappings}</p>
+            <p className="text-2xl sm:text-3xl font-black text-white">{data.summary.total_subject_mappings}</p>
           </div>
 
-          <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
+          <div className="ryme-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">Unique Subjects</span>
+              <span className="text-xs sm:text-sm font-medium text-slate-300">Unique Subjects</span>
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#137fec]/10 flex items-center justify-center flex-shrink-0">
                 <span className="material-symbols-outlined text-[#137fec] text-base sm:text-lg">book</span>
               </div>
             </div>
-            <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{data.summary.total_unique_subjects}</p>
+            <p className="text-2xl sm:text-3xl font-black text-white">{data.summary.total_unique_subjects}</p>
           </div>
         </div>
       )}
 
       {!loading && !error && data?.classes && (
-        <div className="bg-white dark:bg-slate-800 rounded-xl p-3 sm:p-4 shadow-sm border border-slate-200 dark:border-slate-700">
+        <div className="ryme-card rounded-xl p-3 sm:p-4 shadow-sm border border-slate-200">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Filter by Class</label>
+              <label className="block text-xs font-medium text-slate-200 mb-2">Filter by Class</label>
               <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
                 <span className="material-symbols-outlined pl-2 sm:pl-3 text-slate-500 dark:text-slate-400 text-base">class</span>
                 <select
@@ -211,11 +211,11 @@ function AllSubjectDetails() {
             return (
               <div
                 key={classData.class}
-                className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow"
+                className="ryme-card rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow"
               >
                 <button
                   onClick={() => toggleClass(classData.class)}
-                  className="w-full flex items-center justify-between p-3 sm:p-5 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 hover:from-slate-100 hover:to-slate-200 dark:hover:from-slate-600 dark:hover:to-slate-700 transition-all"
+                  className="w-full flex items-center justify-between p-3 sm:p-5 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 transition-all"
                 >
                   <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                     <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#137fec] text-white flex items-center justify-center font-bold flex-shrink-0">
@@ -237,14 +237,14 @@ function AllSubjectDetails() {
                 </button>
 
                 {expandedClasses.has(classData.class) && (
-                  <div className="p-3 sm:p-5 bg-slate-50/50 dark:bg-slate-900/30">
-                    <div className="bg-white dark:bg-slate-800 rounded-lg p-3 sm:p-4 border border-slate-200 dark:border-slate-700">
+                  <div className="p-3 sm:p-5 bg-slate-50/50">
+                    <div className="ryme-card-soft rounded-lg p-3 sm:p-4 border border-slate-200">
                       {classSubjects.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
                           {classSubjects.map((subject, subjectIndex) => (
                             <div
                               key={subject.id || `${subject.subject_code}-${subjectIndex}`}
-                              className="bg-gradient-to-br from-slate-50 to-white dark:from-slate-700 dark:to-slate-800 rounded-lg p-2.5 sm:p-3 border border-slate-200 dark:border-slate-600 hover:border-[#137fec] hover:shadow-md transition-all"
+                              className="bg-gradient-to-br from-slate-50 to-white rounded-lg p-2.5 sm:p-3 border border-slate-200 hover:border-[#137fec] hover:shadow-md transition-all"
                             >
                               <div className="flex items-start justify-between gap-2">
                                 <div className="flex-1 min-w-0">

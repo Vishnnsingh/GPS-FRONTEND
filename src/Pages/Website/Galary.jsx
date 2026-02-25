@@ -11,30 +11,40 @@ function Galary() {
 
   return (
     <WebsiteLayout>
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-        <p className="text-xs font-black text-[#137fec]">Gallery</p>
-        <h1 className="mt-1 text-3xl sm:text-4xl font-black text-[#0d141b] dark:text-white">Campus Moments</h1>
-        <p className="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-3xl">
-          Real school photos from classes, events, labs, sports and daily student activities.
-        </p>
+      <section className="ryme-section">
+        <div className="ryme-shell">
+          <div className="ryme-card p-6 sm:p-8">
+            <span className="ryme-tag">Campus gallery</span>
+            <h1 className="mt-4 text-4xl font-extrabold text-white sm:text-5xl">School Moments</h1>
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-200 sm:text-base">
+              Real photos from classrooms, activities, events, sports and day-to-day student life on campus.
+            </p>
+          </div>
+        </div>
+      </section>
 
-        <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 auto-rows-[220px] sm:auto-rows-[200px] lg:auto-rows-[210px] gap-4">
-          {campusPhotos.map((photo, idx) => (
-            <div
-              key={photo.id}
-              className={`group relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-lg transition-all ${getCardSpan(photo, idx)}`}
-            >
-              <img
-                src={photo.src}
-                alt={photo.title}
-                className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
-              />
-              <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
-                <p className="text-sm font-bold text-white">{photo.title}</p>
-                <p className="text-xs text-white/80">Campus & Activities</p>
-              </div>
+      <section className="ryme-section pt-0">
+        <div className="ryme-shell">
+          <div className="bg-grid-fade rounded-2xl p-3 sm:p-4">
+            <div className="grid auto-rows-[220px] grid-cols-1 gap-4 sm:auto-rows-[200px] sm:grid-cols-2 lg:auto-rows-[210px] lg:grid-cols-4">
+              {campusPhotos.map((photo, index) => (
+                <article
+                  key={photo.id}
+                  className={`ryme-card group relative overflow-hidden ${getCardSpan(photo, index)}`}
+                >
+                  <img
+                    src={photo.src}
+                    alt={photo.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#031323]/90 via-[#031323]/55 to-transparent p-3.5">
+                    <p className="text-sm font-bold text-white">{photo.title}</p>
+                    <p className="text-xs uppercase tracking-[0.13em] text-cyan-100/85">Campus & Activities</p>
+                  </div>
+                </article>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </section>
     </WebsiteLayout>
@@ -42,5 +52,3 @@ function Galary() {
 }
 
 export default Galary
-
-

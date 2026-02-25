@@ -112,6 +112,7 @@ function Dashboard({ initialView = 'dashboard' }) {
     if (!currentUser) {
       navigate('/login')
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(currentUser)
       setLoginType(loginTypeFromStorage)
       
@@ -128,12 +129,14 @@ function Dashboard({ initialView = 'dashboard' }) {
 
   useEffect(() => {
     if (loginType !== 'student' && !isTeacher && activeView === 'dashboard') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchDashboardData()
     }
   }, [loginType, activeView, isTeacher])
 
   useEffect(() => {
     if (isTeacher && activeView !== 'uploadMarks') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveView('uploadMarks')
     }
   }, [isTeacher, activeView])
@@ -150,19 +153,25 @@ function Dashboard({ initialView = 'dashboard' }) {
       />
       
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto w-full">
+      <main className="relative z-10 flex-1 overflow-y-auto w-full">
           <div className="p-3 sm:p-4 lg:p-6 w-full max-w-full">
             {loginType !== 'student' && !isTeacher && activeView === 'dashboard' && (
-              <div className="space-y-4 sm:space-y-6" style={{ fontFamily: "'Lexend', sans-serif" }}>
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#0d141b] dark:text-white">Dashboard</h2>
+              <div className="space-y-4 sm:space-y-6">
+                <div className="ryme-card p-5 sm:p-6">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/75">Control Center</p>
+                  <h2 className="mt-2 text-2xl font-extrabold text-white sm:text-3xl">Dashboard Analytics</h2>
+                  <p className="mt-2 text-sm text-slate-300">
+                    Real-time overview of students, class setup and subject distribution across the school.
+                  </p>
+                </div>
                 
                 {/* Dashboard Cards */}
                 {dashboardData.loading ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-700">
+                      <div key={i} className="ryme-kpi-card p-4 sm:p-5">
                         <div className="flex items-center justify-center py-8">
-                          <span className="material-symbols-outlined animate-spin text-2xl sm:text-3xl text-[#137fec]">sync</span>
+                          <span className="material-symbols-outlined animate-spin text-2xl sm:text-3xl text-cyan-200">sync</span>
                         </div>
                       </div>
                     ))}
@@ -170,36 +179,36 @@ function Dashboard({ initialView = 'dashboard' }) {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {/* Total Students */}
-                    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
+                    <div className="ryme-kpi-card p-4 sm:p-5">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">Total Students</span>
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[#137fec]/10 flex items-center justify-center flex-shrink-0">
-                          <span className="material-symbols-outlined text-[#137fec] text-base sm:text-lg">people</span>
+                        <span className="text-xs sm:text-sm font-medium text-slate-300">Total Students</span>
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-cyan-300/15 flex items-center justify-center flex-shrink-0">
+                          <span className="material-symbols-outlined text-cyan-200 text-base sm:text-lg">people</span>
                         </div>
                       </div>
-                      <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{dashboardData.totalStudents}</p>
+                      <p className="text-2xl sm:text-3xl font-black text-white">{dashboardData.totalStudents}</p>
                     </div>
 
                     {/* Total Classes */}
-                    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
+                    <div className="ryme-kpi-card p-4 sm:p-5">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">Total Classes</span>
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                          <span className="material-symbols-outlined text-green-500 text-base sm:text-lg">class</span>
+                        <span className="text-xs sm:text-sm font-medium text-slate-300">Total Classes</span>
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-300/15 flex items-center justify-center flex-shrink-0">
+                          <span className="material-symbols-outlined text-emerald-200 text-base sm:text-lg">class</span>
                         </div>
                       </div>
-                      <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{dashboardData.totalClasses}</p>
+                      <p className="text-2xl sm:text-3xl font-black text-white">{dashboardData.totalClasses}</p>
                     </div>
 
                     {/* Total Subjects */}
-                    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
+                    <div className="ryme-kpi-card p-4 sm:p-5">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">Total Subjects</span>
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
-                          <span className="material-symbols-outlined text-purple-500 text-base sm:text-lg">book</span>
+                        <span className="text-xs sm:text-sm font-medium text-slate-300">Total Subjects</span>
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-sky-300/15 flex items-center justify-center flex-shrink-0">
+                          <span className="material-symbols-outlined text-sky-200 text-base sm:text-lg">book</span>
                         </div>
                       </div>
-                      <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{dashboardData.totalSubjects}</p>
+                      <p className="text-2xl sm:text-3xl font-black text-white">{dashboardData.totalSubjects}</p>
                     </div>
                   </div>
                 )}
@@ -209,21 +218,36 @@ function Dashboard({ initialView = 'dashboard' }) {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                     {/* Students Distribution by Class */}
                     {dashboardData.studentsByClass.length > 0 && (
-                      <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-                        <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-4">Students Distribution by Class</h3>
+                      <div className="ryme-card p-4 sm:p-6">
+                        <h3 className="text-base sm:text-lg font-bold text-white mb-4">Students Distribution by Class</h3>
                         <ResponsiveContainer width="100%" height={250}>
                           <BarChart data={dashboardData.studentsByClass}>
-                            <CartesianGrid strokeDasharray="3 3" />
+                            <CartesianGrid stroke="rgba(153, 178, 209, 0.2)" strokeDasharray="3 3" />
                             <XAxis 
                               dataKey="name" 
                               angle={-45} 
                               textAnchor="end" 
                               height={80}
-                              style={{ fontSize: 10 }}
+                              tick={{ fill: '#b9cce7', fontSize: 10 }}
+                              axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
+                              tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                             />
-                            <YAxis style={{ fontSize: 10 }} />
-                            <Tooltip contentStyle={{ fontSize: 12 }} />
-                            <Bar dataKey="value" fill="#137fec" name="Students" />
+                            <YAxis
+                              tick={{ fill: '#b9cce7', fontSize: 10 }}
+                              axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
+                              tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                fontSize: 12,
+                                borderRadius: 12,
+                                border: '1px solid rgba(64, 212, 255, 0.25)',
+                                background: 'rgba(7, 20, 36, 0.96)',
+                                color: '#e6f2ff',
+                              }}
+                              labelStyle={{ color: '#cfe5ff' }}
+                            />
+                            <Bar dataKey="value" fill="#40d4ff" name="Students" />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
@@ -231,8 +255,8 @@ function Dashboard({ initialView = 'dashboard' }) {
 
                     {/* Students Distribution by Section */}
                     {dashboardData.studentsBySection.length > 0 && (
-                      <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-                        <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-4">Students Distribution by Section</h3>
+                      <div className="ryme-card p-4 sm:p-6">
+                        <h3 className="text-base sm:text-lg font-bold text-white mb-4">Students Distribution by Section</h3>
                         <ResponsiveContainer width="100%" height={250}>
                           <PieChart>
                             <Pie
@@ -250,8 +274,17 @@ function Dashboard({ initialView = 'dashboard' }) {
                                 return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                               })}
                             </Pie>
-                            <Tooltip contentStyle={{ fontSize: 12 }} />
-                            <Legend wrapperStyle={{ fontSize: 10 }} />
+                            <Tooltip
+                              contentStyle={{
+                                fontSize: 12,
+                                borderRadius: 12,
+                                border: '1px solid rgba(64, 212, 255, 0.25)',
+                                background: 'rgba(7, 20, 36, 0.96)',
+                                color: '#e6f2ff',
+                              }}
+                              labelStyle={{ color: '#cfe5ff' }}
+                            />
+                            <Legend wrapperStyle={{ fontSize: 10, color: '#d3e7ff' }} />
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
@@ -259,23 +292,38 @@ function Dashboard({ initialView = 'dashboard' }) {
 
                     {/* Subjects per Class */}
                     {dashboardData.subjectsPerClass.length > 0 && (
-                      <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-2">
-                        <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-4">Subjects & Sections per Class</h3>
+                      <div className="ryme-card p-4 sm:p-6 lg:col-span-2">
+                        <h3 className="text-base sm:text-lg font-bold text-white mb-4">Subjects & Sections per Class</h3>
                         <ResponsiveContainer width="100%" height={250}>
                           <BarChart data={dashboardData.subjectsPerClass}>
-                            <CartesianGrid strokeDasharray="3 3" />
+                            <CartesianGrid stroke="rgba(153, 178, 209, 0.2)" strokeDasharray="3 3" />
                             <XAxis 
                               dataKey="name" 
                               angle={-45} 
                               textAnchor="end" 
                               height={80}
-                              style={{ fontSize: 10 }}
+                              tick={{ fill: '#b9cce7', fontSize: 10 }}
+                              axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
+                              tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                             />
-                            <YAxis style={{ fontSize: 10 }} />
-                            <Tooltip contentStyle={{ fontSize: 12 }} />
-                            <Legend wrapperStyle={{ fontSize: 10 }} />
-                            <Bar dataKey="subjects" fill="#137fec" name="Subjects" />
-                            <Bar dataKey="sections" fill="#10b981" name="Sections" />
+                            <YAxis
+                              tick={{ fill: '#b9cce7', fontSize: 10 }}
+                              axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
+                              tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                fontSize: 12,
+                                borderRadius: 12,
+                                border: '1px solid rgba(64, 212, 255, 0.25)',
+                                background: 'rgba(7, 20, 36, 0.96)',
+                                color: '#e6f2ff',
+                              }}
+                              labelStyle={{ color: '#cfe5ff' }}
+                            />
+                            <Legend wrapperStyle={{ fontSize: 10, color: '#d3e7ff' }} />
+                            <Bar dataKey="subjects" fill="#40d4ff" name="Subjects" />
+                            <Bar dataKey="sections" fill="#34d399" name="Sections" />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
@@ -283,57 +331,57 @@ function Dashboard({ initialView = 'dashboard' }) {
 
                     {/* Statistics Cards */}
                     <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:col-span-2">
-                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-3 sm:p-4 border border-blue-200 dark:border-blue-800">
+                      <div className="ryme-card-soft p-3 sm:p-4">
                         <div className="flex items-center justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1 truncate">Avg. Students/Class</p>
-                            <p className="text-xl sm:text-2xl font-black text-blue-900 dark:text-blue-100">
+                            <p className="text-xs font-medium text-cyan-100 mb-1 truncate">Avg. Students/Class</p>
+                            <p className="text-xl sm:text-2xl font-black text-white">
                               {dashboardData.totalClasses > 0 
                                 ? Math.round(dashboardData.totalStudents / dashboardData.totalClasses) 
                                 : 0}
                             </p>
                           </div>
-                          <span className="material-symbols-outlined text-blue-500 text-2xl sm:text-3xl flex-shrink-0">trending_up</span>
+                          <span className="material-symbols-outlined text-cyan-200 text-2xl sm:text-3xl flex-shrink-0">trending_up</span>
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-3 sm:p-4 border border-green-200 dark:border-green-800">
+                      <div className="ryme-card-soft p-3 sm:p-4">
                         <div className="flex items-center justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-1 truncate">Avg. Subjects/Class</p>
-                            <p className="text-xl sm:text-2xl font-black text-green-900 dark:text-green-100">
+                            <p className="text-xs font-medium text-cyan-100 mb-1 truncate">Avg. Subjects/Class</p>
+                            <p className="text-xl sm:text-2xl font-black text-white">
                               {dashboardData.totalClasses > 0 
                                 ? Math.round(dashboardData.subjectsPerClass.reduce((sum, item) => sum + item.subjects, 0) / dashboardData.totalClasses) 
                                 : 0}
                             </p>
                           </div>
-                          <span className="material-symbols-outlined text-green-500 text-2xl sm:text-3xl flex-shrink-0">book</span>
+                          <span className="material-symbols-outlined text-cyan-200 text-2xl sm:text-3xl flex-shrink-0">book</span>
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-3 sm:p-4 border border-purple-200 dark:border-purple-800">
+                      <div className="ryme-card-soft p-3 sm:p-4">
                         <div className="flex items-center justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1 truncate">Total Sections</p>
-                            <p className="text-xl sm:text-2xl font-black text-purple-900 dark:text-purple-100">
+                            <p className="text-xs font-medium text-cyan-100 mb-1 truncate">Total Sections</p>
+                            <p className="text-xl sm:text-2xl font-black text-white">
                               {dashboardData.subjectsPerClass.reduce((sum, item) => sum + item.sections, 0)}
                             </p>
                           </div>
-                          <span className="material-symbols-outlined text-purple-500 text-2xl sm:text-3xl flex-shrink-0">category</span>
+                          <span className="material-symbols-outlined text-cyan-200 text-2xl sm:text-3xl flex-shrink-0">category</span>
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl p-3 sm:p-4 border border-orange-200 dark:border-orange-800">
+                      <div className="ryme-card-soft p-3 sm:p-4">
                         <div className="flex items-center justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="text-xs font-medium text-orange-600 dark:text-orange-400 mb-1 truncate">Subject Coverage</p>
-                            <p className="text-xl sm:text-2xl font-black text-orange-900 dark:text-orange-100">
+                            <p className="text-xs font-medium text-cyan-100 mb-1 truncate">Subject Coverage</p>
+                            <p className="text-xl sm:text-2xl font-black text-white">
                               {dashboardData.totalClasses > 0 
                                 ? `${Math.round((dashboardData.totalSubjects / dashboardData.totalClasses) * 10)}%`
                                 : '0%'}
                             </p>
                           </div>
-                          <span className="material-symbols-outlined text-orange-500 text-2xl sm:text-3xl flex-shrink-0">analytics</span>
+                          <span className="material-symbols-outlined text-cyan-200 text-2xl sm:text-3xl flex-shrink-0">analytics</span>
                         </div>
                       </div>
                     </div>

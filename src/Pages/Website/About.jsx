@@ -3,286 +3,151 @@ import { Link } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 import { aboutPhotos } from '../../assets/websiteImages'
 
+const values = [
+  { icon: 'workspace_premium', title: 'Excellence', text: 'High academic standards with accountable progress tracking.' },
+  { icon: 'security', title: 'Discipline', text: 'Respectful campus culture with clear systems and routines.' },
+  { icon: 'lightbulb', title: 'Innovation', text: 'Modern teaching tools and practical problem-solving exposure.' },
+  { icon: 'groups', title: 'Inclusion', text: 'Supportive classrooms where every child is guided and heard.' },
+]
+
+const achievements = [
+  'Consistent board performance with strong subject outcomes.',
+  'Growing digital adoption for exams, marks and reporting.',
+  'Balanced focus on sports, events and co-curricular activities.',
+  'Parent trust built through transparency and communication.',
+]
+
 function About() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
 
   return (
     <WebsiteLayout>
-      {/* Hero Section */}
-      <section className="w-full bg-slate-50 dark:bg-slate-900 py-12 sm:py-16">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-10 sm:mb-12">
-              <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">About Us</p>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#0d141b] dark:text-white">
-                {SCHOOL_NAME}
-              </h1>
-              <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
-                We are committed to quality education with discipline, character building and holistic development.
-                Our teachers and staff create a supportive and modern learning environment for every child.
+      <section className="ryme-section">
+        <div className="ryme-shell">
+          <div className="ryme-grid lg:grid-cols-[1fr_1.04fr]">
+            <div className="ryme-card p-6 sm:p-8">
+              <span className="ryme-tag">About school</span>
+              <h1 className="mt-4 text-4xl font-extrabold text-white sm:text-5xl">{SCHOOL_NAME}</h1>
+              <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-base">
+                We nurture confident learners through academics, values and practical skill-building. Our teachers and
+                systems work together to ensure that every student gets structure, support and consistent growth.
               </p>
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div className="relative">
-                <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xl">
-                  <img
-                    src={aboutPhotos.hero}
-                    alt="School campus overview"
-                    className="w-full aspect-4/3 object-cover"
-                  />
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <div className="ryme-card-soft p-3">
+                  <p className="text-2xl font-extrabold text-cyan-200">15+</p>
+                  <p className="text-xs uppercase tracking-[0.15em] text-slate-200/90">Years Journey</p>
                 </div>
-                <div className="hidden sm:block absolute -bottom-6 -right-6 w-44 h-44 rounded-2xl overflow-hidden border-4 border-white dark:border-slate-900 shadow-xl">
-                  <img
-                    src={aboutPhotos.secondary}
-                    alt="Students in classroom"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="ryme-card-soft p-3">
+                  <p className="text-2xl font-extrabold text-cyan-200">95%</p>
+                  <p className="text-xs uppercase tracking-[0.15em] text-slate-200/90">Academic Success</p>
                 </div>
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  {
-                    title: 'Smart Classes',
-                    desc: 'Digital classroom tools and interactive teaching support for better learning.',
-                    icon: 'menu_book',
-                  },
-                  {
-                    title: 'Computer Lab',
-                    desc: 'Practical computer sessions with guided digital literacy activities.',
-                    icon: 'computer',
-                  },
-                  {
-                    title: 'Library',
-                    desc: 'A reading-friendly environment that encourages research and regular study habits.',
-                    icon: 'library_books',
-                  },
-                  {
-                    title: 'Transport',
-                    desc: 'Safe and convenient school transport support for students.',
-                    icon: 'directions_bus',
-                  },
-                ].map((i) => (
-                  <div
-                    key={i.title}
-                    className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:shadow-lg transition-shadow"
-                  >
-                    <div className="h-10 w-10 rounded-xl bg-[#137fec] flex items-center justify-center mb-3">
-                      <span className="material-symbols-outlined text-white">{i.icon}</span>
-                    </div>
-                    <p className="text-lg sm:text-xl font-black text-[#137fec]">{i.title}</p>
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{i.desc}</p>
-                  </div>
+            <div className="ryme-grid grid-cols-2">
+              <div className="ryme-card col-span-2 overflow-hidden">
+                <img src={aboutPhotos.hero} alt="School campus" className="h-72 w-full object-cover sm:h-80" />
+              </div>
+              <div className="ryme-card overflow-hidden">
+                <img src={aboutPhotos.secondary} alt="Classroom learning" className="h-52 w-full object-cover" />
+              </div>
+              <div className="ryme-card p-5">
+                <p className="text-xs uppercase tracking-[0.16em] text-cyan-100">Mission</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-100/95">
+                  Deliver quality education with discipline, compassion and future-ready skills.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="ryme-section pt-0">
+        <div className="ryme-shell">
+          <div className="mb-6">
+            <span className="ryme-tag">Core values</span>
+            <h2 className="ryme-section-title mt-3">What drives our culture</h2>
+          </div>
+          <div className="ryme-grid sm:grid-cols-2 lg:grid-cols-4">
+            {values.map((value) => (
+              <article key={value.title} className="ryme-kpi-card p-5">
+                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-300/15 text-cyan-200">
+                  <span className="material-symbols-outlined">{value.icon}</span>
+                </div>
+                <h3 className="mt-4 text-lg font-bold text-white">{value.title}</h3>
+                <p className="mt-2 text-sm text-slate-200/95">{value.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="ryme-section pt-0">
+        <div className="ryme-shell">
+          <div className="ryme-grid lg:grid-cols-[1.12fr_0.88fr]">
+            <article className="ryme-card p-6 sm:p-8">
+              <span className="ryme-tag">Our journey</span>
+              <h2 className="mt-3 text-3xl font-extrabold text-white sm:text-4xl">Built with consistency and trust</h2>
+              <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-base">
+                From a focused local institution to a structured school ecosystem, we have continuously improved
+                infrastructure, faculty practices and digital processes to support students and families.
+              </p>
+
+              <div className="mt-5 space-y-3">
+                {achievements.map((item) => (
+                  <p key={item} className="inline-flex items-start gap-2 text-sm text-slate-200">
+                    <span className="material-symbols-outlined mt-0.5 text-base text-cyan-300">check_circle</span>
+                    {item}
+                  </p>
                 ))}
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Vision & Mission */}
-      <section className="w-full bg-white dark:bg-slate-800 py-12 sm:py-16">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-10 sm:mb-12">
-              <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Our Foundation</p>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0d141b] dark:text-white">
-                Vision & Mission
-              </h2>
-            </div>
+              <img src={aboutPhotos.journey} alt="School journey" className="mt-5 h-56 w-full rounded-xl object-cover" />
+            </article>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-              {[
-                {
-                  title: 'Vision',
-                  desc: 'To develop responsible citizens with curiosity, creativity and modern skills. We aim to nurture confident individuals with strong values who can contribute meaningfully to society.',
-                  icon: 'visibility',
-                },
-                {
-                  title: 'Mission',
-                  desc: 'To provide a strong foundation in academics with values and confidence. We create a supportive learning environment where every student can achieve their full potential through quality education and holistic development.',
-                  icon: 'target',
-                },
-              ].map((c) => (
-                <div
-                  key={c.title}
-                  className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 hover:shadow-lg transition-all duration-300"
-                >
-                  <div className="h-16 w-16 rounded-xl bg-[#137fec] flex items-center justify-center mb-6 shadow-sm">
-                    <span className="material-symbols-outlined text-white text-3xl">{c.icon}</span>
-                  </div>
-                  <h3 className="text-2xl sm:text-3xl font-black text-[#0d141b] dark:text-white mb-4">{c.title}</h3>
-                  <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">{c.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Values */}
-      <section className="w-full bg-slate-50 dark:bg-slate-900 py-12 sm:py-16">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-10 sm:mb-12">
-              <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">What We Stand For</p>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0d141b] dark:text-white">
-                Our Core Values
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                { title: 'Excellence', desc: 'Striving for the highest standards in academics and character.', icon: 'workspace_premium' },
-                { title: 'Discipline', desc: 'Building strong character through structured learning and values.', icon: 'security' },
-                { title: 'Innovation', desc: 'Embracing modern teaching methods and technology for better learning.', icon: 'lightbulb' },
-                { title: 'Integrity', desc: 'Upholding honesty, ethics and moral values in all our actions.', icon: 'verified' },
-              ].map((v) => (
-                <div
-                  key={v.title}
-                  className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 hover:shadow-lg hover:border-[#137fec]/30 transition-all duration-300"
-                >
-                  <div className="h-12 w-12 rounded-xl bg-[#137fec] flex items-center justify-center mb-4 shadow-sm">
-                    <span className="material-symbols-outlined text-white text-xl">{v.icon}</span>
-                  </div>
-                  <h3 className="text-lg font-black text-[#0d141b] dark:text-white mb-2">{v.title}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-300">{v.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* History & Achievements */}
-      <section className="w-full bg-white dark:bg-slate-800 py-12 sm:py-16">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
-              <div>
-                <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Our Journey</p>
-                <h2 className="text-3xl sm:text-4xl font-black text-[#0d141b] dark:text-white mb-6">
-                  School History
-                </h2>
-                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
-                  Established with a vision to provide quality education, {SCHOOL_NAME} has been serving the community
-                  for over 15 years. We have grown from a small institution to a recognized educational establishment
-                  known for academic excellence and holistic development.
-                </p>
-                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Our journey has been marked by continuous improvement, modern infrastructure development, and a
-                  commitment to nurturing young minds. We take pride in our alumni who have excelled in various fields
-                  and continue to make us proud.
-                </p>
-                <div className="mt-6 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-md">
-                  <img
-                    src={aboutPhotos.journey}
-                    alt="School journey highlights"
-                    className="w-full h-52 sm:h-64 object-cover"
-                  />
-                </div>
+            <article className="ryme-card p-6 sm:p-8">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-300/15 text-cyan-200">
+                <span className="material-symbols-outlined">format_quote</span>
               </div>
-
-              <div>
-                <div className="mb-6 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-md">
-                  <img
-                    src={aboutPhotos.achievements}
-                    alt="School achievements and events"
-                    className="w-full h-52 sm:h-64 object-cover"
-                  />
-                </div>
-                <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Recognition</p>
-                <h2 className="text-3xl sm:text-4xl font-black text-[#0d141b] dark:text-white mb-6">
-                  Key Achievements
-                </h2>
-                <div className="space-y-4">
-                  {[
-                    { title: 'CBSE Affiliation', desc: 'Recognized by Central Board of Secondary Education' },
-                    { title: 'Academic Excellence', desc: 'Consistent high performance in board examinations' },
-                    { title: 'Sports Champions', desc: 'Multiple inter-school competition victories' },
-                    { title: 'Innovation Award', desc: 'Recognition for modern teaching methodologies' },
-                  ].map((a) => (
-                    <div
-                      key={a.title}
-                      className="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700"
-                    >
-                      <div className="h-10 w-10 rounded-lg bg-[#137fec] flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-white text-lg">check</span>
-                      </div>
-                      <div>
-                        <h3 className="text-base font-black text-[#0d141b] dark:text-white">{a.title}</h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">{a.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Principal's Message */}
-      <section className="w-full bg-slate-50 dark:bg-slate-900 py-12 sm:py-16">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 md:p-10">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-12 w-12 rounded-xl bg-[#137fec] flex items-center justify-center">
-                  <span className="material-symbols-outlined text-white text-2xl">format_quote</span>
-                </div>
-                <p className="text-lg sm:text-xl font-black text-[#0d141b] dark:text-white">Principal's Message</p>
-              </div>
-              <p className="text-base sm:text-lg text-slate-700 dark:text-slate-200 leading-relaxed italic mb-6">
-                "Education is not just about marks, it is about building character, confidence and skills.
-                We encourage every student to learn with curiosity and grow with discipline. At {SCHOOL_NAME},
-                we believe in nurturing each child's unique potential while instilling strong values and
-                preparing them for the challenges of tomorrow."
+              <h3 className="mt-4 text-2xl font-extrabold text-white">Principal&apos;s message</h3>
+              <p className="mt-4 text-sm leading-relaxed text-slate-100/95 sm:text-base">
+                Education is not only about marks. It is about confidence, values and readiness for life. We guide each
+                student with personal attention so they grow with skill, discipline and purpose.
               </p>
-              <div className="flex items-center gap-3">
-                <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-[#137fec]/30">
-                  <img
-                    src={aboutPhotos.principal}
-                    alt="Principal portrait"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+
+              <div className="mt-6 flex items-center gap-3 rounded-xl border border-cyan-200/20 bg-cyan-300/5 p-3">
+                <img src={aboutPhotos.principal} alt="Principal portrait" className="h-14 w-14 rounded-full object-cover" />
                 <div>
-                  <p className="text-base font-black text-[#0d141b] dark:text-white">Principal</p>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">{SCHOOL_NAME}</p>
+                  <p className="text-sm font-bold text-white">Principal</p>
+                  <p className="text-xs text-slate-200/90">{SCHOOL_NAME}</p>
                 </div>
               </div>
-            </div>
+
+              <img
+                src={aboutPhotos.achievements}
+                alt="School achievement moments"
+                className="mt-6 h-52 w-full rounded-xl object-cover"
+              />
+            </article>
           </div>
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="w-full bg-white dark:bg-slate-800 py-12 sm:py-16">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-black text-[#0d141b] dark:text-white mb-4">
-              Join Our Community
-            </h2>
-            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
-              Experience quality education with modern facilities and dedicated teachers. Get in touch to learn more
-              about admissions and our programs.
+      <section className="ryme-section pt-0">
+        <div className="ryme-shell">
+          <div className="ryme-card p-7 text-center sm:p-9">
+            <span className="ryme-tag">Admissions open</span>
+            <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">Be part of our learning community</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-200 sm:text-base">
+              Visit campus, meet our faculty and explore programs crafted for all-round student development.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/contact"
-                className="inline-flex items-center justify-center gap-2 font-semibold px-6 py-3 rounded-xl bg-[#137fec] text-white hover:bg-[#0f6dd4] shadow-lg shadow-[#137fec]/30 transition-colors"
-              >
-                <span className="material-symbols-outlined">call</span>
-                Contact Us
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Link to="/contact" className="ryme-button">
+                Contact School
               </Link>
-              <Link
-                to="/gallery"
-                className="inline-flex items-center justify-center gap-2 font-semibold px-6 py-3 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-              >
-                <span className="material-symbols-outlined">photo_library</span>
-                View Gallery
+              <Link to="/gallery" className="ryme-button-ghost">
+                Explore Gallery
               </Link>
             </div>
           </div>
@@ -293,5 +158,3 @@ function About() {
 }
 
 export default About
-
-
