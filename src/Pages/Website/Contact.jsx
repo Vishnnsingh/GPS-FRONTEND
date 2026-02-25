@@ -2,218 +2,172 @@ import React, { useState } from 'react'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 import { contactPhotos } from '../../assets/websiteImages'
 
+const contactItems = [
+  { icon: 'call', title: 'Phone', value: '+91 7870225302', link: 'tel:+917870225302' },
+  { icon: 'mail', title: 'Email', value: 'gpschool2025@gmail.com', link: 'mailto:gpschool2025@gmail.com' },
+  { icon: 'location_on', title: 'Address', value: 'Belaspur Dainmanwa Road, Harinagar, Bihar 845103', link: 'https://maps.google.com' },
+  { icon: 'schedule', title: 'Office Hours', value: 'Mon - Sat, 8:00 AM to 2:00 PM', link: '#' },
+]
+
 function Contact() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
   const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' })
   const [sent, setSent] = useState(false)
 
-  const onChange = (e) => {
-    const { name, value } = e.target
-    setForm((p) => ({ ...p, [name]: value }))
+  const onChange = (event) => {
+    const { name, value } = event.target
+    setForm((prev) => ({ ...prev, [name]: value }))
     setSent(false)
   }
 
-  const onSubmit = (e) => {
-    e.preventDefault()
+  const onSubmit = (event) => {
+    event.preventDefault()
     setSent(true)
-    // No backend wired yet; keeping it as a UI-only form.
   }
 
   return (
     <WebsiteLayout>
-      {/* Hero Section */}
-      <section className="w-full bg-slate-50 dark:bg-slate-900 py-12 sm:py-16">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-10 sm:mb-12">
-              <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Get in Touch</p>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#0d141b] dark:text-white">
-                Contact Us
-              </h1>
-              <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
-                For admissions, fees, transport or general queries — we're here to help. Reach out to {SCHOOL_NAME}
-                and our team will get back to you promptly.
-              </p>
-            </div>
+      <section className="ryme-section">
+        <div className="ryme-shell">
+          <div className="ryme-card p-6 sm:p-8">
+            <span className="ryme-tag">Contact desk</span>
+            <h1 className="mt-4 text-4xl font-extrabold text-white sm:text-5xl">Talk to {SCHOOL_NAME}</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-200 sm:text-base">
+              For admissions, fees, transport, results or general school support, connect with us and the team will
+              respond quickly.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Contact Information & Form */}
-      <section className="w-full bg-white dark:bg-slate-800 py-12 sm:py-16">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
-              {/* Contact Information */}
-              <div>
-                <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Contact Information</p>
-                <h2 className="text-2xl sm:text-3xl font-black text-[#0d141b] dark:text-white mb-6">
-                  Reach Out to Us
-                </h2>
-                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
-                  We're available during school hours and always happy to assist with any questions about admissions,
-                  academics, facilities, or general inquiries.
-                </p>
+      <section className="ryme-section pt-0">
+        <div className="ryme-shell">
+          <div className="ryme-grid lg:grid-cols-[0.9fr_1.1fr]">
+            <article className="ryme-card p-5 sm:p-6">
+              <h2 className="text-2xl font-extrabold text-white">Reach out directly</h2>
+              <p className="mt-2 text-sm text-slate-200">Use any preferred channel and we will assist you.</p>
 
-                <div className="mb-8 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <img
-                    src={contactPhotos.hero}
-                    alt="Campus contact support"
-                    className="w-full h-48 sm:h-56 object-cover"
+              <img src={contactPhotos.hero} alt="Campus support" className="mt-5 h-52 w-full rounded-xl object-cover" />
+
+              <div className="mt-5 space-y-3">
+                {contactItems.map((item) => (
+                  <a
+                    key={item.title}
+                    href={item.link}
+                    target={item.link.startsWith('http') ? '_blank' : undefined}
+                    rel={item.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    className="ryme-card-soft flex items-start gap-3 p-3"
+                  >
+                    <span className="material-symbols-outlined text-cyan-300">{item.icon}</span>
+                    <span>
+                      <p className="text-xs uppercase tracking-[0.14em] text-cyan-100/80">{item.title}</p>
+                      <p className="text-sm text-slate-100/95">{item.value}</p>
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </article>
+
+            <article className="ryme-card p-5 sm:p-6">
+              <h2 className="text-2xl font-extrabold text-white">Send a message</h2>
+              <p className="mt-2 text-sm text-slate-200">Share your query and we will get back within one business day.</p>
+
+              {sent ? (
+                <div className="mt-4 rounded-xl border border-emerald-300/30 bg-emerald-400/10 p-3 text-sm text-emerald-100">
+                  Message received. Thank you, we will contact you soon.
+                </div>
+              ) : null}
+
+              <form className="mt-5 space-y-3" onSubmit={onSubmit}>
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-200">
+                    Full Name
+                  </label>
+                  <input
+                    name="name"
+                    value={form.name}
+                    onChange={onChange}
+                    className="ryme-input"
+                    placeholder="Enter full name"
+                    required
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  {[
-                    { icon: 'call', title: 'Phone', value: '+91 00000 00000', link: 'tel:+910000000000' },
-                    { icon: 'mail', title: 'Email', value: 'info@school.edu', link: 'mailto:info@school.edu' },
-                    { icon: 'location_on', title: 'Address', value: 'School Road, Your City, State - 000000', link: '#' },
-                    { icon: 'schedule', title: 'Timing', value: 'Mon-Sat: 8:00 AM - 2:00 PM', link: '#' },
-                  ].map((c) => (
-                    <a
-                      key={c.title}
-                      href={c.link}
-                      className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-5 sm:p-6 hover:shadow-lg hover:border-[#137fec]/30 transition-all duration-300"
-                    >
-                      <div className="h-12 w-12 rounded-xl bg-[#137fec] flex items-center justify-center mb-4 shadow-sm">
-                        <span className="material-symbols-outlined text-white text-xl">{c.icon}</span>
-                      </div>
-                      <p className="text-sm font-black text-[#0d141b] dark:text-white mb-2">{c.title}</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{c.value}</p>
-                    </a>
-                  ))}
-                </div>
-
-                {/* Additional Info */}
-                <div className="mt-8 p-6 bg-[#137fec]/10 rounded-xl border border-[#137fec]/20">
-                  <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-lg bg-[#137fec] flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-white">info</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-black text-[#0d141b] dark:text-white mb-2">Quick Response</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-300">
-                        We typically respond within 24 hours. For urgent matters, please call us directly.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Contact Form */}
-              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8">
-                <div className="mb-6">
-                  <p className="text-lg sm:text-xl font-black text-[#0d141b] dark:text-white">Send a Message</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
-                    Fill in your details and we'll get back to you as soon as possible.
-                  </p>
-                </div>
-
-                {sent ? (
-                  <div className="mb-6 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-green-600 dark:text-green-400">check_circle</span>
-                      <p className="text-sm font-semibold text-green-700 dark:text-green-300">
-                        Thank you! Your message has been sent. We'll contact you soon.
-                      </p>
-                    </div>
-                  </div>
-                ) : null}
-
-                <form className="space-y-4" onSubmit={onSubmit}>
+                <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                      Full Name <span className="text-[#137fec]">*</span>
-                    </label>
-                    <input
-                      name="name"
-                      value={form.name}
-                      onChange={onChange}
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec] transition-colors"
-                      placeholder="Enter your full name"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                      Phone Number <span className="text-[#137fec]">*</span>
+                    <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-200">
+                      Phone
                     </label>
                     <input
                       name="phone"
                       value={form.phone}
                       onChange={onChange}
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec] transition-colors"
-                      placeholder="Enter your mobile number"
-                      inputMode="tel"
+                      className="ryme-input"
+                      placeholder="9876543210"
                       required
                     />
                   </div>
-
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                      Email Address <span className="text-[#137fec]">*</span>
+                    <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-200">
+                      Email
                     </label>
                     <input
                       name="email"
                       type="email"
                       value={form.email}
                       onChange={onChange}
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec] transition-colors"
-                      placeholder="Enter your email address"
+                      className="ryme-input"
+                      placeholder="name@email.com"
                       required
                     />
                   </div>
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                      Message <span className="text-[#137fec]">*</span>
-                    </label>
-                    <textarea
-                      name="message"
-                      value={form.message}
-                      onChange={onChange}
-                      className="w-full min-h-32 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec] transition-colors resize-none"
-                      placeholder="Write your message or query here..."
-                      required
-                    />
-                  </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-200">
+                    Message
+                  </label>
+                  <textarea
+                    name="message"
+                    value={form.message}
+                    onChange={onChange}
+                    className="ryme-input min-h-36 resize-none"
+                    placeholder="Write your question..."
+                    required
+                  />
+                </div>
 
-                  <button
-                    type="submit"
-                    className="w-full inline-flex items-center justify-center gap-2 font-semibold px-6 py-3 rounded-xl bg-[#137fec] text-white hover:bg-[#0f6dd4] shadow-lg shadow-[#137fec]/30 transition-all duration-200"
-                  >
-                    <span className="material-symbols-outlined">send</span>
-                    Send Message
-                  </button>
-                </form>
-              </div>
-            </div>
+                <button type="submit" className="ryme-button w-full">
+                  <span className="material-symbols-outlined text-base">send</span>
+                  Submit Message
+                </button>
+              </form>
+            </article>
           </div>
         </div>
       </section>
 
-      {/* Map Section */}
-      <section className="w-full bg-slate-50 dark:bg-slate-900 py-12 sm:py-16">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <p className="text-xs sm:text-sm font-semibold text-[#137fec] mb-2">Find Us</p>
-              <h2 className="text-2xl sm:text-3xl font-black text-[#0d141b] dark:text-white">School Location</h2>
-            </div>
-            <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
-              <div className="relative w-full h-64 sm:h-80 md:h-96">
-                <img
-                  src={contactPhotos.map}
-                  alt="School location and campus route"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/35 flex items-end">
-                  <div className="p-4 sm:p-6">
-                    <p className="text-white text-lg sm:text-xl font-bold">Visit Our Campus</p>
-                    <p className="text-white/90 text-sm">School Road, Your City, State - 000000</p>
-                  </div>
-                </div>
+      <section className="ryme-section pt-0">
+        <div className="ryme-shell">
+          <div className="ryme-card overflow-hidden">
+            <div className="relative h-72 sm:h-96">
+              <img src={contactPhotos.location} alt="School campus location" className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#031223] via-[#031223]/58 to-[#031223]/15"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7">
+                <p className="text-xs uppercase tracking-[0.14em] text-cyan-100/90">Visit us</p>
+                <p className="mt-1 text-2xl font-bold text-white sm:text-4xl">School Campus Location</p>
+                <p className="mt-1 max-w-3xl text-sm text-slate-100/95 sm:text-lg">
+                  Belaspur Dainmanwa Road, Harinagar, West Champaran, Bihar
+                </p>
+                <a
+                  href="https://maps.google.com/?q=Belaspur+Dainmanwa+Road+Harinagar+West+Champaran+Bihar"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-cyan-200/35 bg-cyan-400/15 px-4 py-2 text-sm font-semibold text-cyan-50 backdrop-blur-sm hover:bg-cyan-300/20"
+                >
+                  <span className="material-symbols-outlined text-base">near_me</span>
+                  Open Directions
+                </a>
               </div>
             </div>
           </div>
@@ -224,5 +178,3 @@ function Contact() {
 }
 
 export default Contact
-
-
