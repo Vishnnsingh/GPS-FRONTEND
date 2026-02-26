@@ -97,11 +97,11 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/gallery" element={<Galary />} />
         <Route path="/login" element={<AllLogin />} />
-        <Route path="/student-login" element={<StudentLogin />} />
-        <Route path="/result-login" element={<ResultLogin />} />
+        {/* <Route path="/student-login" element={<StudentLogin />} /> */}
+        {/* <Route path="/result-login" element={<ResultLogin />} /> */}
         <Route path="/results-portal" element={<ResultsPortal />} />
         <Route path="/result" element={<Results />} />
-        <Route path="/register" element={<StudentRegister />} />
+        {/* <Route path="/register" element={<StudentRegister />} /> */}
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route
           element={

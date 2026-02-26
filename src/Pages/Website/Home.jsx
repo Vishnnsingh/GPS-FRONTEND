@@ -100,7 +100,7 @@ function Home() {
 
                 <div className="mt-7 flex flex-wrap items-center gap-3">
                   <Link
-                    to="/result-login"
+                    to="/results-portal"
                     className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#5ce6ff] to-[#1abef8] px-7 py-3 text-base font-extrabold text-[#04182d] shadow-xl shadow-cyan-500/25"
                   >
                     Result
@@ -284,7 +284,7 @@ function Home() {
                 <span className="ryme-tag">Parent & student voice</span>
                 <h2 className="mt-3 text-3xl font-extrabold text-white sm:text-4xl">Trusted by our community</h2>
               </div>
-              <Link to="/result-login" className="ryme-button">
+              <Link to="/results-portal" className="ryme-button">
                 Open Result Portal
               </Link>
             </div>

@@ -265,7 +265,235 @@ function Results() {
   }
 
   const handlePrint = () => {
-    window.print()
+    if (!data) return
+
+    try {
+      const doc = new jsPDF('p', 'mm', 'a4')
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const pageHeight = doc.internal.pageSize.getHeight()
+      const margin = 8
+      const contentWidth = pageWidth - margin * 2
+
+      doc.setDrawColor(70, 94, 126)
+      doc.setLineWidth(0.4)
+      doc.roundedRect(margin, margin, contentWidth, pageHeight - margin * 2, 4, 4)
+
+      let y = margin + 8
+      doc.setFont('times', 'bold')
+      doc.setTextColor(31, 52, 96)
+      doc.setFontSize(24)
+      doc.text(String(SCHOOL_NAME).toUpperCase(), pageWidth / 2, y, { align: 'center' })
+      y += 6
+
+      doc.setFont('times', 'bold')
+      doc.setTextColor(52, 74, 115)
+      doc.setFontSize(10)
+      doc.text(String(SCHOOL_ADDRESS).toUpperCase(), pageWidth / 2, y, { align: 'center' })
+      y += 7
+
+      doc.setTextColor(42, 63, 103)
+      doc.setFontSize(13)
+      doc.text(
+        `${String(data?.terminal || params.terminal || '--').toUpperCase()} EXAMINATION RESULT - ${sessionLabel}`,
+        pageWidth / 2,
+        y,
+        { align: 'center' }
+      )
+      y += 4
+
+      doc.setDrawColor(194, 204, 221)
+      doc.line(margin + 3, y, pageWidth - margin - 3, y)
+      y += 3
+
+      const infoBody = [
+        [
+          'Name of Student',
+          toDisplayValue(student?.name),
+          'Roll Number',
+          toDisplayValue(student?.roll_no ?? params.roll),
+        ],
+        [
+          "Father's Name",
+          toDisplayValue(student?.father_name),
+          'Section',
+          toDisplayValue(student?.section ?? params.section),
+        ],
+        [
+          'Class',
+          toDisplayValue(student?.class ?? params.classValue),
+          'Current Terminal',
+          toDisplayValue(data?.terminal || params.terminal),
+        ],
+        [
+          'Session',
+          toDisplayValue(sessionLabel),
+          '',
+          '',
+        ],
+      ]
+
+      autoTable(doc, {
+        startY: y,
+        margin: { left: margin + 3, right: margin + 3 },
+        tableWidth: contentWidth - 6,
+        theme: 'grid',
+        body: infoBody,
+        styles: { fontSize: 9, cellPadding: 2, textColor: [20, 28, 43] },
+        columnStyles: {
+          0: { fontStyle: 'bold', fillColor: [238, 242, 248], cellWidth: 40 },
+          1: { fontStyle: 'bold', cellWidth: 54 },
+          2: { fontStyle: 'bold', fillColor: [238, 242, 248], cellWidth: 32 },
+          3: { fontStyle: 'bold', cellWidth: 52 },
+        },
+      })
+
+      y = doc.lastAutoTable.finalY + 3
+
+      const marksBody = processedMarks.length
+        ? processedMarks.map((m) => [
+            String(m.subjectName),
+            String(m.fullMarks),
+            String(m.passMarks),
+            String(m.externalDisplay),
+            String(m.internalDisplay),
+            String(m.obtainedDisplay),
+            String(m.status),
+          ])
+        : [['No marks available', '--', '--', '--', '--', '--', '--']]
+
+      autoTable(doc, {
+        startY: y,
+        margin: { left: margin + 3, right: margin + 3 },
+        tableWidth: contentWidth - 6,
+        head: [['Subject', 'FM', 'Pass', 'Ext', 'Int', 'Obtained', 'Result']],
+        body: marksBody,
+        theme: 'grid',
+        styles: { fontSize: 8.2, cellPadding: 1.8, textColor: [20, 28, 43] },
+        headStyles: { fillColor: [231, 236, 245], textColor: [37, 55, 80], fontStyle: 'bold' },
+        columnStyles: {
+          0: { cellWidth: 60, fontStyle: 'bold' },
+          1: { halign: 'center', cellWidth: 16 },
+          2: { halign: 'center', cellWidth: 16 },
+          3: { halign: 'center', cellWidth: 15 },
+          4: { halign: 'center', cellWidth: 15 },
+          5: { halign: 'center', cellWidth: 20, fontStyle: 'bold' },
+          6: { halign: 'center', cellWidth: 20, fontStyle: 'bold' },
+        },
+      })
+
+      y = doc.lastAutoTable.finalY + 3
+
+      const summaryHeader = ['Metric', ...visibleTerminals.map((t) => `${t} Term`)]
+      const summaryRows = [
+        ['Total Marks', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.total_max_marks)))],
+        ['Marks Obtained', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.total_obtained)))],
+        [
+          'Percentage',
+          ...visibleTerminals.map((t) => String(getSummaryCellValue(
+            t,
+            typeof termSummaries[t]?.percentage !== 'undefined' && termSummaries[t]?.percentage !== null
+              ? `${termSummaries[t].percentage}%`
+              : '--'
+          ))),
+        ],
+        ['Division', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.division)))],
+        ['Class & Section Rank', ...visibleTerminals.map((t) => String(getDisplayRank(t)))],
+        [
+          'Published Date',
+          ...visibleTerminals.map((t) => {
+            const publishedDate = getPublishedDateFromSummary(termSummaries[t])
+            if (!isTermAvailable(t)) {
+              return 'Result Not Found'
+            }
+            return publishedDate
+              ? new Date(publishedDate).toLocaleDateString('en-IN')
+              : '--'
+          }),
+        ],
+      ]
+
+      autoTable(doc, {
+        startY: y,
+        margin: { left: margin + 3, right: margin + 3 },
+        tableWidth: contentWidth - 6,
+        head: [summaryHeader],
+        body: summaryRows,
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 1.8, textColor: [20, 28, 43] },
+        headStyles: { fillColor: [231, 236, 245], textColor: [37, 55, 80], fontStyle: 'bold' },
+        columnStyles: {
+          0: { fontStyle: 'bold', cellWidth: 48 },
+        },
+      })
+
+      y = doc.lastAutoTable.finalY + 4
+      doc.setTextColor(50, 64, 86)
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(8.5)
+
+      const notes = [
+        'This is a computer-generated result marksheet and does not require any signature.',
+        'Pass Marks: 30 for regular subjects and 15 for Drawing (FM: 50, External only).',
+        'Rank is calculated class and section wise.',
+      ]
+
+      notes.forEach((note) => {
+        if (y > pageHeight - 18) return
+        doc.text(`- ${note}`, margin + 5, y)
+        y += 4
+      })
+
+      const signatureLineY = Math.max(y + 3, pageHeight - 20)
+      doc.setDrawColor(120, 130, 148)
+      doc.line(pageWidth - 68, signatureLineY, pageWidth - 18, signatureLineY)
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(8.5)
+      doc.text("Principal's Signature", pageWidth - 43, signatureLineY + 4, { align: 'center' })
+
+      doc.setFont('helvetica', 'normal')
+      doc.text(`Generated: ${todayLabel}`, margin + 5, signatureLineY + 4)
+
+      // Generate PDF blob and open print dialog directly (NO DOWNLOAD, NO NEW WINDOW)
+      const pdfBlob = doc.output('blob')
+      const pdfUrl = URL.createObjectURL(pdfBlob)
+      
+      // Create hidden iframe for printing
+      const iframe = document.createElement('iframe')
+      iframe.style.position = 'fixed'
+      iframe.style.right = '0'
+      iframe.style.bottom = '0'
+      iframe.style.width = '0'
+      iframe.style.height = '0'
+      iframe.style.border = 'none'
+      iframe.src = pdfUrl
+      
+      document.body.appendChild(iframe)
+      
+      // Wait for PDF to load then trigger print dialog
+      iframe.onload = () => {
+        setTimeout(() => {
+          try {
+            iframe.contentWindow?.print()
+            // Clean up after print dialog opens
+            setTimeout(() => {
+              document.body.removeChild(iframe)
+              URL.revokeObjectURL(pdfUrl)
+            }, 1000)
+          } catch (e) {
+            console.error('Print failed:', e)
+            document.body.removeChild(iframe)
+            URL.revokeObjectURL(pdfUrl)
+            fireToast('error', 'Print', 'Unable to open print dialog.')
+          }
+        }, 500)
+      }
+      
+      fireToast('success', 'Print', 'Print dialog opened.')
+    } catch (err) {
+      console.error('Failed to open print dialog:', err)
+      fireToast('error', 'Print', 'Unable to open print dialog.')
+      window.print()
+    }
   }
 
   const toNumber = (value) => {
@@ -667,7 +895,9 @@ function Results() {
       doc.setFont('helvetica', 'normal')
       doc.text(`Generated: ${todayLabel}`, margin + 5, signatureLineY + 4)
 
+      // Generate PDF and download only (NO PRINT DIALOG)
       doc.save(`${downloadFileName}.pdf`)
+      
       fireToast('success', 'Download', 'Result card PDF downloaded.')
     } catch (err) {
       console.error('Failed to download result card PDF:', err)

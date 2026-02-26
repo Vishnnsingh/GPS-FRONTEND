@@ -155,7 +155,7 @@ function AllLogin() {
                   </div>
                 </label>
 
-                <div className="flex items-center justify-between pt-1">
+                {/* <div className="flex items-center justify-between pt-1">
                   <label className="inline-flex items-center gap-2 text-sm text-slate-300">
                     <input type="checkbox" className="h-4 w-4 rounded border-cyan-300/50 bg-transparent" />
                     Remember me
@@ -163,7 +163,7 @@ function AllLogin() {
                   <a href="#" className="text-sm font-semibold text-cyan-200 hover:text-cyan-100">
                     Forgot Password?
                   </a>
-                </div>
+                </div> */}
 
                 <button type="submit" disabled={loading} className="ryme-button mt-2 w-full disabled:opacity-60">
                   {loading ? (
@@ -180,12 +180,12 @@ function AllLogin() {
                 </button>
               </form>
 
-              <p className="mt-4 text-center text-sm text-slate-300">
+              {/* <p className="mt-4 text-center text-sm text-slate-300">
                 Don't have an account?{' '}
                 <Link to="/register" className="font-bold text-cyan-200 hover:text-cyan-100">
                   Sign Up
                 </Link>
-              </p>
+              </p> */}
             </article>
           </div>
         </div>

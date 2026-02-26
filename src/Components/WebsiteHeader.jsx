@@ -54,7 +54,7 @@ function WebsiteHeader() {
 
             <div className="hidden items-center gap-2 md:flex">
               <Link
-                to="/result-login"
+                to="/results-portal"
                 className="inline-flex items-center justify-center rounded-xl border border-cyan-300/35 px-3 py-2 text-xs font-semibold text-cyan-50 hover:bg-cyan-300/10"
               >
                 Result
