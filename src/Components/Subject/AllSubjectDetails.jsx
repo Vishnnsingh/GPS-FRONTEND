@@ -104,7 +104,7 @@ function AllSubjectDetails() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center justify-center gap-1.5 bg-[#137fec] hover:bg-[#137fec]/90 text-white font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg shadow-lg shadow-[#137fec]/20 transition-all text-xs sm:text-sm"
+            className="flex items-center justify-center gap-1.5 bg-cyan-500 hover:bg-cyan-500/90 text-white font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg shadow-lg shadow-cyan-500/20 transition-all text-xs sm:text-sm"
           >
             <span className="material-symbols-outlined text-base">add</span>
             <span className="hidden sm:inline">Add Subject</span>
@@ -112,7 +112,7 @@ function AllSubjectDetails() {
           </button>
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center justify-center gap-1.5 bg-[#137fec] hover:bg-[#137fec]/90 text-white font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg shadow-lg shadow-[#137fec]/20 transition-all text-xs sm:text-sm"
+            className="flex items-center justify-center gap-1.5 bg-cyan-500 hover:bg-cyan-500/90 text-white font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg shadow-lg shadow-cyan-500/20 transition-all text-xs sm:text-sm"
           >
             <span className="material-symbols-outlined text-base">book</span>
             <span className="hidden md:inline">Add to Class</span>
@@ -136,7 +136,7 @@ function AllSubjectDetails() {
 
       {loading && (
         <div className="flex items-center justify-center py-12">
-          <span className="material-symbols-outlined animate-spin text-3xl sm:text-4xl text-[#137fec]">sync</span>
+          <span className="material-symbols-outlined animate-spin text-3xl sm:text-4xl text-cyan-200">sync</span>
         </div>
       )}
 
@@ -145,8 +145,8 @@ function AllSubjectDetails() {
           <div className="ryme-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs sm:text-sm font-medium text-slate-300">Total Classes</span>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#137fec]/10 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-[#137fec] text-base sm:text-lg">class</span>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-cyan-300/15 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-cyan-200 text-base sm:text-lg">class</span>
               </div>
             </div>
             <p className="text-2xl sm:text-3xl font-black text-white">{data.summary.total_classes}</p>
@@ -155,8 +155,8 @@ function AllSubjectDetails() {
           <div className="ryme-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs sm:text-sm font-medium text-slate-300">Mappings</span>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#137fec]/10 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-[#137fec] text-base sm:text-lg">link</span>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-cyan-300/15 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-cyan-200 text-base sm:text-lg">link</span>
               </div>
             </div>
             <p className="text-2xl sm:text-3xl font-black text-white">{data.summary.total_subject_mappings}</p>
@@ -165,8 +165,8 @@ function AllSubjectDetails() {
           <div className="ryme-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs sm:text-sm font-medium text-slate-300">Unique Subjects</span>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#137fec]/10 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-[#137fec] text-base sm:text-lg">book</span>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-cyan-300/15 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-cyan-200 text-base sm:text-lg">book</span>
               </div>
             </div>
             <p className="text-2xl sm:text-3xl font-black text-white">{data.summary.total_unique_subjects}</p>
@@ -179,12 +179,12 @@ function AllSubjectDetails() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-200 mb-2">Filter by Class</label>
-              <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
-                <span className="material-symbols-outlined pl-2 sm:pl-3 text-slate-500 dark:text-slate-400 text-base">class</span>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 sm:pl-3 text-cyan-200 text-base">class</span>
                 <select
                   value={selectedClass}
                   onChange={(e) => setSelectedClass(e.target.value)}
-                  className="w-full bg-transparent border-none focus:ring-0 py-2 sm:py-2.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white"
+                  className="w-full bg-transparent border-none focus:ring-0 py-2 sm:py-2.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white dropdown-cyan"
                 >
                   <option value="">All Classes</option>
                   {data?.classes && data.classes.length > 0 ? (
@@ -218,7 +218,7 @@ function AllSubjectDetails() {
                   className="w-full flex items-center justify-between p-3 sm:p-5 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 transition-all"
                 >
                   <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[#137fec] text-white flex items-center justify-center font-bold flex-shrink-0">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-cyan-500 text-white flex items-center justify-center font-bold flex-shrink-0">
                       <span className="material-symbols-outlined text-base sm:text-lg">
                         {expandedClasses.has(classData.class) ? 'expand_less' : 'expand_more'}
                       </span>
@@ -244,7 +244,7 @@ function AllSubjectDetails() {
                           {classSubjects.map((subject, subjectIndex) => (
                             <div
                               key={subject.id || `${subject.subject_code}-${subjectIndex}`}
-                              className="bg-gradient-to-br from-slate-50 to-white rounded-lg p-2.5 sm:p-3 border border-slate-200 hover:border-[#137fec] hover:shadow-md transition-all"
+                              className="bg-gradient-to-br from-slate-50 to-white rounded-lg p-2.5 sm:p-3 border border-slate-200 hover:border-cyan-400 hover:shadow-md transition-all"
                             >
                               <div className="flex items-start justify-between gap-2">
                                 <div className="flex-1 min-w-0">
@@ -255,7 +255,7 @@ function AllSubjectDetails() {
                                     <span className="font-medium text-slate-700 dark:text-slate-300">{subject.subject_code}</span>
                                   </p>
                                 </div>
-                                <span className="flex-shrink-0 text-xs bg-[#137fec]/10 text-[#137fec] dark:bg-[#137fec]/20 dark:text-[#137fec] px-1.5 py-0.5 rounded font-medium whitespace-nowrap">
+                                <span className="flex-shrink-0 text-xs bg-cyan-300/15 text-cyan-200 dark:bg-cyan-500/20 dark:text-cyan-200 px-1.5 py-0.5 rounded font-medium whitespace-nowrap">
                                   #{subject.sequence}
                                 </span>
                               </div>
@@ -275,8 +275,8 @@ function AllSubjectDetails() {
       )}
 
       {!loading && !error && filteredClasses.length === 0 && (
-        <div className="bg-white dark:bg-slate-800 rounded-lg p-6 sm:p-8 shadow-md border border-blue-200 dark:border-blue-800 text-center">
-          <span className="material-symbols-outlined text-3xl sm:text-4xl text-slate-400 mb-2 block">book</span>
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-6 sm:p-8 shadow-md border border-cyan-200/30 dark:border-cyan-800/50 text-center">
+          <span className="material-symbols-outlined text-3xl sm:text-4xl text-cyan-200 mb-2 block">book</span>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">No subjects found</p>
         </div>
       )}

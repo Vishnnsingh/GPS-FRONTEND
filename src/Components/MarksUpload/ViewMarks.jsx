@@ -293,7 +293,7 @@ function ViewMarks() {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
               Class <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
               <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">class</span>
               {loadingSubjects ? (
                 <div className="w-full py-2.5 px-2 text-sm text-slate-500 dark:text-slate-400">Loading...</div>
@@ -318,7 +318,7 @@ function ViewMarks() {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
               Section
             </label>
-            <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
               <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">category</span>
               <select
                 value={filters.section}
@@ -339,7 +339,7 @@ function ViewMarks() {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
               Terminal <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
               <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">calendar_today</span>
               <select
                 value={filters.terminal}
@@ -367,7 +367,7 @@ function ViewMarks() {
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center py-12">
-          <span className="material-symbols-outlined animate-spin text-4xl text-[#137fec]">sync</span>
+          <span className="material-symbols-outlined animate-spin text-4xl text-cyan-200">sync</span>
         </div>
       )}
 
@@ -379,8 +379,8 @@ function ViewMarks() {
             <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Total Students</span>
-                <div className="w-10 h-10 rounded-lg bg-[#137fec]/10 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[#137fec] text-lg">people</span>
+                <div className="w-10 h-10 rounded-lg bg-cyan-300/15 flex items-center justify-center border border-cyan-400/30">
+                  <span className="material-symbols-outlined text-cyan-200 text-lg">people</span>
                 </div>
               </div>
               <p className="text-3xl font-black text-slate-900 dark:text-white">{marksData.count || marksData.students.length}</p>
@@ -424,7 +424,7 @@ function ViewMarks() {
                   Subject-wise Marks
                 </h3>
                 {/* Student Dropdown - Small, inside card on right */}
-                <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all w-48">
+                  <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all w-48">
                   <span className="material-symbols-outlined pl-2 text-slate-500 dark:text-slate-400 text-sm">person</span>
                   <select
                     value={selectedStudent}
@@ -452,10 +452,22 @@ function ViewMarks() {
                       interval={0}
                     />
                     <YAxis tick={{ fontSize: 11 }} />
-                    <Tooltip />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(7, 20, 36, 0.96)',
+                        border: '1px solid rgba(64, 212, 255, 0.25)',
+                        borderRadius: '12px',
+                        padding: '8px 12px',
+                        fontSize: '12px',
+                      }}
+                      labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
+                      itemStyle={{ color: '#ffffff' }}
+                      wrapperStyle={{ background: 'transparent' }}
+                      cursor={{ fill: 'transparent' }}
+                    />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    <Bar dataKey="external" fill="#137fec" name="External Marks" />
-                    <Bar dataKey="internal" fill="#10b981" name="Internal Marks" />
+                    <Bar dataKey="external" fill="#06b6d4" name="External Marks" cursor="pointer" />
+                    <Bar dataKey="internal" fill="#10b981" name="Internal Marks" cursor="pointer" />
                   </BarChart>
                 ) : (
                   <div className="flex items-center justify-center h-full">
@@ -484,7 +496,18 @@ function ViewMarks() {
                       <Cell key={`cell-${index}`} fill={getStatusColor(entry.name)} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(7, 20, 36, 0.96)',
+                      border: '1px solid rgba(64, 212, 255, 0.25)',
+                      borderRadius: '12px',
+                      padding: '8px 12px',
+                      fontSize: '12px',
+                    }}
+                    labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
+                    itemStyle={{ color: '#ffffff' }}
+                    wrapperStyle={{ background: 'transparent' }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -588,7 +611,7 @@ function ViewMarks() {
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                     disabled={currentPage === 1}
-                    className="px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Previous
                   </button>
@@ -599,8 +622,8 @@ function ViewMarks() {
                         onClick={() => setCurrentPage(page)}
                         className={`px-2 py-1 text-xs font-medium rounded-lg transition-colors ${
                           currentPage === page
-                            ? 'bg-[#137fec] text-white'
-                            : 'text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600'
+                            ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20'
+                            : 'text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-cyan-200/30 dark:border-cyan-700/50 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10'
                         }`}
                       >
                         {page}
@@ -610,7 +633,7 @@ function ViewMarks() {
                   <button
                     onClick={() => setCurrentPage(prev => Math.min(Math.ceil(marksData.students.length / itemsPerPage), prev + 1))}
                     disabled={currentPage >= Math.ceil(marksData.students.length / itemsPerPage)}
-                    className="px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Next
                   </button>
@@ -674,8 +697,8 @@ function ViewMarks() {
                 <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-700 dark:to-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-600">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Total Students</span>
-                    <div className="w-8 h-8 rounded-lg bg-[#137fec]/10 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#137fec] text-sm">people</span>
+                    <div className="w-8 h-8 rounded-lg bg-cyan-300/15 flex items-center justify-center border border-cyan-400/30">
+                      <span className="material-symbols-outlined text-cyan-200 text-sm">people</span>
                     </div>
                   </div>
                   <p className="text-2xl font-black text-slate-900 dark:text-white">{publishData.total_students || 0}</p>

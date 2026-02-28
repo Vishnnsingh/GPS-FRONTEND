@@ -35,7 +35,7 @@ function FeeManager() {
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2 ${
               activeTab === tab.id
-                ? 'bg-[#137fec] text-white shadow-md'
+                ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700'
             }`}
           >

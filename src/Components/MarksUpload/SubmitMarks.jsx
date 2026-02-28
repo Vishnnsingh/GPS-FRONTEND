@@ -595,7 +595,7 @@ function SubmitMarks() {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
               Class <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
               <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">class</span>
               {loadingSubjects ? (
                 <div className="w-full py-2.5 px-2 text-sm text-slate-500 dark:text-slate-400">
@@ -625,7 +625,7 @@ function SubmitMarks() {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
               Section <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
               <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">category</span>
               <select
                 name="section"
@@ -657,7 +657,7 @@ function SubmitMarks() {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
               Terminal <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
               <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">calendar_today</span>
               <select
                 name="terminal"
@@ -681,7 +681,7 @@ function SubmitMarks() {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">
               Roll Number <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
               <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">badge</span>
               <input
                 type="number"
@@ -699,7 +699,7 @@ function SubmitMarks() {
 
         {/* Subjects and Marks */}
         {formData.class && formData.section && formData.roll_no && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+          <div className="bg-cyan-50/30 dark:bg-cyan-900/10 rounded-lg p-4 border border-cyan-200/30 dark:border-cyan-700/50">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">Student Verification</h3>
               {studentPreview && (
@@ -763,8 +763,8 @@ function SubmitMarks() {
               </span>
             </div>
 
-            <div className="rounded-xl border border-sky-200 dark:border-sky-800 bg-gradient-to-r from-sky-50 via-cyan-50 to-indigo-50 dark:from-sky-900/20 dark:via-cyan-900/20 dark:to-indigo-900/20 px-4 py-3">
-              <p className="text-xs sm:text-sm font-semibold text-sky-900 dark:text-sky-200">
+            <div className="rounded-xl border border-cyan-200/30 dark:border-cyan-700/50 bg-transparent px-4 py-3">
+              <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-cyan-200">
                 Rules: External max 80, Internal max 20, Drawing subject me sirf External allowed (max 50). Negative marks allowed nahi hain.
               </p>
             </div>
@@ -796,7 +796,7 @@ function SubmitMarks() {
                         </h4>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="inline-flex items-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-0.5 text-[11px] font-bold">
+                        <span className="inline-flex items-center rounded-full bg-cyan-300/15 text-cyan-200 border border-cyan-400/30 px-2 py-0.5 text-[11px] font-bold">
                           Ext Max {rules.externalMax}
                         </span>
                         {rules.internalAllowed ? (
@@ -817,7 +817,7 @@ function SubmitMarks() {
                         <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                           External Marks
                         </label>
-                        <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
+                        <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
                           <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">assessment</span>
                           <input
                             type="number"
@@ -843,7 +843,7 @@ function SubmitMarks() {
                           <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                             Internal Marks
                           </label>
-                          <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 focus-within:border-[#137fec] focus-within:ring-2 focus-within:ring-[#137fec]/20 transition-all">
+                          <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
                             <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">grade</span>
                             <input
                               type="number"
@@ -903,7 +903,7 @@ function SubmitMarks() {
               availableSubjects.length === 0 ||
               Object.keys(markFieldErrors).length > 0
             }
-            className="px-6 py-2.5 text-sm font-bold text-white bg-[#137fec] hover:bg-[#137fec]/90 rounded-lg shadow-lg shadow-[#137fec]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-6 py-2.5 text-sm font-bold text-white bg-cyan-500 hover:bg-cyan-500/90 rounded-lg shadow-lg shadow-cyan-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {loading ? (
               <>

@@ -91,7 +91,7 @@ function WebsiteHeader() {
                 ))}
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   <Link
-                    to="/result-login"
+                    to="/results-portal"
                     onClick={() => setOpen(false)}
                     className="inline-flex items-center justify-center rounded-xl border border-cyan-300/35 px-3 py-2 text-sm font-semibold text-cyan-50"
                   >

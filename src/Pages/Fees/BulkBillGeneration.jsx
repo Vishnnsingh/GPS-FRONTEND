@@ -202,7 +202,7 @@ function BulkBillGeneration() {
                   setFormData({ ...formData, class: '' })
                 }
               }}
-              className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+              className="w-5 h-5 text-cyan-500 rounded focus:ring-2 focus:ring-cyan-400"
             />
             <div>
               <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Generate for All Classes</span>
@@ -223,7 +223,7 @@ function BulkBillGeneration() {
               value={formData.class}
               onChange={(e) => setFormData({ ...formData, class: e.target.value })}
               placeholder={generateForAll ? "Not required for all classes" : "e.g., LKG, 1, 2, 3"}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -234,7 +234,7 @@ function BulkBillGeneration() {
               required
               value={formData.month}
               onChange={(e) => setFormData({ ...formData, month: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+              className="w-full px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
             />
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Format: YYYY-MM (e.g., 2026-03)</p>
           </div>
@@ -248,32 +248,32 @@ function BulkBillGeneration() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <label className="flex items-center gap-3 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+            <label className="flex items-center gap-3 cursor-pointer p-3 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 transition-colors">
               <input
                 type="checkbox"
                 checked={formData.include_annual_fee}
                 onChange={(e) => setFormData({ ...formData, include_annual_fee: e.target.checked })}
-                className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+                className="w-5 h-5 text-cyan-500 rounded focus:ring-2 focus:ring-cyan-400"
               />
               <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Annual Fee</span>
             </label>
 
-            <label className="flex items-center gap-3 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+            <label className="flex items-center gap-3 cursor-pointer p-3 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 transition-colors">
               <input
                 type="checkbox"
                 checked={formData.include_exam_fee}
                 onChange={(e) => setFormData({ ...formData, include_exam_fee: e.target.checked })}
-                className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+                className="w-5 h-5 text-cyan-500 rounded focus:ring-2 focus:ring-cyan-400"
               />
               <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Exam Fee</span>
             </label>
 
-            <label className="flex items-center gap-3 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+            <label className="flex items-center gap-3 cursor-pointer p-3 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 transition-colors">
               <input
                 type="checkbox"
                 checked={formData.include_computer_fee}
                 onChange={(e) => setFormData({ ...formData, include_computer_fee: e.target.checked })}
-                className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+                className="w-5 h-5 text-cyan-500 rounded focus:ring-2 focus:ring-cyan-400"
               />
               <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Computer Fee</span>
             </label>
@@ -284,7 +284,7 @@ function BulkBillGeneration() {
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 px-4 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#137fec]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20"
           >
             {loading ? (
               <>

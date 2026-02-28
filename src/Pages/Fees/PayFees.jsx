@@ -99,7 +99,7 @@ function PayFees() {
               value={formData.class}
               onChange={(e) => setFormData({ ...formData, class: e.target.value })}
               placeholder="e.g., 1, 2, 3"
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
             />
           </div>
 
@@ -112,7 +112,7 @@ function PayFees() {
               value={formData.roll_number}
               onChange={(e) => setFormData({ ...formData, roll_number: e.target.value })}
               placeholder="Enter roll number"
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
             />
           </div>
 
@@ -124,7 +124,7 @@ function PayFees() {
               value={formData.section}
               onChange={(e) => setFormData({ ...formData, section: e.target.value.toUpperCase() })}
               placeholder="e.g., A, B, C"
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
             />
           </div>
 
@@ -135,7 +135,7 @@ function PayFees() {
               required
               value={formData.month}
               onChange={(e) => setFormData({ ...formData, month: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
             />
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Format: YYYY-MM (e.g., 2024-01)</p>
           </div>
@@ -150,7 +150,7 @@ function PayFees() {
               value={formData.amount_paid}
               onChange={(e) => setFormData({ ...formData, amount_paid: e.target.value })}
               placeholder="0.00"
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
             />
           </div>
 
@@ -160,7 +160,7 @@ function PayFees() {
               required
               value={formData.payment_mode}
               onChange={(e) => setFormData({ ...formData, payment_mode: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 dropdown-cyan"
             >
               {paymentModes.map((mode) => (
                 <option key={mode.value} value={mode.value}>
@@ -177,7 +177,7 @@ function PayFees() {
               required
               value={formData.payment_date}
               onChange={(e) => setFormData({ ...formData, payment_date: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
             />
           </div>
         </div>
@@ -186,7 +186,7 @@ function PayFees() {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#137fec]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-6 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-cyan-500/20"
           >
             {loading ? (
               <>
@@ -214,7 +214,8 @@ function PayFees() {
           }}
         >
           <div 
-            className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto table-scrollbar"
+            style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -240,13 +241,13 @@ function PayFees() {
             <div className="space-y-4">
               {/* Receipt Number - Highlighted */}
               {paymentResponse.payment?.receipt_no && (
-                <div className="bg-gradient-to-r from-blue-50 to-[#137fec]/10 dark:from-blue-900/30 dark:to-blue-800/20 rounded-xl p-5 border border-blue-200 dark:border-blue-700/50">
+                <div className="bg-gradient-to-r from-cyan-50/30 to-cyan-500/10 dark:from-cyan-900/30 dark:to-cyan-800/20 rounded-xl p-5 border border-cyan-200/30 dark:border-cyan-700/50">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mb-1">Receipt Number</p>
-                      <p className="text-2xl font-bold text-[#137fec] dark:text-blue-400">{paymentResponse.payment.receipt_no}</p>
+                      <p className="text-2xl font-bold text-cyan-200 dark:text-cyan-200">{paymentResponse.payment.receipt_no}</p>
                     </div>
-                    <span className="material-symbols-outlined text-4xl text-blue-400 dark:text-blue-500">receipt</span>
+                    <span className="material-symbols-outlined text-4xl text-cyan-200 dark:text-cyan-200">receipt</span>
                   </div>
                 </div>
               )}

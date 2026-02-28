@@ -274,7 +274,7 @@ function FeeList({ onViewInvoice }) {
                 Total: {totalCount} {totalCount === 1 ? 'record' : 'records'}
               </span>
               {statusFilter !== 'all' && filteredFeeList.length !== feeList.length && (
-                <span className="text-xs sm:text-sm text-[#137fec] dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 sm:px-3 py-1.5 rounded-full font-medium truncate">
+                <span className="text-xs sm:text-sm text-cyan-200 dark:text-cyan-200 bg-cyan-300/15 dark:bg-cyan-500/20 px-2 sm:px-3 py-1.5 rounded-full font-medium truncate border border-cyan-400/30">
                   Showing: {filteredFeeList.length}
                 </span>
               )}
@@ -302,7 +302,7 @@ function FeeList({ onViewInvoice }) {
             value={classFilter}
             onChange={(e) => setClassFilter(e.target.value)}
             placeholder="Class"
-            className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+            className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
           />
         </div>
         <div>
@@ -312,7 +312,7 @@ function FeeList({ onViewInvoice }) {
             value={sectionFilter}
             onChange={(e) => setSectionFilter(e.target.value)}
             placeholder="Section"
-            className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+            className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
           />
         </div>
         <div>
@@ -321,10 +321,10 @@ function FeeList({ onViewInvoice }) {
             type="month"
             value={monthFilter}
             onChange={(e) => setMonthFilter(e.target.value)}
-            className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+            className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
           />
         </div>
-        <div className="col-span-2 sm:col-span-2 lg:col-span-1">
+        <div className="col-span-2 sm:col-span-2 lg:col-span-1 flex items-end">
           <button
             onClick={() => {
               setClassFilter('')
@@ -334,7 +334,7 @@ function FeeList({ onViewInvoice }) {
               setFeeList([])
               setFilteredFeeList([])
             }}
-            className="w-full px-2 sm:px-4 py-1.5 sm:py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            className="w-full px-2 sm:px-4 py-1.5 sm:py-2 text-sm border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 text-slate-700 dark:text-slate-300 hover:text-cyan-200 dark:hover:text-cyan-200 transition-colors"
           >
             Reset
           </button>
@@ -359,8 +359,8 @@ function FeeList({ onViewInvoice }) {
                   onClick={() => setStatusFilter('all')}
                   className={`px-2 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1 ${
                     statusFilter === 'all'
-                      ? 'bg-[#137fec] text-white shadow-sm'
-                      : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600'
+                      ? 'bg-cyan-500 text-white shadow-sm shadow-cyan-500/20'
+                      : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 hover:text-cyan-200 dark:hover:text-cyan-200 border border-cyan-200/30 dark:border-cyan-700/50'
                   }`}
                 >
                   <span className="material-symbols-outlined text-xs">apps</span>
@@ -464,26 +464,26 @@ function FeeList({ onViewInvoice }) {
         </p>
       ) : (
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
             <table className="w-full">
             <thead>
-              <tr className="bg-slate-100 dark:bg-slate-900 border-b-2 border-slate-300 dark:border-slate-600">
-                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-bold text-slate-900 dark:text-white sticky left-0 bg-slate-100 dark:bg-slate-900 z-10 border-r border-slate-300 dark:border-slate-600">Student</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Roll</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden sm:table-cell">Class</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden md:table-cell">Section</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden lg:table-cell">Month</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden lg:table-cell">Tuition</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden lg:table-cell">Exam</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden lg:table-cell">Annual</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden lg:table-cell">Computer</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden lg:table-cell">Transport</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-slate-900 dark:text-white hidden lg:table-cell">Prev Due</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-slate-900 dark:text-white bg-blue-50 dark:bg-blue-900/20">Total</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-green-600 dark:text-green-400">Paid</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-red-600 dark:text-red-400">Due</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Status</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-slate-900 dark:text-white sticky right-0 bg-slate-100 dark:bg-slate-900 border-l border-slate-300 dark:border-slate-600">Action</th>
+              <tr className="bg-cyan-500 dark:bg-cyan-500 border-b-2 border-cyan-200/30 dark:border-cyan-700/50">
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-bold text-white sticky left-0 bg-cyan-500 dark:bg-cyan-500 z-10 border-r border-cyan-200/30 dark:border-cyan-700/50">Student</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-white">Roll</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-white hidden sm:table-cell">Class</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-white hidden md:table-cell">Section</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-white hidden lg:table-cell">Month</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-white hidden lg:table-cell">Tuition</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-white hidden lg:table-cell">Exam</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-white hidden lg:table-cell">Annual</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-white hidden lg:table-cell">Computer</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-white hidden lg:table-cell">Transport</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-white hidden lg:table-cell">Prev Due</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-white bg-cyan-500/20 dark:bg-cyan-500/20">Total</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-white">Paid</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-right text-xs sm:text-sm font-bold text-white">Due</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-white">Status</th>
+                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-bold text-white sticky right-0 bg-cyan-500 dark:bg-cyan-500 border-l border-cyan-200/30 dark:border-cyan-700/50">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -495,8 +495,8 @@ function FeeList({ onViewInvoice }) {
                 const isPaid = billStatus === 'paid' || netPayable === 0
                 
                 return (
-                  <tr key={fee.bill_id || fee.student_id || index} className="border-b text-xs sm:text-sm border-slate-200 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-slate-900/50 transition-colors">
-                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-900 dark:text-white font-medium sticky left-0 bg-white dark:bg-slate-800 z-10 border-r border-slate-300 dark:border-slate-600 shadow-[2px_0_4px_rgba(0,0,0,0.05)]">
+                  <tr key={fee.bill_id || fee.student_id || index} className="border-b text-xs sm:text-sm border-cyan-200/30 dark:border-cyan-700/50 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 transition-colors">
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-900 dark:text-white font-medium sticky left-0 bg-white dark:bg-slate-800 z-10 border-r border-cyan-200/30 dark:border-cyan-700/50 shadow-[2px_0_4px_rgba(0,0,0,0.05)]">
                       <div>
                         <div className="font-semibold truncate text-xs sm:text-sm">{fee.student_name || '--'}</div>
                         {fee.father_name && (
@@ -514,7 +514,7 @@ function FeeList({ onViewInvoice }) {
                     <td className="px-2 sm:px-3 py-2 sm:py-3 text-right text-slate-700 dark:text-slate-300 hidden lg:table-cell">₹{(parseFloat(fee.computer_fee) || 0).toLocaleString('en-IN')}</td>
                     <td className="px-2 sm:px-3 py-2 sm:py-3 text-right text-slate-700 dark:text-slate-300 hidden lg:table-cell">₹{(parseFloat(fee.transport_fee) || 0).toLocaleString('en-IN')}</td>
                     <td className="px-2 sm:px-3 py-2 sm:py-3 text-right text-orange-600 dark:text-orange-400 font-medium hidden lg:table-cell">₹{(parseFloat(fee.previous_due) || 0).toLocaleString('en-IN')}</td>
-                    <td className="px-2 sm:px-3 py-2 sm:py-3 text-right text-slate-900 dark:text-white font-bold bg-blue-50 dark:bg-blue-900/20">
+                    <td className="px-2 sm:px-3 py-2 sm:py-3 text-right text-slate-900 dark:text-white font-bold bg-cyan-50/30 dark:bg-cyan-900/10">
                       ₹{totalFee.toLocaleString('en-IN')}
                     </td>
                     <td className="px-2 sm:px-3 py-2 sm:py-3 text-right text-green-600 dark:text-green-400 font-bold">
@@ -532,10 +532,10 @@ function FeeList({ onViewInvoice }) {
                         <span className="px-1.5 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded text-xs font-semibold whitespace-nowrap inline-block">Unpaid</span>
                       )}
                     </td>
-                    <td className="px-2 sm:px-3 py-2 sm:py-3 text-center sticky right-0 bg-white dark:bg-slate-800 border-l border-slate-300 dark:border-slate-600 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
+                    <td className="px-2 sm:px-3 py-2 sm:py-3 text-center sticky right-0 bg-white dark:bg-slate-800 border-l border-cyan-200/30 dark:border-cyan-700/50 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
                       <button
                         onClick={() => onViewInvoice && onViewInvoice(fee.bill_id)}
-                        className="inline-flex items-center gap-1 px-2 py-1 bg-[#137fec] hover:bg-[#137fec]/90 text-white rounded text-xs font-medium transition-colors"
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-cyan-500 hover:bg-cyan-500/90 text-white rounded text-xs font-medium transition-colors shadow-sm shadow-cyan-500/20"
                         title="View Invoice"
                       >
                         <span className="material-symbols-outlined text-sm">description</span>
@@ -549,7 +549,7 @@ function FeeList({ onViewInvoice }) {
             {/* Summary Row */}
             {filteredFeeList.length > 0 && (
               <tfoot>
-                <tr className="bg-blue-100 dark:bg-blue-900/30 border-t-2 border-blue-300 dark:border-blue-700 font-bold text-xs sm:text-sm">
+                <tr className="bg-cyan-500/20 dark:bg-cyan-500/20 border-t-2 border-cyan-200/30 dark:border-cyan-700/50 font-bold text-xs sm:text-sm">
                   <td colSpan={5} className="px-2 sm:px-4 py-2 sm:py-3 text-right text-slate-900 dark:text-white">
                     Total ({filteredFeeList.length}):
                   </td>
@@ -571,7 +571,7 @@ function FeeList({ onViewInvoice }) {
                   <td className="px-2 sm:px-3 py-2 sm:py-3 text-right text-slate-900 dark:text-white hidden lg:table-cell">
                     ₹{filteredFeeList.reduce((sum, f) => sum + (parseFloat(f.previous_due) || 0), 0).toLocaleString('en-IN')}
                   </td>
-                  <td className="px-2 sm:px-3 py-2 sm:py-3 text-right bg-blue-50 dark:bg-blue-900/20 text-slate-900 dark:text-white font-bold">
+                  <td className="px-2 sm:px-3 py-2 sm:py-3 text-right bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white font-bold">
                     ₹{filteredFeeList.reduce((sum, f) => sum + (parseFloat(f.total_fee) || 0), 0).toLocaleString('en-IN')}
                   </td>
                   <td className="px-2 sm:px-3 py-2 sm:py-3 text-right text-green-600 dark:text-green-400 font-bold">

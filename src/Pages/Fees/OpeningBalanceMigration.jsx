@@ -431,7 +431,7 @@ function OpeningBalanceMigration() {
         {/* Step 1 */}
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-4">
           <div className="flex items-center gap-2 mb-3">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#137fec] text-white text-xs font-bold">1</span>
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500 text-white text-xs font-bold">1</span>
             <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Select Migration Month</h4>
           </div>
           <div className="max-w-sm">
@@ -440,7 +440,7 @@ function OpeningBalanceMigration() {
               type="month"
               value={migrationMonth}
               onChange={(event) => setMigrationMonth(event.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+              className="w-full px-3 py-2 rounded-lg border border-cyan-200/30 dark:border-cyan-700/50 bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
             />
           </div>
         </div>
@@ -448,7 +448,7 @@ function OpeningBalanceMigration() {
         {/* Step 2 */}
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-4">
           <div className="flex items-center gap-2 mb-3">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#137fec] text-white text-xs font-bold">2</span>
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500 text-white text-xs font-bold">2</span>
             <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Upload Excel</h4>
           </div>
 
@@ -471,7 +471,7 @@ function OpeningBalanceMigration() {
             accept=".xlsx,.xls,.csv"
             onChange={handleFileUpload}
             disabled={!migrationMonth}
-            className="block w-full text-sm text-slate-700 dark:text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-[#137fec] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[#0f6dd4] disabled:opacity-60"
+            className="block w-full text-sm text-slate-700 dark:text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-cyan-500 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-cyan-500/90 file:shadow-lg file:shadow-cyan-500/20 disabled:opacity-60"
           />
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
             {migrationMonth
@@ -488,14 +488,14 @@ function OpeningBalanceMigration() {
         {/* Step 3 */}
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-4 space-y-4">
           <div className="flex items-center gap-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#137fec] text-white text-xs font-bold">3</span>
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500 text-white text-xs font-bold">3</span>
             <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Preview and Validation</h4>
           </div>
 
           {loadingStudents && (
-            <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-3 flex items-center gap-2">
-              <span className="material-symbols-outlined animate-spin text-blue-600 dark:text-blue-400">sync</span>
-              <p className="text-sm text-blue-700 dark:text-blue-300">Loading student master data for validation...</p>
+            <div className="rounded-lg border border-cyan-200/30 dark:border-cyan-700/50 bg-cyan-50/30 dark:bg-cyan-900/10 p-3 flex items-center gap-2">
+              <span className="material-symbols-outlined animate-spin text-cyan-200">sync</span>
+              <p className="text-sm text-cyan-200">Loading student master data for validation...</p>
             </div>
           )}
 
@@ -541,7 +541,7 @@ function OpeningBalanceMigration() {
                   <div className="px-3 py-2 bg-emerald-50 dark:bg-emerald-900/20 border-b border-emerald-200 dark:border-emerald-700">
                     <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Valid Records (Green)</p>
                   </div>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
                     <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-emerald-100/70 dark:bg-emerald-900/30">
                         <tr>
@@ -582,7 +582,7 @@ function OpeningBalanceMigration() {
                   <div className="px-3 py-2 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-700">
                     <p className="text-sm font-semibold text-red-700 dark:text-red-300">Invalid Records (Red)</p>
                   </div>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
                     <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-red-100/70 dark:bg-red-900/30">
                         <tr>
@@ -623,7 +623,7 @@ function OpeningBalanceMigration() {
         {/* Step 4 */}
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-4">
           <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#137fec] text-white text-xs font-bold">4</span>
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500 text-white text-xs font-bold">4</span>
             <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Confirm Migration</h4>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
@@ -633,7 +633,7 @@ function OpeningBalanceMigration() {
             type="button"
             onClick={() => setShowConfirmModal(true)}
             disabled={!canMigrate}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#137fec] text-white font-semibold hover:bg-[#0f6dd4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500 text-white font-semibold hover:bg-cyan-500/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-500/20"
           >
             {isMigrating ? (
               <>
@@ -668,7 +668,7 @@ function OpeningBalanceMigration() {
                 type="checkbox"
                 checked={isConfirmedByAdmin}
                 onChange={(event) => setIsConfirmedByAdmin(event.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#137fec] focus:ring-[#137fec]"
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-cyan-500 focus:ring-cyan-400"
               />
               <span className="text-sm text-slate-700 dark:text-slate-300">
                 I confirm this migration is correct.
@@ -691,7 +691,7 @@ function OpeningBalanceMigration() {
                 type="button"
                 onClick={handleConfirmMigration}
                 disabled={!isConfirmedByAdmin || isMigrating}
-                className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+                className="px-4 py-2 rounded-lg bg-cyan-500 text-white font-semibold hover:bg-cyan-500/90 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20"
               >
                 {isMigrating ? (
                   <>

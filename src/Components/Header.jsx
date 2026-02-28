@@ -32,7 +32,7 @@ function Header({ sidebarOpen, setSidebarOpen }) {
             </div>
           </div>
 
-          <div className="hidden rounded-xl border border-cyan-200/25 bg-cyan-300/8 px-3 py-2 text-xs text-slate-200 md:block">
+          <div className="hidden rounded-xl border border-cyan-200/25 bg-cyan-300/8 px-3 py-2 text-xs text-cyan-100 md:block">
             Unified dashboard for students, marks, fees and promotions
           </div>
 

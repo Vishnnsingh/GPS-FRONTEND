@@ -139,7 +139,7 @@ function TeacherManagement() {
     <div className="space-y-4" style={{ fontFamily: "'Lexend', sans-serif" }}>
       <div className="flex items-center justify-between">
         <h2 className="text-xl sm:text-2xl font-black text-[#0d141b] dark:text-white">Teacher Management</h2>
-        <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#137fec] bg-[#137fec]/10 border border-[#137fec]/20 px-3 py-1.5 rounded-full">
+        <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-cyan-200 bg-cyan-300/15 border border-cyan-400/30 px-3 py-1.5 rounded-full">
           <span className="material-symbols-outlined text-base">groups</span>
           {totalTeachers} Teachers
         </span>
@@ -169,7 +169,7 @@ function TeacherManagement() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="teacher@school.com"
-                className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                className="w-full px-3 py-2 rounded-lg border border-cyan-200/30 dark:border-cyan-700/50 bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
                 required
               />
             </div>
@@ -181,14 +181,14 @@ function TeacherManagement() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Minimum 6 characters"
-                className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                className="w-full px-3 py-2 rounded-lg border border-cyan-200/30 dark:border-cyan-700/50 bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
                 required
               />
             </div>
             <button
               type="submit"
               disabled={submitting}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#137fec] text-white font-semibold hover:bg-[#137fec]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-cyan-500 text-white font-semibold hover:bg-cyan-500/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-cyan-500/20"
             >
               {submitting ? (
                 <>
@@ -209,29 +209,29 @@ function TeacherManagement() {
           <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">Teachers List</h3>
 
           {loading ? (
-            <div className="py-10 flex items-center justify-center text-slate-500 dark:text-slate-300">
+            <div className="py-10 flex items-center justify-center text-cyan-200">
               <span className="material-symbols-outlined animate-spin mr-2">sync</span>
               Loading teachers...
             </div>
           ) : teachers.length === 0 ? (
             <p className="text-sm text-slate-500 dark:text-slate-400 py-8 text-center">No teachers found.</p>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40">
-                    <th className="px-3 py-2.5 text-left font-semibold text-slate-700 dark:text-slate-300">Email</th>
-                    <th className="px-3 py-2.5 text-left font-semibold text-slate-700 dark:text-slate-300">Role</th>
-                    <th className="px-3 py-2.5 text-left font-semibold text-slate-700 dark:text-slate-300">Created</th>
-                    <th className="px-3 py-2.5 text-center font-semibold text-slate-700 dark:text-slate-300">Action</th>
+                  <tr className="border-b border-cyan-200/30 dark:border-cyan-700/50 bg-cyan-500 dark:bg-cyan-500">
+                    <th className="px-3 py-2.5 text-left font-semibold text-white">Email</th>
+                    <th className="px-3 py-2.5 text-left font-semibold text-white">Role</th>
+                    <th className="px-3 py-2.5 text-left font-semibold text-white">Created</th>
+                    <th className="px-3 py-2.5 text-center font-semibold text-white">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {teachers.map((teacher) => (
-                    <tr key={`${teacher.id}-${teacher.email}`} className="border-b border-slate-100 dark:border-slate-700/60">
+                    <tr key={`${teacher.id}-${teacher.email}`} className="border-b border-cyan-200/30 dark:border-cyan-700/50 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10">
                       <td className="px-3 py-2.5 text-slate-900 dark:text-white">{teacher.email}</td>
                       <td className="px-3 py-2.5">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 border border-cyan-400/30 dark:border-cyan-600/50">
                           teacher
                         </span>
                       </td>

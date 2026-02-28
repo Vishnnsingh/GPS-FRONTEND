@@ -15,6 +15,31 @@ import { getAllStudents } from '../../Api/students'
 import { getAllSubjects } from '../../Api/subjects'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
+// Custom Tooltip for Pie Chart with white text
+const CustomPieTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div
+        style={{
+          backgroundColor: 'rgba(7, 20, 36, 0.96)',
+          border: '1px solid rgba(64, 212, 255, 0.25)',
+          borderRadius: '12px',
+          padding: '8px 12px',
+          fontSize: '12px',
+        }}
+      >
+        <p style={{ color: '#ffffff', margin: 0, fontWeight: 'bold' }}>
+          {payload[0].name}
+        </p>
+        <p style={{ color: '#ffffff', margin: '4px 0 0 0' }}>
+          {payload[0].dataKey}: {payload[0].value}
+        </p>
+      </div>
+    )
+  }
+  return null
+}
+
 function Dashboard({ initialView = 'dashboard' }) {
   const navigate = useNavigate()
   const { sidebarOpen, setSidebarOpen } = useOutletContext()
@@ -225,14 +250,16 @@ function Dashboard({ initialView = 'dashboard' }) {
                             <CartesianGrid stroke="rgba(153, 178, 209, 0.2)" strokeDasharray="3 3" />
                             <XAxis 
                               dataKey="name" 
-                              angle={-45} 
-                              textAnchor="end" 
-                              height={80}
-                              tick={{ fill: '#b9cce7', fontSize: 10 }}
+                              angle={0} 
+                              textAnchor="middle" 
+                              height={60}
+                              tick={{ fill: '#b9cce7', fontSize: 10, dy: 8 }}
                               axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                               tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                             />
                             <YAxis
+                              domain={[0, 'dataMax']}
+                              allowDecimals={false}
                               tick={{ fill: '#b9cce7', fontSize: 10 }}
                               axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                               tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
@@ -246,8 +273,10 @@ function Dashboard({ initialView = 'dashboard' }) {
                                 color: '#e6f2ff',
                               }}
                               labelStyle={{ color: '#cfe5ff' }}
+                              wrapperStyle={{ background: 'transparent' }}
+                              cursor={{ fill: 'transparent' }}
                             />
-                            <Bar dataKey="value" fill="#40d4ff" name="Students" />
+                            <Bar dataKey="value" fill="#40d4ff" name="Students" cursor="pointer" />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
@@ -265,25 +294,17 @@ function Dashboard({ initialView = 'dashboard' }) {
                               cy="50%"
                               labelLine={false}
                               label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                              labelStyle={{ fill: '#ffffff', fontSize: 12, fontWeight: 'bold' }}
                               outerRadius={60}
-                              fill="#8884d8"
+                              fill="#40d4ff"
                               dataKey="value"
                             >
                               {dashboardData.studentsBySection.map((entry, index) => {
-                                const colors = ['#137fec', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+                                const colors = ['#40d4ff', '#34d399', '#60a5fa', '#3b82f6', '#22d3ee', '#14b8a6']
                                 return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                               })}
                             </Pie>
-                            <Tooltip
-                              contentStyle={{
-                                fontSize: 12,
-                                borderRadius: 12,
-                                border: '1px solid rgba(64, 212, 255, 0.25)',
-                                background: 'rgba(7, 20, 36, 0.96)',
-                                color: '#e6f2ff',
-                              }}
-                              labelStyle={{ color: '#cfe5ff' }}
-                            />
+                            <Tooltip content={<CustomPieTooltip />} cursor={{ fill: 'transparent' }} />
                             <Legend wrapperStyle={{ fontSize: 10, color: '#d3e7ff' }} />
                           </PieChart>
                         </ResponsiveContainer>
@@ -299,14 +320,16 @@ function Dashboard({ initialView = 'dashboard' }) {
                             <CartesianGrid stroke="rgba(153, 178, 209, 0.2)" strokeDasharray="3 3" />
                             <XAxis 
                               dataKey="name" 
-                              angle={-45} 
-                              textAnchor="end" 
-                              height={80}
-                              tick={{ fill: '#b9cce7', fontSize: 10 }}
+                              angle={0} 
+                              textAnchor="middle" 
+                              height={60}
+                              tick={{ fill: '#b9cce7', fontSize: 10, dy: 8 }}
                               axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                               tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                             />
                             <YAxis
+                              domain={[0, 'dataMax']}
+                              allowDecimals={false}
                               tick={{ fill: '#b9cce7', fontSize: 10 }}
                               axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                               tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
@@ -320,10 +343,12 @@ function Dashboard({ initialView = 'dashboard' }) {
                                 color: '#e6f2ff',
                               }}
                               labelStyle={{ color: '#cfe5ff' }}
+                              wrapperStyle={{ background: 'transparent' }}
+                              cursor={{ fill: 'transparent' }}
                             />
                             <Legend wrapperStyle={{ fontSize: 10, color: '#d3e7ff' }} />
-                            <Bar dataKey="subjects" fill="#40d4ff" name="Subjects" />
-                            <Bar dataKey="sections" fill="#34d399" name="Sections" />
+                            <Bar dataKey="subjects" fill="#40d4ff" name="Subjects" cursor="pointer" />
+                            <Bar dataKey="sections" fill="#34d399" name="Sections" cursor="pointer" />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>

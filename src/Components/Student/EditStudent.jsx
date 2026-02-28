@@ -93,17 +93,53 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ fontFamily: "'Lexend', sans-serif" }}>
+    <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 pt-20" style={{ fontFamily: "'Lexend', sans-serif" }}>
       {/* Blurred Background */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm z-[9998]"
         onClick={onClose}
       ></div>
 
       {/* Modal */}
-      <div className="relative bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-2xl max-h-[calc(90vh-5rem)] overflow-hidden z-[9999]">
+        <style>{`
+          .scrollbar-cyan::-webkit-scrollbar {
+            width: 8px;
+          }
+          .scrollbar-cyan::-webkit-scrollbar-track {
+            background: rgb(224, 242, 254);
+            border-radius: 4px;
+          }
+          .scrollbar-cyan::-webkit-scrollbar-thumb {
+            background: rgb(99, 126, 153);
+            border-radius: 4px;
+          }
+          .scrollbar-cyan::-webkit-scrollbar-thumb:hover {
+            background: rgb(71, 85, 105);
+          }
+          .dark .scrollbar-cyan::-webkit-scrollbar-track {
+            background: rgb(224, 242, 254);
+          }
+          .dark .scrollbar-cyan::-webkit-scrollbar-thumb {
+            background: rgb(99, 126, 153);
+          }
+          .dark .scrollbar-cyan::-webkit-scrollbar-thumb:hover {
+            background: rgb(71, 85, 105);
+          }
+          @media (prefers-color-scheme: dark) {
+            .scrollbar-cyan::-webkit-scrollbar-track {
+              background: rgb(224, 242, 254);
+            }
+            .scrollbar-cyan::-webkit-scrollbar-thumb {
+              background: rgb(99, 126, 153);
+            }
+            .scrollbar-cyan::-webkit-scrollbar-thumb:hover {
+              background: rgb(71, 85, 105);
+            }
+          }
+        `}</style>
         {/* Header */}
-        <div className="sticky top-0 bg-[#137fec] text-white px-6 py-4 rounded-t-lg flex items-center justify-between">
+        <div className="bg-cyan-500 text-white px-6 py-4 rounded-t-lg flex items-center justify-between">
           <h2 className="text-xl font-black">Edit Student</h2>
           <button
             onClick={onClose}
@@ -114,7 +150,10 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-12rem)] scrollbar-cyan" style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)'
+        }}>
           {success && (
             <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-2">
               <span className="material-symbols-outlined text-green-600 dark:text-green-400">check_circle</span>
@@ -134,8 +173,8 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Name <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">person</span>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">person</span>
                 <input
                   type="text"
                   name="name"
@@ -153,8 +192,8 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Father Name <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">family_restroom</span>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">family_restroom</span>
                 <input
                   type="text"
                   name="father_name"
@@ -172,8 +211,8 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Mother Name <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">family_restroom</span>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">family_restroom</span>
                 <input
                   type="text"
                   name="mother_name"
@@ -191,8 +230,8 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Gender <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">wc</span>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">wc</span>
                 <select
                   name="gender"
                   value={formData.gender}
@@ -212,8 +251,8 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Class <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">class</span>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">class</span>
                 <input
                   type="text"
                   name="class"
@@ -231,8 +270,8 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Roll Number <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">badge</span>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">badge</span>
                 <input
                   type="number"
                   name="roll_no"
@@ -250,8 +289,8 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Section <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">category</span>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">category</span>
                 <input
                   type="text"
                   name="section"
@@ -269,8 +308,8 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Mobile <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">phone</span>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">phone</span>
                 <input
                   type="tel"
                   name="mobile"
@@ -289,8 +328,8 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Address <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-start border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-2 pt-2 text-[#137fec] text-base">home</span>
+            <div className="flex items-start border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+              <span className="material-symbols-outlined pl-2 pt-2 text-cyan-200 text-base">home</span>
               <textarea
                 name="address"
                 value={formData.address}
@@ -310,7 +349,7 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
               name="uses_transport"
               checked={formData.uses_transport}
               onChange={handleChange}
-              className="w-4 h-4 rounded border-blue-300 text-[#137fec] focus:ring-[#137fec]"
+              className="w-4 h-4 rounded border-cyan-300 text-cyan-500 focus:ring-cyan-400"
               id="uses_transport_edit"
             />
             <label htmlFor="uses_transport_edit" className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
@@ -324,8 +363,8 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Transport Charge
               </label>
-              <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">local_shipping</span>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">local_shipping</span>
                 <input
                   type="number"
                   name="transport_charge"
@@ -351,7 +390,7 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 text-sm font-bold text-white bg-[#137fec] hover:bg-[#137fec]/90 rounded-lg shadow-lg shadow-[#137fec]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 text-sm font-bold text-white bg-cyan-500 hover:bg-cyan-500/90 rounded-lg shadow-lg shadow-cyan-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {loading ? (
                 <>

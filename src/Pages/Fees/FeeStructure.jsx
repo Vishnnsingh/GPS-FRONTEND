@@ -269,7 +269,7 @@ function FeeStructure() {
               setMode('single')
               setIsModalOpen(true)
             }}
-            className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#137fec]/90 transition-colors flex items-center justify-center gap-2 whitespace-nowrap text-sm sm:text-base"
+            className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors flex items-center justify-center gap-2 whitespace-nowrap text-sm sm:text-base shadow-lg shadow-cyan-500/20"
           >
             <span className="material-symbols-outlined text-sm">add</span>
             Add Single
@@ -280,7 +280,7 @@ function FeeStructure() {
               setMode('bulk')
               setIsModalOpen(true)
             }}
-            className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2 shadow-sm whitespace-nowrap text-sm sm:text-base"
+            className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 whitespace-nowrap text-sm sm:text-base"
           >
             <span className="material-symbols-outlined text-sm">add_circle</span>
             Add Bulk
@@ -339,40 +339,40 @@ function FeeStructure() {
 
         return (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-4 border border-blue-200 dark:border-blue-700/50 shadow-sm">
+            <div className="bg-gradient-to-br from-cyan-50/30 to-cyan-100/30 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-xl p-4 border border-cyan-200/30 dark:border-cyan-700/50 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-blue-600 dark:text-blue-300 font-medium">Total Classes</p>
-                  <p className="text-2xl font-black mt-1 text-blue-700 dark:text-blue-200">{totalClasses}</p>
+                  <p className="text-sm text-cyan-200 font-medium">Total Classes</p>
+                  <p className="text-2xl font-black mt-1 text-cyan-200">{totalClasses}</p>
                 </div>
-                <span className="material-symbols-outlined text-3xl text-blue-400 dark:text-blue-500">class</span>
+                <span className="material-symbols-outlined text-3xl text-cyan-200">class</span>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-xl p-4 border border-emerald-200 dark:border-emerald-700/50 shadow-sm">
+            <div className="bg-gradient-to-br from-cyan-50/30 to-cyan-100/30 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-xl p-4 border border-cyan-200/30 dark:border-cyan-700/50 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-emerald-600 dark:text-emerald-300 font-medium">Total Fees</p>
-                  <p className="text-2xl font-black mt-1 text-emerald-700 dark:text-emerald-200">{totalFees}</p>
+                  <p className="text-sm text-cyan-200 font-medium">Total Fees</p>
+                  <p className="text-2xl font-black mt-1 text-cyan-200">{totalFees}</p>
                 </div>
-                <span className="material-symbols-outlined text-3xl text-emerald-400 dark:text-emerald-500">receipt_long</span>
+                <span className="material-symbols-outlined text-3xl text-cyan-200">receipt_long</span>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-xl p-4 border border-indigo-200 dark:border-indigo-700/50 shadow-sm">
+            <div className="bg-gradient-to-br from-cyan-50/30 to-cyan-100/30 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-xl p-4 border border-cyan-200/30 dark:border-cyan-700/50 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-indigo-600 dark:text-indigo-300 font-medium">Total Amount</p>
-                  <p className="text-xl font-black mt-1 text-indigo-700 dark:text-indigo-200">₹{totalAmount.toLocaleString('en-IN')}</p>
+                  <p className="text-sm text-cyan-200 font-medium">Total Amount</p>
+                  <p className="text-xl font-black mt-1 text-cyan-200">₹{totalAmount.toLocaleString('en-IN')}</p>
                 </div>
-                <span className="material-symbols-outlined text-3xl text-indigo-400 dark:text-indigo-500">payments</span>
+                <span className="material-symbols-outlined text-3xl text-cyan-200">payments</span>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-xl p-4 border border-amber-200 dark:border-amber-700/50 shadow-sm">
+            <div className="bg-gradient-to-br from-cyan-50/30 to-cyan-100/30 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-xl p-4 border border-cyan-200/30 dark:border-cyan-700/50 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600 dark:text-amber-300 font-medium">Required / Optional</p>
-                  <p className="text-xl font-black mt-1 text-amber-700 dark:text-amber-200">{requiredCount} / {optionalCount}</p>
+                  <p className="text-sm text-cyan-200 font-medium">Required / Optional</p>
+                  <p className="text-xl font-black mt-1 text-cyan-200">{requiredCount} / {optionalCount}</p>
                 </div>
-                <span className="material-symbols-outlined text-3xl text-amber-400 dark:text-amber-500">check_circle</span>
+                <span className="material-symbols-outlined text-3xl text-cyan-200">check_circle</span>
               </div>
             </div>
           </div>
@@ -382,7 +382,7 @@ function FeeStructure() {
       {/* Grouped by Class */}
       {loading ? (
         <div className="flex items-center justify-center py-8">
-          <span className="material-symbols-outlined animate-spin text-3xl text-[#137fec]">sync</span>
+          <span className="material-symbols-outlined animate-spin text-3xl text-cyan-200">sync</span>
         </div>
       ) : feeStructures.length === 0 ? (
         <p className="text-center text-slate-500 dark:text-slate-400 py-8">No fee structures found</p>
@@ -417,32 +417,32 @@ function FeeStructure() {
                   className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all overflow-hidden"
                 >
                   {/* Class Header */}
-                  <div className="bg-gradient-to-r from-blue-50 to-[#137fec]/10 dark:from-blue-900/30 dark:to-blue-800/20 px-4 sm:px-6 py-4 border-b border-blue-200 dark:border-blue-700/50">
+                  <div className="bg-gradient-to-r from-cyan-50/30 to-cyan-500/10 dark:from-cyan-900/30 dark:to-cyan-800/20 px-4 sm:px-6 py-4 border-b border-cyan-200/30 dark:border-cyan-700/50">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0 flex items-start sm:items-center gap-3 sm:gap-4">
-                        <div className="bg-[#137fec]/10 dark:bg-blue-500/20 rounded-xl p-2 sm:p-2.5 shrink-0">
-                          <span className="material-symbols-outlined text-[#137fec] dark:text-blue-400 text-xl sm:text-2xl">class</span>
+                        <div className="bg-cyan-300/15 dark:bg-cyan-500/20 rounded-xl p-2 sm:p-2.5 shrink-0">
+                          <span className="material-symbols-outlined text-cyan-200 dark:text-cyan-200 text-xl sm:text-2xl">class</span>
                         </div>
                         <div className="min-w-0">
                           <h4 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
                             Class {classKey}
                           </h4>
                           <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                            <span className="inline-flex items-center rounded-full bg-white/80 dark:bg-slate-800/70 border border-blue-200 dark:border-blue-700/60 px-2 py-0.5 text-slate-700 dark:text-slate-200 font-medium">
+                            <span className="inline-flex items-center rounded-full bg-cyan-500/20 dark:bg-cyan-500/30 border border-cyan-400/50 dark:border-cyan-400/50 px-2 py-0.5 text-white dark:text-white font-medium">
                               {classFees.length} {classFees.length === 1 ? 'Fee Structure' : 'Fee Structures'}
                             </span>
-                            <span className="inline-flex items-center rounded-full bg-white/80 dark:bg-slate-800/70 border border-emerald-200 dark:border-emerald-700/60 px-2 py-0.5 text-emerald-700 dark:text-emerald-300 font-medium">
+                            <span className="inline-flex items-center rounded-full bg-cyan-500/20 dark:bg-cyan-500/30 border border-cyan-400/50 dark:border-cyan-400/50 px-2 py-0.5 text-white dark:text-white font-medium">
                               Required {requiredFees.length}
                             </span>
-                            <span className="inline-flex items-center rounded-full bg-white/80 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-700/60 px-2 py-0.5 text-amber-700 dark:text-amber-300 font-medium">
+                            <span className="inline-flex items-center rounded-full bg-cyan-500/20 dark:bg-cyan-500/30 border border-cyan-400/50 dark:border-cyan-400/50 px-2 py-0.5 text-white dark:text-white font-medium">
                               Optional {optionalFees.length}
                             </span>
                           </div>
                         </div>
                       </div>
-                      <div className="w-full sm:w-auto sm:min-w-[160px] rounded-xl border border-blue-200/80 dark:border-blue-700/60 bg-white/80 dark:bg-slate-800/70 px-3 py-2.5 text-left sm:text-right">
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold">Total Amount</p>
-                        <p className="text-2xl sm:text-3xl font-black text-[#137fec] dark:text-blue-400 leading-tight">
+                      <div className="w-full sm:w-auto sm:min-w-[160px] rounded-xl border border-cyan-400/50 dark:border-cyan-400/50 bg-cyan-500/20 dark:bg-cyan-500/30 px-3 py-2.5 text-left sm:text-right">
+                        <p className="text-[11px] text-white dark:text-white uppercase tracking-wide font-semibold">Total Amount</p>
+                        <p className="text-2xl sm:text-3xl font-black text-white dark:text-white leading-tight">
                           Rs. {totalAmount.toLocaleString('en-IN')}
                         </p>
                       </div>
@@ -450,23 +450,23 @@ function FeeStructure() {
                   </div>
 
                   {/* Fees Table */}
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="bg-slate-50 dark:bg-slate-900/30 border-b border-slate-200 dark:border-slate-700">
-                          <th className="px-4 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Fee Name</th>
-                          <th className="px-4 py-3 text-right font-semibold text-slate-700 dark:text-slate-300">Amount</th>
-                          <th className="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">Period</th>
-                          <th className="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">Late Fine</th>
-                          <th className="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">Type</th>
-                          <th className="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">Actions</th>
+                        <tr className="bg-cyan-500 dark:bg-cyan-500 border-b border-cyan-200/30 dark:border-cyan-700/50">
+                          <th className="px-4 py-3 text-left font-semibold text-white">Fee Name</th>
+                          <th className="px-4 py-3 text-right font-semibold text-white">Amount</th>
+                          <th className="px-4 py-3 text-center font-semibold text-white">Period</th>
+                          <th className="px-4 py-3 text-center font-semibold text-white">Late Fine</th>
+                          <th className="px-4 py-3 text-center font-semibold text-white">Type</th>
+                          <th className="px-4 py-3 text-center font-semibold text-white">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {classFees.map((fee, index) => (
                           <tr 
                             key={fee.id} 
-                            className={`border-b border-slate-100 dark:border-slate-700/50 hover:bg-blue-50/50 dark:hover:bg-slate-900/30 transition-colors ${
+                            className={`border-b border-cyan-200/30 dark:border-cyan-700/50 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 transition-colors ${
                               index === classFees.length - 1 ? 'border-b-0' : ''
                             }`}
                           >
@@ -474,7 +474,7 @@ function FeeStructure() {
                               <div className="flex items-center gap-2">
                                 <span className="font-semibold text-slate-900 dark:text-white">{fee.fee_name}</span>
                                 {fee.is_optional && (
-                                  <span className="px-1.5 py-0.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded text-xs font-medium border border-amber-200 dark:border-amber-700/50">
+                                  <span className="px-1.5 py-0.5 bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 rounded text-xs font-medium border border-cyan-400/30 dark:border-cyan-600/50">
                                     Optional
                                   </span>
                                 )}
@@ -488,8 +488,8 @@ function FeeStructure() {
                             <td className="px-4 py-3 text-center">
                               <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                                 fee.period === 'yearly' 
-                                  ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700/50' 
-                                  : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50'
+                                  ? 'bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 border border-cyan-400/30 dark:border-cyan-600/50' 
+                                  : 'bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 border border-cyan-400/30 dark:border-cyan-600/50'
                               }`}>
                                 {fee.period === 'yearly' ? '📅 Yearly' : '📆 Monthly'}
                               </span>
@@ -508,11 +508,11 @@ function FeeStructure() {
                             </td>
                             <td className="px-4 py-3 text-center">
                               {fee.is_optional ? (
-                                <span className="px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-full text-xs font-medium border border-amber-200 dark:border-amber-700/50">
+                                <span className="px-3 py-1 bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 rounded-full text-xs font-medium border border-cyan-400/30 dark:border-cyan-600/50">
                                   Optional
                                 </span>
                               ) : (
-                                <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-full text-xs font-medium border border-emerald-200 dark:border-emerald-700/50">
+                                <span className="px-3 py-1 bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 rounded-full text-xs font-medium border border-cyan-400/30 dark:border-cyan-600/50">
                                   Required
                                 </span>
                               )}
@@ -522,7 +522,7 @@ function FeeStructure() {
                                 <button
                                   onClick={() => handleEdit(fee)}
                                   disabled={deletingId === fee.id || deletingId !== null}
-                                  className="p-2 text-[#137fec] hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="p-2 text-cyan-200 hover:bg-cyan-100/30 dark:hover:bg-cyan-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                   title="Edit fee structure"
                                 >
                                   <span className="material-symbols-outlined text-lg">edit</span>
@@ -551,7 +551,7 @@ function FeeStructure() {
                             Class Total:
                           </td>
                           <td colSpan={4} className="px-4 py-3 text-right">
-                            <span className="text-xl font-bold text-[#137fec] dark:text-blue-400">
+                            <span className="text-xl font-bold text-cyan-200 dark:text-cyan-200">
                               ₹{totalAmount.toLocaleString('en-IN')}
                             </span>
                           </td>
@@ -569,7 +569,7 @@ function FeeStructure() {
       {/* Modal */}
       {isModalOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-start justify-center p-4 pt-20 lg:pl-72"
           onClick={(e) => {
             if (e.target === e.currentTarget && !loading) {
               setIsModalOpen(false)
@@ -578,12 +578,13 @@ function FeeStructure() {
           }}
         >
           <div 
-            className={`bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full p-6 ${
+            className={`bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full relative z-[9999] flex flex-col ${
               mode === 'bulk' ? 'max-w-5xl' : 'max-w-2xl'
-            } max-h-[90vh] overflow-y-auto`}
+            } max-h-[calc(90vh-5rem)]`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200 dark:border-slate-700">
+            {/* Sticky Header */}
+            <div className="flex items-center justify-between p-6 pb-4 border-b border-slate-200 dark:border-slate-700 sticky top-0 bg-white dark:bg-slate-800 rounded-t-xl z-10">
               <h3 className="text-xl font-black text-slate-900 dark:text-white">
                 {editingId ? 'Edit Fee Structure' : mode === 'bulk' ? 'Add Bulk Fee Structures' : 'Add Fee Structure'}
               </h3>
@@ -598,6 +599,9 @@ function FeeStructure() {
               </button>
             </div>
 
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-6 pt-4 table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
+
             {!editingId && (
               <div className="mb-6 flex gap-3 bg-slate-100 dark:bg-slate-900/50 p-1 rounded-lg">
                 <button
@@ -605,7 +609,7 @@ function FeeStructure() {
                   onClick={() => setMode('single')}
                   className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${
                     mode === 'single'
-                      ? 'bg-[#137fec] text-white shadow-md'
+                      ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20'
                       : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
@@ -616,7 +620,7 @@ function FeeStructure() {
                   onClick={() => setMode('bulk')}
                   className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${
                     mode === 'bulk'
-                      ? 'bg-[#137fec] text-white shadow-md'
+                      ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20'
                       : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
@@ -642,13 +646,13 @@ function FeeStructure() {
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">This class will be applied to all fee structures below</p>
                   </div>
 
-                  <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                  <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2 table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
                     <div className="flex items-center justify-between mb-4">
                       <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Classes & Fees:</p>
                       <button
                         type="button"
                         onClick={addBulkRow}
-                        className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 shadow-sm"
+                        className="px-4 py-2 text-sm bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors flex items-center gap-2 shadow-lg shadow-cyan-500/20"
                       >
                         <span className="material-symbols-outlined text-base">add</span>
                         Add Another Class
@@ -700,14 +704,14 @@ function FeeStructure() {
                                         value={fee.fee_amount}
                                         onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'fee_amount', e.target.value)}
                                         placeholder="0.00"
-                                        className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent text-right"
+                                        className="w-full px-2 py-1.5 text-sm border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 text-right"
                                       />
                                     </td>
                                     <td className="px-3 py-3">
                                       <select
                                         value={fee.period}
                                         onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'period', e.target.value)}
-                                        className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                                        className="w-full px-2 py-1.5 text-sm border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
                                       >
                                         <option value="monthly">Monthly</option>
                                         <option value="yearly">Yearly</option>
@@ -719,7 +723,7 @@ function FeeStructure() {
                                           type="checkbox"
                                           checked={fee.late_fine_enabled}
                                           onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'late_fine_enabled', e.target.checked)}
-                                          className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+                                          className="w-5 h-5 text-cyan-500 rounded focus:ring-2 focus:ring-cyan-400"
                                         />
                                       </label>
                                     </td>
@@ -729,7 +733,7 @@ function FeeStructure() {
                                           type="checkbox"
                                           checked={fee.is_optional}
                                           onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'is_optional', e.target.checked)}
-                                          className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+                                          className="w-5 h-5 text-cyan-500 rounded focus:ring-2 focus:ring-cyan-400"
                                         />
                                       </label>
                                     </td>
@@ -755,7 +759,7 @@ function FeeStructure() {
                         value={formData.class}
                         onChange={(e) => setFormData({ ...formData, class: e.target.value })}
                         placeholder="e.g., LKG, 1, 2"
-                        className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                        className="w-full px-4 py-2.5 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
                       />
                     </div>
 
@@ -767,7 +771,7 @@ function FeeStructure() {
                         value={formData.fee_name}
                         onChange={(e) => setFormData({ ...formData, fee_name: e.target.value })}
                         placeholder="e.g., Tuition Fee"
-                        className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                        className="w-full px-4 py-2.5 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
                       />
                     </div>
 
@@ -781,7 +785,7 @@ function FeeStructure() {
                         value={formData.fee_amount}
                         onChange={(e) => setFormData({ ...formData, fee_amount: e.target.value })}
                         placeholder="0.00"
-                        className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                        className="w-full px-4 py-2.5 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
                       />
                     </div>
 
@@ -791,7 +795,7 @@ function FeeStructure() {
                         required
                         value={formData.period}
                         onChange={(e) => setFormData({ ...formData, period: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#137fec] focus:border-transparent"
+                        className="w-full px-4 py-2.5 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
                       >
                         <option value="monthly">Monthly</option>
                         <option value="yearly">Yearly</option>
@@ -829,7 +833,7 @@ function FeeStructure() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 px-4 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#137fec]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20"
                 >
                   {loading ? (
                     <>
@@ -853,6 +857,7 @@ function FeeStructure() {
                 </button>
               </div>
             </form>
+            </div>
           </div>
         </div>
       )}

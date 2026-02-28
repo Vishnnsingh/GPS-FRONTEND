@@ -314,15 +314,78 @@ function AllStudentDetails() {
 
   return (
     <div className="space-y-3 sm:space-y-4" style={{ fontFamily: "'Lexend', sans-serif" }}>
+      <style>{`
+        .table-scrollbar::-webkit-scrollbar {
+          width: 8px !important;
+          height: 8px !important;
+        }
+        .table-scrollbar::-webkit-scrollbar-track {
+          background: rgb(224, 242, 254) !important;
+          border-radius: 4px !important;
+        }
+        .table-scrollbar::-webkit-scrollbar-thumb {
+          background: rgb(99, 126, 153) !important;
+          border-radius: 4px !important;
+        }
+        .table-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgb(71, 85, 105) !important;
+        }
+        .dark .table-scrollbar::-webkit-scrollbar-track {
+          background: rgb(224, 242, 254) !important;
+        }
+        .dark .table-scrollbar::-webkit-scrollbar-thumb {
+          background: rgb(99, 126, 153) !important;
+        }
+        .dark .table-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgb(71, 85, 105) !important;
+        }
+        @media (prefers-color-scheme: dark) {
+          .table-scrollbar::-webkit-scrollbar-track {
+            background: rgb(224, 242, 254) !important;
+          }
+          .table-scrollbar::-webkit-scrollbar-thumb {
+            background: rgb(99, 126, 153) !important;
+          }
+          .table-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgb(71, 85, 105) !important;
+          }
+        }
+        .dropdown-cyan {
+          color: rgb(15, 23, 42) !important;
+        }
+        .dark .dropdown-cyan {
+          color: rgb(255, 255, 255) !important;
+        }
+        .dropdown-cyan option {
+          background: rgb(224, 242, 254) !important;
+          color: rgb(15, 23, 42) !important;
+        }
+        .dark .dropdown-cyan option {
+          background: rgb(8, 51, 68) !important;
+          color: rgb(255, 255, 255) !important;
+        }
+        .dropdown-cyan option:checked {
+          background: rgb(6, 182, 212) !important;
+          color: rgb(255, 255, 255) !important;
+        }
+        .dropdown-cyan option:hover {
+          background: rgb(6, 182, 212) !important;
+          color: rgb(255, 255, 255) !important;
+        }
+        .dropdown-cyan:focus {
+          outline: none !important;
+          border-color: rgb(6, 182, 212) !important;
+        }
+      `}</style>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#0d141b] dark:text-white">All Student Details</h2>
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
           <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 order-2 sm:order-1">
-            Total: <span className="font-bold text-[#137fec]">{count}</span>
+            Total: <span className="font-bold text-cyan-200">{count}</span>
           </div>
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center justify-center gap-1.5 sm:gap-2 bg-[#137fec] hover:bg-[#137fec]/90 text-white font-bold px-3 sm:px-4 py-2 rounded-lg shadow-lg shadow-[#137fec]/20 transition-all text-xs sm:text-sm order-1 sm:order-2"
+            className="flex items-center justify-center gap-1.5 sm:gap-2 bg-cyan-500 hover:bg-cyan-500/90 text-white font-bold px-3 sm:px-4 py-2 rounded-lg shadow-lg shadow-cyan-500/20 transition-all text-xs sm:text-sm order-1 sm:order-2"
           >
             <span className="material-symbols-outlined text-base">person_add</span>
             <span className="hidden sm:inline">Add New Student</span>
@@ -332,15 +395,15 @@ function AllStudentDetails() {
       </div>
 
       {/* Filters and Search */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 sm:p-4 shadow-md border border-blue-200 dark:border-blue-800">
+      <div className="bg-cyan-50/30 dark:bg-cyan-900/20 rounded-lg p-3 sm:p-4 shadow-md border border-cyan-200/30 dark:border-cyan-800/50">
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-4">
           {/* Class Filter */}
           <div>
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Class
             </label>
-            <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-[#137fec] text-base flex-shrink-0">class</span>
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-cyan-200 text-base shrink-0">class</span>
               <input
                 type="text"
                 value={classFilter}
@@ -356,8 +419,8 @@ function AllStudentDetails() {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Roll
             </label>
-            <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-[#137fec] text-base flex-shrink-0">badge</span>
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-cyan-200 text-base shrink-0">badge</span>
               <input
                 type="text"
                 value={rollFilter}
@@ -373,16 +436,16 @@ function AllStudentDetails() {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Section
             </label>
-            <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-[#137fec] text-base flex-shrink-0">category</span>
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-cyan-200 text-base shrink-0">category</span>
               <select
                 value={sectionFilter}
                 onChange={(e) => setSectionFilter(e.target.value)}
-                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white"
+                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white dropdown-cyan"
               >
-                <option value="">All</option>
+                <option value="" className="bg-cyan-50 dark:bg-slate-800">All</option>
                 {uniqueSections.map((section) => (
-                  <option key={section} value={section}>
+                  <option key={section} value={section} className="bg-cyan-50 dark:bg-slate-800">
                     {section}
                   </option>
                 ))}
@@ -395,16 +458,16 @@ function AllStudentDetails() {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Status
             </label>
-            <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-[#137fec] text-base flex-shrink-0">flag</span>
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-cyan-200 text-base shrink-0">flag</span>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white"
+                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white dropdown-cyan"
               >
-                <option value="all">All</option>
-                <option value="active">Active</option>
-                <option value="left">Left</option>
+                <option value="all" className="bg-cyan-50 dark:bg-slate-800">All</option>
+                <option value="active" className="bg-cyan-50 dark:bg-slate-800">Active</option>
+                <option value="left" className="bg-cyan-50 dark:bg-slate-800">Left</option>
               </select>
             </div>
           </div>
@@ -414,8 +477,8 @@ function AllStudentDetails() {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Search
             </label>
-            <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-[#137fec] text-base flex-shrink-0">search</span>
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+              <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-cyan-200 text-base shrink-0">search</span>
               <input
                 type="text"
                 value={searchTerm}
@@ -449,10 +512,13 @@ function AllStudentDetails() {
 
       {/* Students Table */}
       {!loading && !error && (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md border border-blue-200 dark:border-blue-800 overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md border border-cyan-200/30 dark:border-cyan-800/50 overflow-hidden">
+          <div className="overflow-x-auto table-scrollbar" style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)'
+          }}>
             <table className="w-full text-xs sm:text-sm">
-              <thead className="bg-[#137fec]">
+              <thead className="bg-cyan-500">
                 <tr>
                   <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white">S.No</th>
                   <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white">Roll</th>
@@ -479,7 +545,7 @@ function AllStudentDetails() {
                     const studentLeft = isStudentLeft(student)
 
                     return (
-                    <tr key={index} className="hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors">
+                    <tr key={index} className="hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 transition-colors">
                       <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-900 dark:text-white">
                         {startIndex + index + 1}
                       </td>
@@ -526,7 +592,7 @@ function AllStudentDetails() {
                             Left
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold  text-white dark:bg-green-900/30">
                             Active
                           </span>
                         )}
@@ -538,7 +604,7 @@ function AllStudentDetails() {
                               setSelectedStudent(student)
                               setIsEditModalOpen(true)
                             }}
-                            className="p-1 text-[#137fec] hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                            className="p-1 text-cyan-200 hover:bg-cyan-500/10 hover:border-2 hover:border-cyan-400 dark:hover:bg-cyan-900/20 rounded-lg transition-colors"
                             title="Edit"
                           >
                             <span className="material-symbols-outlined text-base">edit</span>
@@ -556,7 +622,7 @@ function AllStudentDetails() {
 
       {/* Pagination */}
       {!loading && !error && filteredStudents.length > 0 && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 sm:p-4 shadow-md border border-blue-200 dark:border-blue-800">
+        <div className="bg-cyan-50/30 dark:bg-cyan-900/20 rounded-lg p-3 sm:p-4 shadow-md border border-cyan-200/30 dark:border-cyan-800/50">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               Showing <span className="font-medium text-slate-900 dark:text-white">{startIndex + 1}</span> to <span className="font-medium text-slate-900 dark:text-white">{Math.min(endIndex, filteredStudents.length)}</span> of <span className="font-medium text-slate-900 dark:text-white">{filteredStudents.length}</span>
@@ -577,7 +643,7 @@ function AllStudentDetails() {
                         key={page}
                         onClick={() => setCurrentPage(page)}
                         className={`px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-colors ${
-                          currentPage === page ? 'bg-[#137fec] text-white' : 'text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600'
+                          currentPage === page ? 'bg-cyan-500 text-white' : 'text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600'
                         }`}
                       >
                         {page}
@@ -657,7 +723,7 @@ function AllStudentDetails() {
                 <button
                   type="submit"
                   disabled={statusActionLoading}
-                  className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-cyan-500 text-white rounded-lg text-sm font-semibold hover:bg-cyan-500/90 disabled:opacity-50"
                 >
                   {statusActionLoading ? 'Saving...' : 'Confirm Leave'}
                 </button>
@@ -738,7 +804,7 @@ function AllStudentDetails() {
                 <button
                   type="submit"
                   disabled={statusActionLoading}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-cyan-500 text-white rounded-lg text-sm font-semibold hover:bg-cyan-500/90 disabled:opacity-50"
                 >
                   {statusActionLoading ? 'Saving...' : 'Confirm Rejoin'}
                 </button>

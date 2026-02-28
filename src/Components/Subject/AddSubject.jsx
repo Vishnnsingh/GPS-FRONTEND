@@ -196,9 +196,9 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
       ></div>
 
       {/* Modal */}
-      <div className="relative bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
         {/* Header */}
-        <div className="sticky top-0 bg-[#137fec] text-white px-6 py-4 rounded-t-lg flex items-center justify-between">
+        <div className="sticky top-0 bg-cyan-500 text-white px-6 py-4 rounded-t-lg flex items-center justify-between">
           <h2 className="text-xl font-black">Add Subject to Class</h2>
           <button
             onClick={onClose}
@@ -226,7 +226,7 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
           )}
 
           {/* Mode Toggle */}
-          <div className="flex items-center gap-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+          <div className="flex items-center gap-4 p-3 bg-cyan-50/30 dark:bg-cyan-900/10 rounded-lg border border-cyan-200/30 dark:border-cyan-700/50">
             <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Mode:</label>
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -239,7 +239,7 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                     setMode(e.target.value)
                     setError('')
                   }}
-                  className="w-4 h-4 text-[#137fec] focus:ring-[#137fec]"
+                  className="w-4 h-4 text-cyan-500 focus:ring-cyan-400"
                 />
                 <span className="text-sm text-slate-700 dark:text-slate-300">Single Subject</span>
               </label>
@@ -253,7 +253,7 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                     setMode(e.target.value)
                     setError('')
                   }}
-                  className="w-4 h-4 text-[#137fec] focus:ring-[#137fec]"
+                  className="w-4 h-4 text-cyan-500 focus:ring-cyan-400"
                 />
                 <span className="text-sm text-slate-700 dark:text-slate-300">Multiple Subjects</span>
               </label>
@@ -266,8 +266,8 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Class <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">class</span>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">class</span>
                 <input
                   type="text"
                   name="class"
@@ -290,8 +290,8 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                   <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Subject <span className="text-red-500">*</span>
                   </label>
-                  <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                    <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">book</span>
+                  <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                    <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">book</span>
                     {loadingSubjects ? (
                       <div className="w-full py-1.5 px-2 text-sm text-slate-500 dark:text-slate-400">
                         Loading subjects...
@@ -301,7 +301,7 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                         name="subject_id"
                         value={formData.subject_id}
                         onChange={handleSubjectSelect}
-                        className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white"
+                        className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white dropdown-cyan"
                         required
                       >
                         <option value="">Select Subject</option>
@@ -320,8 +320,8 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                   <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Subject Code
                   </label>
-                  <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10">
-                    <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">code</span>
+                  <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10">
+                    <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">code</span>
                     <input
                       type="text"
                       name="subject_code"
@@ -340,8 +340,8 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                   <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Subject Name
                   </label>
-                  <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10">
-                    <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">book</span>
+                  <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10">
+                    <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">book</span>
                     <input
                       type="text"
                       name="subject_name"
@@ -358,8 +358,8 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                   <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Sequence <span className="text-red-500">*</span>
                   </label>
-                  <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                    <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">sort</span>
+                  <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                    <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">sort</span>
                     <input
                       type="number"
                       name="sequence"
@@ -386,7 +386,7 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                 <button
                   type="button"
                   onClick={addSubjectField}
-                  className="text-xs text-[#137fec] hover:text-[#0d5bb8] font-medium flex items-center gap-1"
+                  className="text-xs text-cyan-200 hover:text-cyan-300 font-medium flex items-center gap-1"
                 >
                   <span className="material-symbols-outlined text-sm">add</span>
                   Add More
@@ -397,8 +397,8 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                   const selectedSubject = allSubjects.find(sub => sub.id === subjectId)
                   return (
                     <div key={index} className="flex items-center gap-2">
-                      <div className="flex-1 flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-                        <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">book</span>
+                      <div className="flex-1 flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                        <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">book</span>
                         {loadingSubjects ? (
                           <div className="w-full py-1.5 px-2 text-sm text-slate-500 dark:text-slate-400">
                             Loading subjects...
@@ -407,7 +407,7 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                           <select
                             value={subjectId}
                             onChange={(e) => handleMultipleSubjectSelect(index, e.target.value)}
-                            className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white"
+                            className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white dropdown-cyan"
                           >
                             <option value="">Select Subject {index + 1}</option>
                             {allSubjects.map((subject) => (
@@ -434,7 +434,7 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
               </div>
               {/* Display selected subjects summary */}
               {formData.subject_ids.filter(id => id).length > 0 && (
-                <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                <div className="mt-3 p-3 bg-cyan-50/30 dark:bg-cyan-900/10 rounded-lg border border-cyan-200/30 dark:border-cyan-700/50">
                   <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
                     Selected Subjects ({formData.subject_ids.filter(id => id).length}):
                   </p>
@@ -471,7 +471,7 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 text-sm font-bold text-white bg-[#137fec] hover:bg-[#137fec]/90 rounded-lg shadow-lg shadow-[#137fec]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 text-sm font-bold text-white bg-cyan-500 hover:bg-cyan-500/90 rounded-lg shadow-lg shadow-cyan-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {loading ? (
                 <>

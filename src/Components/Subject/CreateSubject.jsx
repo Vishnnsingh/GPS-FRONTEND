@@ -73,9 +73,9 @@ function CreateSubject({ isOpen, onClose, onSuccess }) {
       ></div>
 
       {/* Modal */}
-      <div className="relative bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
         {/* Header */}
-        <div className="sticky top-0 bg-[#137fec] text-white px-6 py-4 rounded-t-lg flex items-center justify-between">
+        <div className="sticky top-0 bg-cyan-500 text-white px-6 py-4 rounded-t-lg flex items-center justify-between">
           <h2 className="text-xl font-black">Create New Subject</h2>
           <button
             onClick={onClose}
@@ -105,8 +105,8 @@ function CreateSubject({ isOpen, onClose, onSuccess }) {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Subject Name <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">book</span>
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+              <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">book</span>
               <input
                 type="text"
                 name="name"
@@ -124,8 +124,8 @@ function CreateSubject({ isOpen, onClose, onSuccess }) {
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Subject Code <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center border border-blue-200 dark:border-blue-700 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 focus-within:border-[#137fec] focus-within:ring-1 focus-within:ring-[#137fec] transition-all">
-              <span className="material-symbols-outlined pl-2 text-[#137fec] text-base">code</span>
+            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+              <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">code</span>
               <input
                 type="text"
                 name="code"
@@ -155,7 +155,7 @@ function CreateSubject({ isOpen, onClose, onSuccess }) {
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 text-sm font-bold text-white bg-[#137fec] hover:bg-[#137fec]/90 rounded-lg shadow-lg shadow-[#137fec]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 text-sm font-bold text-white bg-cyan-500 hover:bg-cyan-500/90 rounded-lg shadow-lg shadow-cyan-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {loading ? (
                 <>

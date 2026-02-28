@@ -223,12 +223,12 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
           value={billId}
           onChange={(e) => handleBillIdChange(e.target.value)}
           placeholder="Enter Bill ID"
-          className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+          className="flex-1 px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
         />
         <button
           onClick={() => handleFetchInvoice()}
           disabled={loading}
-          className="px-4 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#137fec]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-cyan-500/20"
         >
           {loading ? (
             <>
@@ -246,7 +246,7 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
           <button
             onClick={handleDownloadPDF}
             disabled={loading}
-            className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 text-slate-700 dark:text-slate-300 hover:text-cyan-200 dark:hover:text-cyan-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
           >
             <span className="material-symbols-outlined text-sm">download</span>
             Download PDF
@@ -378,7 +378,7 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
           {/* Screen Display View */}
           <div className="print:hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 space-y-6">
           {/* Invoice Header */}
-          <div className="bg-gradient-to-r from-blue-50 to-[#137fec]/10 dark:from-blue-900/30 dark:to-blue-800/20 rounded-xl p-5 border border-blue-200 dark:border-blue-700/50">
+          <div className="bg-gradient-to-r from-cyan-50/30 to-cyan-500/10 dark:from-cyan-900/30 dark:to-cyan-800/20 rounded-xl p-5 border border-cyan-200/30 dark:border-cyan-700/50">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-1">Invoice #{invoiceData.invoice_number || invoiceData.bill_id || '--'}</h4>
@@ -446,24 +446,24 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
           {invoiceData.items && invoiceData.items.length > 0 && (
             <div>
               <h4 className="text-md font-bold text-slate-900 dark:text-white mb-4">Fee Items</h4>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-100 dark:bg-slate-900 border-b-2 border-slate-300 dark:border-slate-600">
-                      <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">S.No</th>
-                      <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Fee Name</th>
-                      <th className="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">Amount</th>
+                    <tr className="bg-cyan-500 dark:bg-cyan-500 border-b-2 border-cyan-200/30 dark:border-cyan-700/50">
+                      <th className="px-4 py-3 text-left font-bold text-white">S.No</th>
+                      <th className="px-4 py-3 text-left font-bold text-white">Fee Name</th>
+                      <th className="px-4 py-3 text-right font-bold text-white">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     {invoiceData.items.map((item, index) => (
-                      <tr key={item.id || index} className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/50">
+                      <tr key={item.id || index} className="border-b border-cyan-200/30 dark:border-cyan-700/50 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 transition-colors">
                         <td className="px-4 py-3 text-center text-slate-600 dark:text-slate-400">{index + 1}</td>
                         <td className="px-4 py-3 text-slate-900 dark:text-white font-medium">{item.fee_name || item.name || '--'}</td>
                         <td className="px-4 py-3 text-right text-slate-900 dark:text-white font-semibold">₹{(item.amount || 0).toLocaleString('en-IN')}</td>
                       </tr>
                     ))}
-                    <tr className="bg-slate-50 dark:bg-slate-900/50 border-t-2 border-slate-300 dark:border-slate-600 font-bold">
+                    <tr className="bg-cyan-500/20 dark:bg-cyan-500/20 border-t-2 border-cyan-200/30 dark:border-cyan-700/50 font-bold">
                       <td colSpan={2} className="px-4 py-3 text-right text-slate-900 dark:text-white">Total:</td>
                       <td className="px-4 py-3 text-right text-slate-900 dark:text-white">
                         ₹{invoiceData.items.reduce((sum, item) => sum + (item.amount || 0), 0).toLocaleString('en-IN')}
@@ -479,22 +479,22 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
           {invoiceData.payments && invoiceData.payments.length > 0 && (
             <div>
               <h4 className="text-md font-bold text-slate-900 dark:text-white mb-4">Payment History</h4>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-100 dark:bg-slate-900 border-b-2 border-slate-300 dark:border-slate-600">
-                      <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Receipt No</th>
-                      <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Payment Date</th>
-                      <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Payment Mode</th>
-                      <th className="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">Amount Paid</th>
+                    <tr className="bg-cyan-500 dark:bg-cyan-500 border-b-2 border-cyan-200/30 dark:border-cyan-700/50">
+                      <th className="px-4 py-3 text-left font-bold text-white">Receipt No</th>
+                      <th className="px-4 py-3 text-left font-bold text-white">Payment Date</th>
+                      <th className="px-4 py-3 text-left font-bold text-white">Payment Mode</th>
+                      <th className="px-4 py-3 text-right font-bold text-white">Amount Paid</th>
                       {invoiceData.payments.some(p => p.transaction_id) && (
-                        <th className="px-4 py-3 text-left font-bold text-slate-900 dark:text-white">Transaction ID</th>
+                        <th className="px-4 py-3 text-left font-bold text-white">Transaction ID</th>
                       )}
                     </tr>
                   </thead>
                   <tbody>
                     {invoiceData.payments.map((payment, index) => (
-                      <tr key={payment.id || index} className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/50">
+                      <tr key={payment.id || index} className="border-b border-cyan-200/30 dark:border-cyan-700/50 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10">
                         <td className="px-4 py-3 text-slate-900 dark:text-white font-medium">
                           {payment.receipt_no || '--'}
                         </td>
@@ -506,7 +506,7 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
                           }) : '--'}
                         </td>
                         <td className="px-4 py-3 text-slate-900 dark:text-white capitalize">
-                          <span className="px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-md text-xs font-medium">
+                          <span className="px-2 py-1 bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 rounded-md text-xs font-medium border border-cyan-400/30">
                             {payment.payment_mode || '--'}
                           </span>
                         </td>

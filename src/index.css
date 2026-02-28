@@ -376,6 +376,87 @@
     background: rgba(173, 209, 243, 0.55);
     background-clip: content-box;
   }
+
+  .table-scrollbar {
+    scrollbar-width: thin !important;
+    scrollbar-color: rgb(99, 126, 153) rgb(224, 242, 254) !important;
+  }
+
+  .table-scrollbar::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+  }
+
+  .table-scrollbar::-webkit-scrollbar-track {
+    background: rgb(224, 242, 254) !important;
+    border-radius: 4px !important;
+  }
+
+  .table-scrollbar::-webkit-scrollbar-thumb {
+    background: rgb(99, 126, 153) !important;
+    border-radius: 4px !important;
+  }
+
+  .table-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgb(71, 85, 105) !important;
+  }
+
+  .dark .table-scrollbar::-webkit-scrollbar-track {
+    background: rgb(224, 242, 254) !important;
+  }
+
+  .dark .table-scrollbar::-webkit-scrollbar-thumb {
+    background: rgb(99, 126, 153) !important;
+  }
+
+  .dark .table-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgb(71, 85, 105) !important;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .table-scrollbar::-webkit-scrollbar-track {
+      background: rgb(224, 242, 254) !important;
+    }
+    .table-scrollbar::-webkit-scrollbar-thumb {
+      background: rgb(99, 126, 153) !important;
+    }
+    .table-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgb(71, 85, 105) !important;
+    }
+  }
+
+  .dropdown-cyan {
+    color: rgb(15, 23, 42) !important;
+  }
+
+  .dark .dropdown-cyan {
+    color: rgb(255, 255, 255) !important;
+  }
+
+  .dropdown-cyan option {
+    background: rgb(224, 242, 254) !important;
+    color: rgb(15, 23, 42) !important;
+  }
+
+  .dark .dropdown-cyan option {
+    background: rgb(8, 51, 68) !important;
+    color: rgb(255, 255, 255) !important;
+  }
+
+  .dropdown-cyan option:checked {
+    background: rgb(6, 182, 212) !important;
+    color: rgb(255, 255, 255) !important;
+  }
+
+  .dropdown-cyan option:hover {
+    background: rgb(6, 182, 212) !important;
+    color: rgb(255, 255, 255) !important;
+  }
+
+  .dropdown-cyan:focus {
+    outline: none !important;
+    border-color: rgb(6, 182, 212) !important;
+  }
 }
 
 @layer utilities {

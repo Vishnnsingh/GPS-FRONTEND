@@ -69,17 +69,17 @@ function DeleteSubject({ isOpen, onClose, onSuccess }) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ fontFamily: "'Lexend', sans-serif" }}>
+    <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 pt-20" style={{ fontFamily: "'Lexend', sans-serif" }}>
       {/* Blurred Background */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm z-[9998]"
         onClick={onClose}
       ></div>
 
       {/* Modal */}
-      <div className="relative bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
+      <div className="relative bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[calc(90vh-5rem)] overflow-hidden flex flex-col z-[9999]">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#137fec] to-[#0d5bb8] text-white px-6 py-4 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-white/20 rounded-lg">
               <span className="material-symbols-outlined text-xl">delete</span>
@@ -98,7 +98,7 @@ function DeleteSubject({ isOpen, onClose, onSuccess }) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
           {success && (
             <div className="p-3 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-lg flex items-center gap-2">
               <span className="material-symbols-outlined text-green-600 dark:text-green-400">check_circle</span>
@@ -117,7 +117,7 @@ function DeleteSubject({ isOpen, onClose, onSuccess }) {
           {loadingSubjects && (
             <div className="flex items-center justify-center py-16">
               <div className="text-center">
-                <span className="material-symbols-outlined animate-spin text-4xl text-[#137fec] mb-2">sync</span>
+                <span className="material-symbols-outlined animate-spin text-4xl text-cyan-200 mb-2">sync</span>
                 <p className="text-sm text-slate-500 dark:text-slate-400">Loading subjects...</p>
               </div>
             </div>
@@ -129,12 +129,12 @@ function DeleteSubject({ isOpen, onClose, onSuccess }) {
               {allSubjects.map((subject, index) => (
                 <div
                   key={subject.id}
-                  className="bg-gradient-to-r from-slate-50 to-blue-50/50 dark:from-slate-700 dark:to-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-600 hover:border-[#137fec] hover:shadow-md transition-all"
+                  className="bg-gradient-to-r from-slate-50 to-cyan-50/30 dark:from-slate-700 dark:to-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-600 hover:border-cyan-400 hover:shadow-md transition-all"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 flex-1">
                       {/* Serial Number Badge */}
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#137fec] text-white flex items-center justify-center font-bold text-sm">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-cyan-500 text-white flex items-center justify-center font-bold text-sm">
                         {index + 1}
                       </div>
                       
@@ -144,7 +144,7 @@ function DeleteSubject({ isOpen, onClose, onSuccess }) {
                           <h3 className="text-base font-bold text-slate-900 dark:text-white truncate">
                             {subject.name || '-'}
                           </h3>
-                          <span className="px-2 py-0.5 bg-[#137fec]/10 text-[#137fec] dark:bg-[#137fec]/20 dark:text-[#137fec] rounded text-xs font-medium">
+                          <span className="px-2 py-0.5 bg-cyan-300/15 text-cyan-200 dark:bg-cyan-500/20 dark:text-cyan-200 rounded text-xs font-medium">
                             {subject.code || '-'}
                           </span>
                         </div>
