@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { downloadBillsData, getFeeList } from '../../Api/fees'
+import { getFeeList } from '../../Api/fees'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
@@ -38,10 +38,10 @@ function FeeList({ onViewInvoice }) {
     }
   }, [statusFilter, feeList])
 
+  // Load data on component mount and when filters change
   useEffect(() => {
-    if (classFilter || monthFilter) {
-      fetchFeeList()
-    }
+    fetchFeeList()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classFilter, sectionFilter, monthFilter])
 
   const fetchFeeList = async () => {
@@ -60,60 +60,37 @@ function FeeList({ onViewInvoice }) {
         section: sectionFilter,
         month: monthFilter,
       });
+      
       let feeList = [];
 
-      if (feeListResponse.success) {
-        feeList = feeListResponse.fees || feeListResponse.data || [];
-      } else if (feeListResponse.data && Array.isArray(feeListResponse.data)) {
+      // Handle different response structures - prioritize data extraction
+      if (feeListResponse.data && Array.isArray(feeListResponse.data)) {
         feeList = feeListResponse.data;
-      } else if (Array.isArray(feeListResponse)) {
-        feeList = feeListResponse;
       } else if (feeListResponse.fees && Array.isArray(feeListResponse.fees)) {
         feeList = feeListResponse.fees;
+      } else if (feeListResponse.success && feeListResponse.data && Array.isArray(feeListResponse.data)) {
+        feeList = feeListResponse.data;
+      } else if (feeListResponse.success && feeListResponse.fees && Array.isArray(feeListResponse.fees)) {
+        feeList = feeListResponse.fees;
+      } else if (Array.isArray(feeListResponse)) {
+        feeList = feeListResponse;
       } else {
-        setError(feeListResponse.message || 'Failed to fetch fee list');
+        // If no data but message exists, show message but don't treat as error if it's just informational
+        if (feeListResponse.message && !feeListResponse.data) {
+          setError(feeListResponse.message);
+        }
+        feeList = [];
       }
 
-      // Fetch bills data
-      const billsResponse = await downloadBillsData({
-        month: monthFilter,
-        class: classFilter,
-        section: sectionFilter,
-      });
-      let bills = [];
-
-      if (billsResponse && billsResponse.bills && Array.isArray(billsResponse.bills)) {
-        bills = billsResponse.bills;
-      } else {
-        console.warn('No bills data found or invalid format');
-      }
-
-      // Merge bills data into fee list
-      const mergedData = feeList.map((fee) => {
-        const bill = bills.find((b) => b.student?.roll_no === fee.roll_no && b.student?.class === fee.class);
-        return {
-          ...fee,
-          bill_id: bill?.bill_id || '',
-          month: bill?.month || fee.month,
-          tuition_fee: bill?.items?.find((item) => item.fee_name === 'Tuition Fee')?.amount || fee.tuition_fee,
-          exam_fee: bill?.items?.find((item) => item.fee_name === 'Exam Fee')?.amount || fee.exam_fee,
-          annual_fee: bill?.items?.find((item) => item.fee_name === 'Annual Fee')?.amount || fee.annual_fee,
-          computer_fee: bill?.items?.find((item) => item.fee_name === 'Computer Fee')?.amount || fee.computer_fee,
-          transport_fee: bill?.items?.find((item) => item.fee_name === 'Transport Fee')?.amount || fee.transport_fee,
-          previous_due: bill?.items?.find((item) => item.fee_name === 'Previous Due')?.amount || fee.previous_due,
-          total_fee: bill?.summary?.total_amount || fee.total_fee,
-          total_paid: bill?.summary?.advance_used || fee.total_paid,
-          net_payable: bill?.summary?.net_payable || fee.net_payable,
-          bill_status: bill?.summary?.status || fee.bill_status,
-        };
-      });
-
-      setFeeList(mergedData);
-      setTotalCount(mergedData.length);
+      console.log('Fee list response:', feeListResponse);
+      console.log('Fee list data extracted:', feeList);
+      setFeeList(feeList);
+      setTotalCount(feeList.length);
     } catch (err) {
       console.error('Error fetching data:', err);
       setError(err?.message || 'Failed to fetch data');
       setFeeList([]);
+      setTotalCount(0);
     } finally {
       setLoading(false);
     }
@@ -460,7 +437,7 @@ function FeeList({ onViewInvoice }) {
         </p>
       ) : filteredFeeList.length === 0 ? (
         <p className="text-center text-slate-500 dark:text-slate-400 py-8 text-sm">
-          {classFilter || monthFilter ? 'No fees found. Try adjusting filters.' : 'Enter filters to view fee list'}
+          {classFilter || monthFilter ? 'No fees found. Try adjusting filters.' : 'No fees found. Data will appear here when available.'}
         </p>
       ) : (
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
