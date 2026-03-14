@@ -1,0 +1,1 @@
+export const CLASS_OPTIONS = ['Mother Care', 'LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8']

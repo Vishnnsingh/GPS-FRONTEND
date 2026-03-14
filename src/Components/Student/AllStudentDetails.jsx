@@ -3,6 +3,7 @@ import { getAllStudents, deleteStudent, leaveStudent, rejoinStudent } from '../.
 import { emitToast } from '../../Api/auth'
 import AddStudent from './AddStudent'
 import EditStudent from './EditStudent'
+import { CLASS_OPTIONS } from '../../constants/classOptions'
 
 function AllStudentDetails() {
   const [students, setStudents] = useState([])
@@ -351,26 +352,34 @@ function AllStudentDetails() {
           }
         }
         .dropdown-cyan {
-          color: rgb(15, 23, 42) !important;
+          color: rgb(244, 248, 255) !important;
+          background: rgba(10, 26, 44, 0.82) !important;
+          font-weight: 700 !important;
         }
         .dark .dropdown-cyan {
-          color: rgb(255, 255, 255) !important;
+          color: rgb(244, 248, 255) !important;
+          background: rgba(10, 26, 44, 0.82) !important;
+          font-weight: 700 !important;
         }
         .dropdown-cyan option {
-          background: rgb(224, 242, 254) !important;
-          color: rgb(15, 23, 42) !important;
+          background: rgb(8, 51, 68) !important;
+          color: rgb(244, 248, 255) !important;
+          font-weight: 700 !important;
         }
         .dark .dropdown-cyan option {
           background: rgb(8, 51, 68) !important;
-          color: rgb(255, 255, 255) !important;
+          color: rgb(244, 248, 255) !important;
+          font-weight: 700 !important;
         }
         .dropdown-cyan option:checked {
           background: rgb(6, 182, 212) !important;
           color: rgb(255, 255, 255) !important;
+          font-weight: 700 !important;
         }
         .dropdown-cyan option:hover {
           background: rgb(6, 182, 212) !important;
           color: rgb(255, 255, 255) !important;
+          font-weight: 700 !important;
         }
         .dropdown-cyan:focus {
           outline: none !important;
@@ -404,13 +413,18 @@ function AllStudentDetails() {
             </label>
             <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
               <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-cyan-200 text-base shrink-0">class</span>
-              <input
-                type="text"
+              <select
                 value={classFilter}
                 onChange={(e) => setClassFilter(e.target.value)}
-                placeholder="1, 4"
-                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
-              />
+                className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dropdown-cyan"
+              >
+                <option value="" className="bg-cyan-50 dark:bg-slate-800">All</option>
+                {CLASS_OPTIONS.map((className) => (
+                  <option key={className} value={className} className="bg-cyan-50 dark:bg-slate-800">
+                    {className}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -753,12 +767,19 @@ function AllStudentDetails() {
             <form onSubmit={handleRejoinSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Class</label>
-                <input
+                <select
                   value={rejoinForm.class}
                   onChange={(e) => setRejoinForm((prev) => ({ ...prev, class: e.target.value }))}
                   required
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm"
-                />
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm dropdown-cyan"
+                >
+                  <option value="" className="bg-cyan-50 dark:bg-slate-800">Select Class</option>
+                  {CLASS_OPTIONS.map((className) => (
+                    <option key={className} value={className} className="bg-cyan-50 dark:bg-slate-800">
+                      {className}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Section</label>

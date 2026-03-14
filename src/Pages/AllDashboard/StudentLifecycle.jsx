@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { emitToast } from '../../Api/auth'
 import { getAllStudents, leaveStudent, rejoinStudent } from '../../Api/students'
+import { CLASS_OPTIONS } from '../../constants/classOptions'
 
 function StudentLifecycle() {
   const [activeStudentsData, setActiveStudentsData] = useState([])
@@ -317,12 +318,18 @@ function StudentLifecycle() {
 
       <div className="ryme-card rounded-xl p-3 sm:p-4">
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3">
-          <input
+          <select
             value={filters.class}
             onChange={(e) => setFilters((prev) => ({ ...prev, class: e.target.value }))}
-            placeholder="Class"
             className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
-          />
+          >
+            <option value="" className="bg-white text-slate-900">All Classes</option>
+            {CLASS_OPTIONS.map((className) => (
+              <option key={className} value={className} className="bg-white text-slate-900">
+                {className}
+              </option>
+            ))}
+          </select>
           <input
             value={filters.section}
             onChange={(e) => setFilters((prev) => ({ ...prev, section: e.target.value }))}
@@ -631,13 +638,19 @@ function StudentLifecycle() {
               UUID: {getStudentId(rejoinModal.student)}
             </p>
             <form onSubmit={submitRejoin} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input
+              <select
                 value={rejoinModal.class}
                 onChange={(e) => setRejoinModal((prev) => ({ ...prev, class: e.target.value }))}
-                placeholder="Class"
                 className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
                 required
-              />
+              >
+                <option value="" className="bg-white text-slate-900">Select Class</option>
+                {CLASS_OPTIONS.map((className) => (
+                  <option key={className} value={className} className="bg-white text-slate-900">
+                    {className}
+                  </option>
+                ))}
+              </select>
               <input
                 value={rejoinModal.section}
                 onChange={(e) => setRejoinModal((prev) => ({ ...prev, section: e.target.value.toUpperCase() }))}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { downloadBillsData, getFeeList } from '../../Api/fees'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import { CLASS_OPTIONS } from '../../constants/classOptions'
 
 function FeeList({ onViewInvoice }) {
   const [feeList, setFeeList] = useState([])
@@ -297,13 +298,18 @@ function FeeList({ onViewInvoice }) {
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class</label>
-          <input
-            type="text"
+          <select
             value={classFilter}
             onChange={(e) => setClassFilter(e.target.value)}
-            placeholder="Class"
             className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
-          />
+          >
+            <option value="" className="bg-white text-slate-900">All Classes</option>
+            {CLASS_OPTIONS.map((className) => (
+              <option key={className} value={className} className="bg-white text-slate-900">
+                {className}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Section</label>

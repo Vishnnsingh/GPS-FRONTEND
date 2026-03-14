@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { createFeeStructure, getFeeStructures, updateFeeStructure, deleteFeeStructure } from '../../Api/fees'
+import { CLASS_OPTIONS } from '../../constants/classOptions'
 
 const FEE_TYPES = [
   { name: 'Tuition Fee', defaultPeriod: 'monthly' },
@@ -292,13 +293,18 @@ function FeeStructure() {
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-end">
         <div className="w-full sm:flex-1">
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class</label>
-          <input
-            type="text"
+          <select
             value={classFilter}
             onChange={(e) => setClassFilter(e.target.value)}
-            placeholder="Filter by class"
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-          />
+          >
+            <option value="" className="bg-white text-slate-900">All Classes</option>
+            {CLASS_OPTIONS.map((className) => (
+              <option key={className} value={className} className="bg-white text-slate-900">
+                {className}
+              </option>
+            ))}
+          </select>
         </div>
         <button
           onClick={() => {
@@ -635,14 +641,19 @@ function FeeStructure() {
                   {/* Bulk Mode */}
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class (for all) *</label>
-                    <input
-                      type="text"
+                    <select
                       required
                       value={bulkData[0]?.class || ''}
                       onChange={(e) => updateBulkClassForAll(e.target.value)}
-                      placeholder="e.g., LKG, 1, 2"
                       className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                    />
+                    >
+                      <option value="" className="bg-white text-slate-900">Select Class</option>
+                      {CLASS_OPTIONS.map((className) => (
+                        <option key={className} value={className} className="bg-white text-slate-900">
+                          {className}
+                        </option>
+                      ))}
+                    </select>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">This class will be applied to all fee structures below</p>
                   </div>
 
@@ -753,14 +764,19 @@ function FeeStructure() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Class *</label>
-                      <input
-                        type="text"
+                      <select
                         required
                         value={formData.class}
                         onChange={(e) => setFormData({ ...formData, class: e.target.value })}
-                        placeholder="e.g., LKG, 1, 2"
                         className="w-full px-4 py-2.5 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
-                      />
+                      >
+                        <option value="" className="bg-white text-slate-900">Select Class</option>
+                        {CLASS_OPTIONS.map((className) => (
+                          <option key={className} value={className} className="bg-white text-slate-900">
+                            {className}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div>

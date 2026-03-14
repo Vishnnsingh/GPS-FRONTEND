@@ -4,6 +4,7 @@ import { emitToast } from '../../Api/auth';
 import { Tabs, Tab } from '@mui/material';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { CLASS_OPTIONS } from '../../constants/classOptions';
 
 // Ensure autoTable is properly registered
 jsPDF.API.autoTable = autoTable;
@@ -364,17 +365,20 @@ function Bills() {
                 <span className="material-symbols-outlined text-sm">receipt_long</span>
                 Generate Bills
               </button>
-              <button
-                onClick={() => setActionType('downloadData')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                  actionType === 'downloadData'
-                    ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20'
-                    : 'bg-white dark:bg-slate-800 border border-cyan-200/30 dark:border-cyan-700/50 text-slate-700 dark:text-slate-300 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 hover:text-cyan-200 dark:hover:text-cyan-200'
-                }`}
-              >
-                <span className="material-symbols-outlined text-sm">download</span>
-                View Bills Data
-              </button>
+             {/*
+<button
+  onClick={() => setActionType('downloadData')}
+  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+    actionType === 'downloadData'
+      ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20'
+      : 'bg-white dark:bg-slate-800 border border-cyan-200/30 dark:border-cyan-700/50 text-slate-700 dark:text-slate-300 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 hover:text-cyan-200 dark:hover:text-cyan-200'
+  }`}
+>
+  <span className="material-symbols-outlined text-sm">download</span>
+  View Bills Data
+</button>
+*/}
+
               <button
                 onClick={handleDownloadBillsData}
                 className="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 bg-cyan-500 text-white hover:bg-cyan-500/90 shadow-lg shadow-cyan-500/20"
@@ -382,6 +386,7 @@ function Bills() {
                 <span className="material-symbols-outlined text-sm">download</span>
                 Download Bills
               </button>
+              {/*  
               <button
                 onClick={downloadAllBillsPDF}
                 className="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 bg-cyan-500 text-white hover:bg-cyan-500/90 shadow-lg shadow-cyan-500/20"
@@ -389,6 +394,7 @@ function Bills() {
                 <span className="material-symbols-outlined text-sm">picture_as_pdf</span>
                 Download All Bills (Single PDF)
               </button>
+               */}
             </div>
           </div>
 
@@ -421,14 +427,19 @@ function Bills() {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Class {actionType === 'generate' ? '*' : '(Optional)'}
               </label>
-              <input
-                type="text"
+              <select
                 required={actionType === 'generate'}
                 value={formData.class}
                 onChange={(e) => setFormData({ ...formData, class: e.target.value })}
-                placeholder="e.g., 1, 2, 3, LKG"
                 className="w-full px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
-              />
+              >
+                <option value="" className="bg-white text-slate-900">{actionType === 'generate' ? 'Select Class' : 'All Classes (Optional)'}</option>
+                {CLASS_OPTIONS.map((className) => (
+                  <option key={className} value={className} className="bg-white text-slate-900">
+                    {className}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>

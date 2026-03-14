@@ -57,6 +57,27 @@
     transition: all 0.22s ease;
   }
 
+  select {
+    background: rgba(10, 26, 44, 0.82) !important;
+    color: #f4f8ff !important;
+    font-weight: 700 !important;
+  }
+
+  select option,
+  select optgroup {
+    background: #083344 !important;
+    color: #f4f8ff !important;
+    font-weight: 700 !important;
+  }
+
+  .dark select,
+  .dark select option,
+  .dark select optgroup {
+    background: #083344 !important;
+    color: #f4f8ff !important;
+    font-weight: 700 !important;
+  }
+
   img,
   svg,
   video,
@@ -343,11 +364,24 @@
   }
 
   .app-shell input,
-  .app-shell select,
   .app-shell textarea {
     border-color: rgba(143, 180, 227, 0.35) !important;
     background: rgba(10, 26, 44, 0.82) !important;
     color: #f4f8ff !important;
+  }
+
+  .app-shell select {
+    border-color: rgba(143, 180, 227, 0.35) !important;
+    background: rgba(10, 26, 44, 0.82) !important;
+    color: #f4f8ff !important;
+    font-weight: 700 !important;
+  }
+
+  .app-shell select option,
+  .app-shell select optgroup {
+    background: #083344 !important;
+    color: #f4f8ff !important;
+    font-weight: 700 !important;
   }
 
   .app-shell input::placeholder,
@@ -426,31 +460,39 @@
   }
 
   .dropdown-cyan {
-    color: rgb(15, 23, 42) !important;
+    color: #f4f8ff !important;
+    background: rgba(10, 26, 44, 0.82) !important;
+    font-weight: 700 !important;
   }
 
   .dark .dropdown-cyan {
-    color: rgb(255, 255, 255) !important;
+    color: #f4f8ff !important;
+    background: rgba(10, 26, 44, 0.82) !important;
+    font-weight: 700 !important;
   }
 
   .dropdown-cyan option {
-    background: rgb(224, 242, 254) !important;
-    color: rgb(15, 23, 42) !important;
+    background: #083344 !important;
+    color: #f4f8ff !important;
+    font-weight: 700 !important;
   }
 
   .dark .dropdown-cyan option {
-    background: rgb(8, 51, 68) !important;
-    color: rgb(255, 255, 255) !important;
+    background: #083344 !important;
+    color: #f4f8ff !important;
+    font-weight: 700 !important;
   }
 
   .dropdown-cyan option:checked {
     background: rgb(6, 182, 212) !important;
-    color: rgb(255, 255, 255) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
   }
 
   .dropdown-cyan option:hover {
     background: rgb(6, 182, 212) !important;
-    color: rgb(255, 255, 255) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
   }
 
   .dropdown-cyan:focus {

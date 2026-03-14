@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { addStudent } from '../../Api/students'
+import { CLASS_OPTIONS } from '../../constants/classOptions'
 
 function AddStudent({ isOpen, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -238,15 +239,20 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
               </label>
               <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
                 <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">class</span>
-                <input
-                  type="text"
+                <select
                   name="class"
                   value={formData.class}
                   onChange={handleChange}
-                  className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
-                  placeholder="Enter class"
+                  className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white"
                   required
-                />
+                >
+                  <option value="" className="bg-white text-slate-900">Select class</option>
+                  {CLASS_OPTIONS.map((className) => (
+                    <option key={className} value={className} className="bg-white text-slate-900">
+                      {className}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
