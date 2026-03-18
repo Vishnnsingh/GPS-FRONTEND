@@ -1,6 +1,18 @@
 import React, { useState } from 'react'
 import { addStudent } from '../../Api/students'
 
+const normalizeAlphaSpaceUpper = (value) =>
+  value
+    .toUpperCase()
+    .replace(/[^A-Z\s]/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/^\s+/g, '')
+
+const normalizeClassValue = (value) => value.replace(/[^a-zA-Z0-9]/g, '')
+const normalizeSectionValue = (value) => value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 1)
+const normalizeMobileValue = (value) => value.replace(/\D/g, '').slice(0, 10)
+const normalizeAddressValue = (value) => value.slice(0, 50)
+
 function AddStudent({ isOpen, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -18,14 +30,106 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState({})
+
+  const validateField = (fieldName, fieldValue) => {
+    const value = (fieldValue ?? '').toString().trim()
+
+    if (fieldName === 'name' || fieldName === 'father_name' || fieldName === 'mother_name') {
+      if (!value) return 'This field is required.'
+      if (!/^[A-Z ]+$/.test(value)) return 'Only alphabets and spaces are allowed.'
+      return ''
+    }
+
+    if (fieldName === 'class') {
+      if (!value) return 'Class is required.'
+      if (!/^[a-zA-Z0-9]+$/.test(value)) return 'Class must contain only letters and numbers.'
+      return ''
+    }
+
+    if (fieldName === 'section') {
+      if (!value) return 'Section is required.'
+      if (!/^[A-Z]$/.test(value)) return 'Section must be a single capital letter.'
+      return ''
+    }
+
+    if (fieldName === 'mobile') {
+      if (!value) return 'Mobile number is required.'
+      if (!/^[6-9]\d{9}$/.test(value)) return 'Enter a valid 10-digit number starting with 6-9.'
+      return ''
+    }
+
+    if (fieldName === 'address') {
+      if (!value) return 'Address is required.'
+      if (value.length > 50) return 'Address cannot exceed 50 characters.'
+      return ''
+    }
+
+    return ''
+  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
+    let nextValue = value
+
+    if (type !== 'checkbox') {
+      if (name === 'name' || name === 'father_name' || name === 'mother_name') {
+        nextValue = normalizeAlphaSpaceUpper(value)
+      }
+
+      if (name === 'class') {
+        nextValue = normalizeClassValue(value)
+      }
+
+      if (name === 'section') {
+        nextValue = normalizeSectionValue(value)
+      }
+
+      if (name === 'mobile') {
+        nextValue = normalizeMobileValue(value)
+      }
+
+      if (name === 'address') {
+        nextValue = normalizeAddressValue(value)
+      }
+    }
+
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : nextValue
     }))
+
+    if (type !== 'checkbox') {
+      setFieldErrors(prev => ({
+        ...prev,
+        [name]: validateField(name, nextValue)
+      }))
+    }
+
     setError('')
+  }
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target
+    if (
+      name === 'name' ||
+      name === 'father_name' ||
+      name === 'mother_name' ||
+      name === 'class' ||
+      name === 'address' ||
+      name === 'mobile' ||
+      name === 'section'
+    ) {
+      const trimmedValue = value.trim()
+      setFormData(prev => ({
+        ...prev,
+        [name]: trimmedValue
+      }))
+      setFieldErrors(prev => ({
+        ...prev,
+        [name]: validateField(name, trimmedValue)
+      }))
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -34,10 +138,38 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
     setLoading(true)
 
     try {
-      const submitData = {
+      const normalizedFormData = {
         ...formData,
-        roll_no: parseInt(formData.roll_no) || 0,
-        transport_charge: formData.uses_transport ? (formData.transport_charge ? parseFloat(formData.transport_charge) : null) : null
+        name: normalizeAlphaSpaceUpper(formData.name).trim(),
+        father_name: normalizeAlphaSpaceUpper(formData.father_name).trim(),
+        mother_name: normalizeAlphaSpaceUpper(formData.mother_name).trim(),
+        class: normalizeClassValue(formData.class).trim(),
+        section: normalizeSectionValue(formData.section).trim(),
+        mobile: normalizeMobileValue(formData.mobile).trim(),
+        address: normalizeAddressValue(formData.address).trim(),
+      }
+
+      const nextFieldErrors = {
+        name: validateField('name', normalizedFormData.name),
+        father_name: validateField('father_name', normalizedFormData.father_name),
+        mother_name: validateField('mother_name', normalizedFormData.mother_name),
+        class: validateField('class', normalizedFormData.class),
+        section: validateField('section', normalizedFormData.section),
+        mobile: validateField('mobile', normalizedFormData.mobile),
+        address: validateField('address', normalizedFormData.address),
+      }
+
+      setFieldErrors(nextFieldErrors)
+      const hasFieldErrors = Object.values(nextFieldErrors).some(Boolean)
+      if (hasFieldErrors) {
+        setError('Please fix the highlighted field errors.')
+        return
+      }
+
+      const submitData = {
+        ...normalizedFormData,
+        roll_no: parseInt(normalizedFormData.roll_no, 10) || 0,
+        transport_charge: normalizedFormData.uses_transport ? (normalizedFormData.transport_charge ? parseFloat(normalizedFormData.transport_charge) : null) : null
       }
       
       const response = await addStudent(submitData)
@@ -45,6 +177,7 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
       if (response.success) {
         setSuccess(true)
         setError('')
+        setFieldErrors({})
         
         // Reset form
         setFormData({
@@ -165,11 +298,15 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
                   placeholder="Enter student name"
                   required
                 />
               </div>
+              {fieldErrors.name ? (
+                <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>
+              ) : null}
             </div>
 
             {/* Father Name */}
@@ -184,11 +321,15 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                   name="father_name"
                   value={formData.father_name}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
                   placeholder="Enter father name"
                   required
                 />
               </div>
+              {fieldErrors.father_name ? (
+                <p className="mt-1 text-xs text-red-500">{fieldErrors.father_name}</p>
+              ) : null}
             </div>
 
             {/* Mother Name */}
@@ -203,11 +344,15 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                   name="mother_name"
                   value={formData.mother_name}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
                   placeholder="Enter mother name"
                   required
                 />
               </div>
+              {fieldErrors.mother_name ? (
+                <p className="mt-1 text-xs text-red-500">{fieldErrors.mother_name}</p>
+              ) : null}
             </div>
 
             {/* Gender */}
@@ -243,11 +388,15 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                   name="class"
                   value={formData.class}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
                   placeholder="Enter class"
                   required
                 />
               </div>
+              {fieldErrors.class ? (
+                <p className="mt-1 text-xs text-red-500">{fieldErrors.class}</p>
+              ) : null}
             </div>
 
             {/* Roll Number */}
@@ -281,11 +430,16 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                   name="section"
                   value={formData.section}
                   onChange={handleChange}
+                  onBlur={handleBlur}
+                  maxLength={1}
                   className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
                   placeholder="Enter section (e.g., A, B)"
                   required
                 />
               </div>
+              {fieldErrors.section ? (
+                <p className="mt-1 text-xs text-red-500">{fieldErrors.section}</p>
+              ) : null}
             </div>
 
             {/* Mobile */}
@@ -300,11 +454,19 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                   name="mobile"
                   value={formData.mobile}
                   onChange={handleChange}
+                  onBlur={handleBlur}
+                  maxLength={10}
+                  pattern="[6-9][0-9]{9}"
+                  inputMode="numeric"
                   className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
                   placeholder="Enter mobile number"
+                  title="Enter a 10-digit mobile number starting with 6, 7, 8, or 9."
                   required
                 />
               </div>
+              {fieldErrors.mobile ? (
+                <p className="mt-1 text-xs text-red-500">{fieldErrors.mobile}</p>
+              ) : null}
             </div>
           </div>
 
@@ -319,12 +481,17 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
+                onBlur={handleBlur}
+                maxLength={50}
                 rows="3"
                 className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 resize-none"
                 placeholder="Enter student address"
                 required
               ></textarea>
             </div>
+            {fieldErrors.address ? (
+              <p className="mt-1 text-xs text-red-500">{fieldErrors.address}</p>
+            ) : null}
           </div>
 
           {/* Uses Transport */}

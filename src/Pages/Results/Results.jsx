@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import { getStudentResultPublic } from '../../Api/marks'
-import schoolLogo from '../../assets/logo.jpeg'
+import schoolLogo from '../../assets/logo.png'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 import '../../styles/print.css'
 
@@ -1029,7 +1029,7 @@ function Results() {
                     <div className="p-4 sm:p-6">
                       <div className="flex items-center justify-center gap-3 sm:gap-7 rounded-2xl border border-[#d3dded] dark:border-slate-700 bg-white/55 dark:bg-slate-800/70 backdrop-blur-sm px-3 py-3 sm:px-5 sm:py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
                         <div className="shrink-0">
-                          <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border border-[#ccb46e] bg-gradient-to-br from-[#fff2c6] via-[#f3da86] to-[#c8a651] p-1.5 shadow-[0_10px_24px_rgba(168,128,43,0.35)]">
+                          <div className="h-24 w-24 sm:h-28 sm:w-28 rounded-2xl border border-[#ccb46e] bg-gradient-to-br from-[#fff2c6] via-[#f3da86] to-[#c8a651] p-1.5 shadow-[0_10px_24px_rgba(168,128,43,0.35)]">
                             <img src={schoolLogo} alt="School logo" className="h-full w-full object-cover rounded-xl" />
                           </div>
                         </div>

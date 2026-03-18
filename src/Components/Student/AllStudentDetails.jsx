@@ -75,10 +75,31 @@ function AllStudentDetails() {
   }
 
   const normalizeField = (value) => (value ?? '').toString().trim().toLowerCase()
+  const formatAddressForTable = (value) => {
+    const address = (value ?? '').toString().trim()
+    if (!address) {
+      return {
+        display: '-',
+        full: ''
+      }
+    }
+
+    if (address.length <= 20) {
+      return {
+        display: address,
+        full: address
+      }
+    }
+
+    return {
+      display: `${address.slice(0, 20)}...`,
+      full: address
+    }
+  }
 
   useEffect(() => {
     fetchStudents()
-  }, [classFilter, rollFilter, sectionFilter])
+  }, [classFilter, rollFilter])
 
   const fetchStudents = async () => {
     setLoading(true)
@@ -87,7 +108,6 @@ function AllStudentDetails() {
       const response = await getAllStudents({
         class: classFilter,
         roll_no: rollFilter,
-        section: sectionFilter,
       })
       if (response.success) {
         const studentsList = response.students || []
@@ -440,7 +460,10 @@ function AllStudentDetails() {
               <span className="material-symbols-outlined pl-1.5 sm:pl-2 text-cyan-200 text-base shrink-0">category</span>
               <select
                 value={sectionFilter}
-                onChange={(e) => setSectionFilter(e.target.value)}
+                onChange={(e) => {
+                  setSectionFilter(e.target.value)
+                  setCurrentPage(1)
+                }}
                 className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs sm:text-sm text-slate-900 dark:text-white dropdown-cyan"
               >
                 <option value="" className="bg-cyan-50 dark:bg-slate-800">All</option>
@@ -543,6 +566,7 @@ function AllStudentDetails() {
                 ) : (
                   paginatedStudents.map((student, index) => {
                     const studentLeft = isStudentLeft(student)
+                    const addressInfo = formatAddressForTable(student.Address || student.address || '')
 
                     return (
                     <tr key={index} className="hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 transition-colors">
@@ -567,8 +591,11 @@ function AllStudentDetails() {
                       <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-600 dark:text-slate-300 hidden lg:table-cell">
                         {student.Mobile || '-'}
                       </td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-600 dark:text-slate-300 hidden xl:table-cell truncate">
-                        {student.Address || '-'}
+                      <td
+                        className="px-2 sm:px-4 py-2 sm:py-3 text-slate-600 dark:text-slate-300 hidden xl:table-cell"
+                        title={addressInfo.full || undefined}
+                      >
+                        {addressInfo.display}
                       </td>
                       <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-600 dark:text-slate-300 hidden lg:table-cell">
                         {student.Transport && student.Transport !== "No" && typeof student.Transport === 'number' ? (

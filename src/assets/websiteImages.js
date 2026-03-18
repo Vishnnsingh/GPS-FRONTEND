@@ -1,4 +1,4 @@
-import schoolLogo from './logo.jpeg'
+import schoolLogo from './logo.png'
 import websiteTechIcon from './react.svg'
 
 import img0000 from './IMG-20240621-WA0000.jpg'
