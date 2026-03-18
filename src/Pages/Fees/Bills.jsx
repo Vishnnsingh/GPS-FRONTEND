@@ -373,22 +373,22 @@ function Bills() {
                 }`}
               >
                 <span className="material-symbols-outlined text-sm">download</span>
-                View Bills Data
+                Downlaod Bill Data
               </button>
-              <button
+              {/* <button
                 onClick={handleDownloadBillsData}
                 className="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 bg-cyan-500 text-white hover:bg-cyan-500/90 shadow-lg shadow-cyan-500/20"
               >
                 <span className="material-symbols-outlined text-sm">download</span>
                 Download Bills
-              </button>
-              <button
+              </button> */}
+              {/* <button
                 onClick={downloadAllBillsPDF}
                 className="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 bg-cyan-500 text-white hover:bg-cyan-500/90 shadow-lg shadow-cyan-500/20"
               >
                 <span className="material-symbols-outlined text-sm">picture_as_pdf</span>
                 Download All Bills (Single PDF)
-              </button>
+              </button> */}
             </div>
           </div>
 

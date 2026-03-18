@@ -13,7 +13,7 @@ function FeeManager() {
 
   const tabs = [
     { id: 'structure', label: 'Fee Structure', icon: 'settings' },
-    { id: 'bulk', label: 'Bulk Bills', icon: 'receipt_long' },
+   
     { id: 'list', label: 'Fee List', icon: 'list' },
     { id: 'pay', label: 'Pay Fees', icon: 'payments' },
     { id: 'invoice', label: 'Invoice', icon: 'description' },
