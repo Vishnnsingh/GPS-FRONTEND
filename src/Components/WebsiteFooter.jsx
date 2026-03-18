@@ -49,7 +49,7 @@ function WebsiteFooter() {
                   <img
                     src={sharedImages.schoolLogo}
                     alt={`${SCHOOL_NAME} logo`}
-                    className="h-11 w-11 rounded-lg object-cover"
+                    className="h-14 w-14 rounded-lg object-cover sm:h-16 sm:w-16"
                   />
                 </div>
                 <div>

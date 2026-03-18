@@ -2,7 +2,7 @@ import { Component, StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import schoolLogo from './assets/logo.jpeg'
+import schoolLogo from './assets/logo.png'
 
 const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
 

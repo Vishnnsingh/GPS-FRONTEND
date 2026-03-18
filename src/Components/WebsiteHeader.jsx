@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import logo from '../assets/logo.jpeg'
+import logo from '../assets/logo.png'
 
 function WebsiteHeader() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
@@ -33,7 +33,7 @@ function WebsiteHeader() {
                 <img
                   src={logo}
                   alt={`${SCHOOL_NAME} Logo`}
-                  className="h-9 w-9 rounded-lg object-cover sm:h-10 sm:w-10"
+                  className="h-11 w-11 rounded-lg object-cover sm:h-12 sm:w-12"
                 />
               </div>
               <div className="min-w-0">
