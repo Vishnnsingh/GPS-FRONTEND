@@ -148,6 +148,7 @@ function Results() {
   const { classValue, roll, terminal, section, session } = params
 
   const [loading, setLoading] = useState(false)
+  const [pdfBusy, setPdfBusy] = useState(false)
   const [error, setError] = useState('')
   const [data, setData] = useState(null)
   const [termSummaries, setTermSummaries] = useState({})
@@ -262,238 +263,6 @@ function Results() {
 
   const fireToast = (type, title, message) => {
     window.dispatchEvent(new CustomEvent('app:toast', { detail: { type, title, message } }))
-  }
-
-  const handlePrint = () => {
-    if (!data) return
-
-    try {
-      const doc = new jsPDF('p', 'mm', 'a4')
-      const pageWidth = doc.internal.pageSize.getWidth()
-      const pageHeight = doc.internal.pageSize.getHeight()
-      const margin = 8
-      const contentWidth = pageWidth - margin * 2
-
-      doc.setDrawColor(70, 94, 126)
-      doc.setLineWidth(0.4)
-      doc.roundedRect(margin, margin, contentWidth, pageHeight - margin * 2, 4, 4)
-
-      let y = margin + 8
-      doc.setFont('times', 'bold')
-      doc.setTextColor(31, 52, 96)
-      doc.setFontSize(24)
-      doc.text(String(SCHOOL_NAME).toUpperCase(), pageWidth / 2, y, { align: 'center' })
-      y += 6
-
-      doc.setFont('times', 'bold')
-      doc.setTextColor(52, 74, 115)
-      doc.setFontSize(10)
-      doc.text(String(SCHOOL_ADDRESS).toUpperCase(), pageWidth / 2, y, { align: 'center' })
-      y += 7
-
-      doc.setTextColor(42, 63, 103)
-      doc.setFontSize(13)
-      doc.text(
-        `${String(data?.terminal || params.terminal || '--').toUpperCase()} EXAMINATION RESULT - ${sessionLabel}`,
-        pageWidth / 2,
-        y,
-        { align: 'center' }
-      )
-      y += 4
-
-      doc.setDrawColor(194, 204, 221)
-      doc.line(margin + 3, y, pageWidth - margin - 3, y)
-      y += 3
-
-      const infoBody = [
-        [
-          'Name of Student',
-          toDisplayValue(student?.name),
-          'Roll Number',
-          toDisplayValue(student?.roll_no ?? params.roll),
-        ],
-        [
-          "Father's Name",
-          toDisplayValue(student?.father_name),
-          'Section',
-          toDisplayValue(student?.section ?? params.section),
-        ],
-        [
-          'Class',
-          toDisplayValue(student?.class ?? params.classValue),
-          'Current Terminal',
-          toDisplayValue(data?.terminal || params.terminal),
-        ],
-        [
-          'Session',
-          toDisplayValue(sessionLabel),
-          '',
-          '',
-        ],
-      ]
-
-      autoTable(doc, {
-        startY: y,
-        margin: { left: margin + 3, right: margin + 3 },
-        tableWidth: contentWidth - 6,
-        theme: 'grid',
-        body: infoBody,
-        styles: { fontSize: 9, cellPadding: 2, textColor: [20, 28, 43] },
-        columnStyles: {
-          0: { fontStyle: 'bold', fillColor: [238, 242, 248], cellWidth: 40 },
-          1: { fontStyle: 'bold', cellWidth: 54 },
-          2: { fontStyle: 'bold', fillColor: [238, 242, 248], cellWidth: 32 },
-          3: { fontStyle: 'bold', cellWidth: 52 },
-        },
-      })
-
-      y = doc.lastAutoTable.finalY + 3
-
-      const marksBody = processedMarks.length
-        ? processedMarks.map((m) => [
-            String(m.subjectName),
-            String(m.fullMarks),
-            String(m.passMarks),
-            String(m.externalDisplay),
-            String(m.internalDisplay),
-            String(m.obtainedDisplay),
-            String(m.status),
-          ])
-        : [['No marks available', '--', '--', '--', '--', '--', '--']]
-
-      autoTable(doc, {
-        startY: y,
-        margin: { left: margin + 3, right: margin + 3 },
-        tableWidth: contentWidth - 6,
-        head: [['Subject', 'FM', 'Pass', 'Ext', 'Int', 'Obtained', 'Result']],
-        body: marksBody,
-        theme: 'grid',
-        styles: { fontSize: 8.2, cellPadding: 1.8, textColor: [20, 28, 43] },
-        headStyles: { fillColor: [231, 236, 245], textColor: [37, 55, 80], fontStyle: 'bold' },
-        columnStyles: {
-          0: { cellWidth: 60, fontStyle: 'bold' },
-          1: { halign: 'center', cellWidth: 16 },
-          2: { halign: 'center', cellWidth: 16 },
-          3: { halign: 'center', cellWidth: 15 },
-          4: { halign: 'center', cellWidth: 15 },
-          5: { halign: 'center', cellWidth: 20, fontStyle: 'bold' },
-          6: { halign: 'center', cellWidth: 20, fontStyle: 'bold' },
-        },
-      })
-
-      y = doc.lastAutoTable.finalY + 3
-
-      const summaryHeader = ['Metric', ...visibleTerminals.map((t) => `${t} Term`)]
-      const summaryRows = [
-        ['Total Marks', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.total_max_marks)))],
-        ['Marks Obtained', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.total_obtained)))],
-        [
-          'Percentage',
-          ...visibleTerminals.map((t) => String(getSummaryCellValue(
-            t,
-            typeof termSummaries[t]?.percentage !== 'undefined' && termSummaries[t]?.percentage !== null
-              ? `${termSummaries[t].percentage}%`
-              : '--'
-          ))),
-        ],
-        ['Division', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.division)))],
-        ['Class & Section Rank', ...visibleTerminals.map((t) => String(getDisplayRank(t)))],
-        [
-          'Published Date',
-          ...visibleTerminals.map((t) => {
-            const publishedDate = getPublishedDateFromSummary(termSummaries[t])
-            if (!isTermAvailable(t)) {
-              return 'Result Not Found'
-            }
-            return publishedDate
-              ? new Date(publishedDate).toLocaleDateString('en-IN')
-              : '--'
-          }),
-        ],
-      ]
-
-      autoTable(doc, {
-        startY: y,
-        margin: { left: margin + 3, right: margin + 3 },
-        tableWidth: contentWidth - 6,
-        head: [summaryHeader],
-        body: summaryRows,
-        theme: 'grid',
-        styles: { fontSize: 8, cellPadding: 1.8, textColor: [20, 28, 43] },
-        headStyles: { fillColor: [231, 236, 245], textColor: [37, 55, 80], fontStyle: 'bold' },
-        columnStyles: {
-          0: { fontStyle: 'bold', cellWidth: 48 },
-        },
-      })
-
-      y = doc.lastAutoTable.finalY + 4
-      doc.setTextColor(50, 64, 86)
-      doc.setFont('helvetica', 'normal')
-      doc.setFontSize(8.5)
-
-      const notes = [
-        'This is a computer-generated result marksheet and does not require any signature.',
-        'Pass Marks: 30 for regular subjects and 15 for Drawing (FM: 50, External only).',
-        'Rank is calculated class and section wise.',
-      ]
-
-      notes.forEach((note) => {
-        if (y > pageHeight - 18) return
-        doc.text(`- ${note}`, margin + 5, y)
-        y += 4
-      })
-
-      const signatureLineY = Math.max(y + 3, pageHeight - 20)
-      doc.setDrawColor(120, 130, 148)
-      doc.line(pageWidth - 68, signatureLineY, pageWidth - 18, signatureLineY)
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(8.5)
-      doc.text("Principal's Signature", pageWidth - 43, signatureLineY + 4, { align: 'center' })
-
-      doc.setFont('helvetica', 'normal')
-      doc.text(`Generated: ${todayLabel}`, margin + 5, signatureLineY + 4)
-
-      // Generate PDF blob and open print dialog directly (NO DOWNLOAD, NO NEW WINDOW)
-      const pdfBlob = doc.output('blob')
-      const pdfUrl = URL.createObjectURL(pdfBlob)
-      
-      // Create hidden iframe for printing
-      const iframe = document.createElement('iframe')
-      iframe.style.position = 'fixed'
-      iframe.style.right = '0'
-      iframe.style.bottom = '0'
-      iframe.style.width = '0'
-      iframe.style.height = '0'
-      iframe.style.border = 'none'
-      iframe.src = pdfUrl
-      
-      document.body.appendChild(iframe)
-      
-      // Wait for PDF to load then trigger print dialog
-      iframe.onload = () => {
-        setTimeout(() => {
-          try {
-            iframe.contentWindow?.print()
-            // Clean up after print dialog opens
-            setTimeout(() => {
-              document.body.removeChild(iframe)
-              URL.revokeObjectURL(pdfUrl)
-            }, 1000)
-          } catch (e) {
-            console.error('Print failed:', e)
-            document.body.removeChild(iframe)
-            URL.revokeObjectURL(pdfUrl)
-            fireToast('error', 'Print', 'Unable to open print dialog.')
-          }
-        }, 500)
-      }
-      
-      fireToast('success', 'Print', 'Print dialog opened.')
-    } catch (err) {
-      console.error('Failed to open print dialog:', err)
-      fireToast('error', 'Print', 'Unable to open print dialog.')
-      window.print()
-    }
   }
 
   const toNumber = (value) => {
@@ -706,203 +475,235 @@ function Results() {
     return 'text-[#2b456f] dark:text-slate-200'
   }
 
-  const handleDownloadPdf = () => {
-    if (!data) return
+  const triggerBlobDownload = (blob, fileName) => {
+    const fileUrl = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = fileUrl
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.setTimeout(() => URL.revokeObjectURL(fileUrl), 1500)
+  }
 
+  const createHighQualityPdfBlob = async () => {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true,
+    })
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const pageHeight = doc.internal.pageSize.getHeight()
+    const margin = 10
+    const contentWidth = pageWidth - margin * 2
+    let cursorY = 14
+
+    const setText = (fontSize, style = 'normal') => {
+      doc.setFont('times', style)
+      doc.setFontSize(fontSize)
+      doc.setTextColor(20, 20, 20)
+    }
+
+    const ensureSpace = (heightNeeded = 10) => {
+      if (cursorY + heightNeeded <= pageHeight - 12) return
+      doc.addPage()
+      cursorY = 14
+    }
+
+    const subjectRows = processedMarks.length > 0
+      ? processedMarks.map((mark) => ([
+        String(mark.subjectName || '--'),
+        String(mark.fullMarks ?? '--'),
+        String(mark.passMarks ?? '--'),
+        String(mark.externalDisplay ?? '--'),
+        String(mark.internalDisplay ?? '--'),
+        String(mark.obtainedDisplay ?? '--'),
+        String(mark.status ?? '--'),
+      ]))
+      : [['No marks available', '--', '--', '--', '--', '--', '--']]
+
+    const summaryHeader = ['Metric', ...visibleTerminals.map((terminalKey) => `${terminalKey} Term`)]
+    const summaryRows = [
+      ['Total Marks', ...visibleTerminals.map((terminalKey) => String(getSummaryCellValue(terminalKey, termSummaries[terminalKey]?.total_max_marks)))],
+      ['Marks Obtained', ...visibleTerminals.map((terminalKey) => String(getSummaryCellValue(terminalKey, termSummaries[terminalKey]?.total_obtained)))],
+      [
+        'Percentage',
+        ...visibleTerminals.map((terminalKey) => String(getSummaryCellValue(
+          terminalKey,
+          typeof termSummaries[terminalKey]?.percentage !== 'undefined' && termSummaries[terminalKey]?.percentage !== null
+            ? `${termSummaries[terminalKey].percentage}%`
+            : '--'
+        ))),
+      ],
+      ['Division', ...visibleTerminals.map((terminalKey) => String(getSummaryCellValue(terminalKey, termSummaries[terminalKey]?.division)))],
+      ['Class & Section Rank', ...visibleTerminals.map((terminalKey) => String(getDisplayRank(terminalKey)))],
+      [
+        'Published Date',
+        ...visibleTerminals.map((terminalKey) => {
+          const publishedDate = getPublishedDateFromSummary(termSummaries[terminalKey])
+          if (!isTermAvailable(terminalKey)) return 'Result Not Found'
+          return publishedDate ? new Date(publishedDate).toLocaleDateString('en-IN') : '--'
+        }),
+      ],
+    ]
+
+    setText(20, 'bold')
+    doc.text(String(SCHOOL_NAME).toUpperCase(), pageWidth / 2, cursorY, { align: 'center' })
+    cursorY += 7
+
+    setText(10, 'normal')
+    doc.text(String(SCHOOL_ADDRESS), pageWidth / 2, cursorY, { align: 'center' })
+    cursorY += 7
+
+    setText(16, 'bold')
+    doc.text(
+      `${String(data?.terminal || params.terminal || '--').toUpperCase()} EXAMINATION RESULT`,
+      pageWidth / 2,
+      cursorY,
+      { align: 'center' }
+    )
+    cursorY += 6
+
+    setText(11, 'bold')
+    doc.text(`Session: ${sessionLabel}`, pageWidth / 2, cursorY, { align: 'center' })
+    cursorY += 6
+
+    doc.setDrawColor(120, 120, 120)
+    doc.line(margin, cursorY, pageWidth - margin, cursorY)
+    cursorY += 5
+
+    autoTable(doc, {
+      startY: cursorY,
+      margin: { left: margin, right: margin },
+      tableWidth: contentWidth,
+      theme: 'grid',
+      styles: {
+        font: 'times',
+        fontSize: 9,
+        textColor: [20, 20, 20],
+        cellPadding: 2,
+        lineColor: [140, 140, 140],
+        lineWidth: 0.2,
+      },
+      body: [
+        ['Student Name', toDisplayValue(student?.name), 'Roll Number', toDisplayValue(student?.roll_no ?? params.roll)],
+        ["Father's Name", toDisplayValue(student?.father_name), 'Section', toDisplayValue(student?.section ?? params.section)],
+        ['Class', toDisplayValue(student?.class ?? params.classValue), 'Current Terminal', toDisplayValue(data?.terminal || params.terminal)],
+        ['Session', toDisplayValue(sessionLabel), 'Generated On', toDisplayValue(todayLabel)],
+      ],
+      columnStyles: {
+        0: { fontStyle: 'bold', cellWidth: 32 },
+        1: { cellWidth: 63 },
+        2: { fontStyle: 'bold', cellWidth: 32 },
+        3: { cellWidth: 63 },
+      },
+    })
+    cursorY = doc.lastAutoTable.finalY + 5
+
+    ensureSpace(18)
+    setText(12, 'bold')
+    doc.text('Subject Marks', margin, cursorY)
+    cursorY += 2
+
+    autoTable(doc, {
+      startY: cursorY,
+      margin: { left: margin, right: margin },
+      tableWidth: contentWidth,
+      theme: 'grid',
+      head: [['Subject', 'FM', 'Pass', 'Ext', 'Int', 'Obt.', 'Result']],
+      body: subjectRows,
+      styles: {
+        font: 'times',
+        fontSize: 8,
+        textColor: [20, 20, 20],
+        cellPadding: 1.6,
+        lineColor: [140, 140, 140],
+        lineWidth: 0.2,
+      },
+      headStyles: {
+        fillColor: [245, 245, 245],
+        textColor: [20, 20, 20],
+        fontStyle: 'bold',
+      },
+      columnStyles: {
+        0: { cellWidth: 62, fontStyle: 'bold' },
+        1: { cellWidth: 14, halign: 'center' },
+        2: { cellWidth: 15, halign: 'center' },
+        3: { cellWidth: 14, halign: 'center' },
+        4: { cellWidth: 14, halign: 'center' },
+        5: { cellWidth: 18, halign: 'center' },
+        6: { cellWidth: 20, halign: 'center', fontStyle: 'bold' },
+      },
+    })
+    cursorY = doc.lastAutoTable.finalY + 5
+
+    ensureSpace(18)
+    setText(12, 'bold')
+    doc.text('Summary Report', margin, cursorY)
+    cursorY += 2
+
+    autoTable(doc, {
+      startY: cursorY,
+      margin: { left: margin, right: margin },
+      tableWidth: contentWidth,
+      theme: 'grid',
+      head: [summaryHeader],
+      body: summaryRows,
+      styles: {
+        font: 'times',
+        fontSize: 8,
+        textColor: [20, 20, 20],
+        cellPadding: 1.6,
+        lineColor: [140, 140, 140],
+        lineWidth: 0.2,
+      },
+      headStyles: {
+        fillColor: [245, 245, 245],
+        textColor: [20, 20, 20],
+        fontStyle: 'bold',
+      },
+      columnStyles: {
+        0: { cellWidth: 42, fontStyle: 'bold' },
+      },
+    })
+    cursorY = doc.lastAutoTable.finalY + 5
+
+    ensureSpace(20)
+    setText(9, 'normal')
+    const notes = [
+      'This is a computer-generated result marksheet.',
+      'AB denotes absent and NA denotes not applicable.',
+      'Pass Marks: 30 for regular subjects and 15 for Drawing.',
+      'Rank displayed above is calculated class and section wise.',
+    ]
+    notes.forEach((note) => {
+      doc.text(`- ${note}`, margin, cursorY)
+      cursorY += 4.5
+    })
+
+    cursorY += 4
+    doc.line(pageWidth - 62, cursorY, pageWidth - margin, cursorY)
+    setText(9, 'bold')
+    doc.text("Principal's Signature", pageWidth - 36, cursorY + 4, { align: 'center' })
+
+    return doc.output('blob')
+  }
+
+  const handleDownloadPdf = async () => {
+    if (!data || pdfBusy) return
+
+    setPdfBusy(true)
     try {
-      const doc = new jsPDF('p', 'mm', 'a4')
-      const pageWidth = doc.internal.pageSize.getWidth()
-      const pageHeight = doc.internal.pageSize.getHeight()
-      const margin = 8
-      const contentWidth = pageWidth - margin * 2
-
-      doc.setDrawColor(70, 94, 126)
-      doc.setLineWidth(0.4)
-      doc.roundedRect(margin, margin, contentWidth, pageHeight - margin * 2, 4, 4)
-
-      let y = margin + 8
-      doc.setFont('times', 'bold')
-      doc.setTextColor(31, 52, 96)
-      doc.setFontSize(24)
-      doc.text(String(SCHOOL_NAME).toUpperCase(), pageWidth / 2, y, { align: 'center' })
-      y += 6
-
-      doc.setFont('times', 'bold')
-      doc.setTextColor(52, 74, 115)
-      doc.setFontSize(10)
-      doc.text(String(SCHOOL_ADDRESS).toUpperCase(), pageWidth / 2, y, { align: 'center' })
-      y += 7
-
-      doc.setTextColor(42, 63, 103)
-      doc.setFontSize(13)
-      doc.text(
-        `${String(data?.terminal || params.terminal || '--').toUpperCase()} EXAMINATION RESULT - ${sessionLabel}`,
-        pageWidth / 2,
-        y,
-        { align: 'center' }
-      )
-      y += 4
-
-      doc.setDrawColor(194, 204, 221)
-      doc.line(margin + 3, y, pageWidth - margin - 3, y)
-      y += 3
-
-      const infoBody = [
-        [
-          'Name of Student',
-          toDisplayValue(student?.name),
-          'Roll Number',
-          toDisplayValue(student?.roll_no ?? params.roll),
-        ],
-        [
-          "Father's Name",
-          toDisplayValue(student?.father_name),
-          'Section',
-          toDisplayValue(student?.section ?? params.section),
-        ],
-        [
-          'Class',
-          toDisplayValue(student?.class ?? params.classValue),
-          'Current Terminal',
-          toDisplayValue(data?.terminal || params.terminal),
-        ],
-        [
-          'Session',
-          toDisplayValue(sessionLabel),
-          '',
-          '',
-        ],
-      ]
-
-      autoTable(doc, {
-        startY: y,
-        margin: { left: margin + 3, right: margin + 3 },
-        tableWidth: contentWidth - 6,
-        theme: 'grid',
-        body: infoBody,
-        styles: { fontSize: 9, cellPadding: 2, textColor: [20, 28, 43] },
-        columnStyles: {
-          0: { fontStyle: 'bold', fillColor: [238, 242, 248], cellWidth: 40 },
-          1: { fontStyle: 'bold', cellWidth: 54 },
-          2: { fontStyle: 'bold', fillColor: [238, 242, 248], cellWidth: 32 },
-          3: { fontStyle: 'bold', cellWidth: 52 },
-        },
-      })
-
-      y = doc.lastAutoTable.finalY + 3
-
-      const marksBody = processedMarks.length
-        ? processedMarks.map((m) => [
-            String(m.subjectName),
-            String(m.fullMarks),
-            String(m.passMarks),
-            String(m.externalDisplay),
-            String(m.internalDisplay),
-            String(m.obtainedDisplay),
-            String(m.status),
-          ])
-        : [['No marks available', '--', '--', '--', '--', '--', '--']]
-
-      autoTable(doc, {
-        startY: y,
-        margin: { left: margin + 3, right: margin + 3 },
-        tableWidth: contentWidth - 6,
-        head: [['Subject', 'FM', 'Pass', 'Ext', 'Int', 'Obtained', 'Result']],
-        body: marksBody,
-        theme: 'grid',
-        styles: { fontSize: 8.2, cellPadding: 1.8, textColor: [20, 28, 43] },
-        headStyles: { fillColor: [231, 236, 245], textColor: [37, 55, 80], fontStyle: 'bold' },
-        columnStyles: {
-          0: { cellWidth: 60, fontStyle: 'bold' },
-          1: { halign: 'center', cellWidth: 16 },
-          2: { halign: 'center', cellWidth: 16 },
-          3: { halign: 'center', cellWidth: 15 },
-          4: { halign: 'center', cellWidth: 15 },
-          5: { halign: 'center', cellWidth: 20, fontStyle: 'bold' },
-          6: { halign: 'center', cellWidth: 20, fontStyle: 'bold' },
-        },
-      })
-
-      y = doc.lastAutoTable.finalY + 3
-
-      const summaryHeader = ['Metric', ...visibleTerminals.map((t) => `${t} Term`)]
-      const summaryRows = [
-        ['Total Marks', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.total_max_marks)))],
-        ['Marks Obtained', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.total_obtained)))],
-        [
-          'Percentage',
-          ...visibleTerminals.map((t) => String(getSummaryCellValue(
-            t,
-            typeof termSummaries[t]?.percentage !== 'undefined' && termSummaries[t]?.percentage !== null
-              ? `${termSummaries[t].percentage}%`
-              : '--'
-          ))),
-        ],
-        ['Division', ...visibleTerminals.map((t) => String(getSummaryCellValue(t, termSummaries[t]?.division)))],
-        ['Class & Section Rank', ...visibleTerminals.map((t) => String(getDisplayRank(t)))],
-        [
-          'Published Date',
-          ...visibleTerminals.map((t) => {
-            const publishedDate = getPublishedDateFromSummary(termSummaries[t])
-            if (!isTermAvailable(t)) {
-              return 'Result Not Found'
-            }
-            return publishedDate
-              ? new Date(publishedDate).toLocaleDateString('en-IN')
-              : '--'
-          }),
-        ],
-      ]
-
-      autoTable(doc, {
-        startY: y,
-        margin: { left: margin + 3, right: margin + 3 },
-        tableWidth: contentWidth - 6,
-        head: [summaryHeader],
-        body: summaryRows,
-        theme: 'grid',
-        styles: { fontSize: 8, cellPadding: 1.8, textColor: [20, 28, 43] },
-        headStyles: { fillColor: [231, 236, 245], textColor: [37, 55, 80], fontStyle: 'bold' },
-        columnStyles: {
-          0: { fontStyle: 'bold', cellWidth: 48 },
-        },
-      })
-
-      y = doc.lastAutoTable.finalY + 4
-      doc.setTextColor(50, 64, 86)
-      doc.setFont('helvetica', 'normal')
-      doc.setFontSize(8.5)
-
-      const notes = [
-        'This is a computer-generated result marksheet and does not require any signature.',
-        'Pass Marks: 30 for regular subjects and 15 for Drawing (FM: 50, External only).',
-        'Rank is calculated class and section wise.',
-      ]
-
-      notes.forEach((note) => {
-        if (y > pageHeight - 18) return
-        doc.text(`- ${note}`, margin + 5, y)
-        y += 4
-      })
-
-      const signatureLineY = Math.max(y + 3, pageHeight - 20)
-      doc.setDrawColor(120, 130, 148)
-      doc.line(pageWidth - 68, signatureLineY, pageWidth - 18, signatureLineY)
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(8.5)
-      doc.text("Principal's Signature", pageWidth - 43, signatureLineY + 4, { align: 'center' })
-
-      doc.setFont('helvetica', 'normal')
-      doc.text(`Generated: ${todayLabel}`, margin + 5, signatureLineY + 4)
-
-      // Generate PDF and download only (NO PRINT DIALOG)
-      doc.save(`${downloadFileName}.pdf`)
-      
-      fireToast('success', 'Download', 'Result card PDF downloaded.')
+      const pdfBlob = await createHighQualityPdfBlob()
+      triggerBlobDownload(pdfBlob, `${downloadFileName}.pdf`)
+      fireToast('success', 'Download', 'High-quality PDF downloaded.')
     } catch (err) {
-      console.error('Failed to download result card PDF:', err)
-      fireToast('error', 'Download', 'Unable to download result card PDF.')
-      window.print()
+      console.error('PDF download failed:', err)
+      const message = err?.message ? `Unable to download PDF. ${err.message}` : 'Unable to download PDF.'
+      fireToast('error', 'Download', message)
+    } finally {
+      setPdfBusy(false)
     }
   }
 
@@ -927,27 +728,16 @@ function Results() {
               <>
                 <button
                   type="button"
-                  onClick={(event) => {
-                    event.preventDefault()
-                    event.stopPropagation()
-                    handlePrint()
-                  }}
-                  className="inline-flex items-center gap-1 rounded-lg bg-[#137fec] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#137fec]/90 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-sm">print</span>
-                  Print Card
-                </button>
-                <button
-                  type="button"
+                  disabled={pdfBusy}
                   onClick={(event) => {
                     event.preventDefault()
                     event.stopPropagation()
                     handleDownloadPdf()
                   }}
-                  className="inline-flex items-center gap-1 rounded-lg bg-[#0f766e] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#0f766e]/90 cursor-pointer"
+                  className="inline-flex items-center gap-1 rounded-lg bg-[#9b2335] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#9b2335]/90 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  <span className="material-symbols-outlined text-sm">download</span>
-                  Download PDF
+                  <span className="material-symbols-outlined text-sm">{pdfBusy ? 'hourglass_top' : 'picture_as_pdf'}</span>
+                  {pdfBusy ? 'Preparing PDF...' : 'Download PDF'}
                 </button>
               </>
             ) : null}
@@ -961,7 +751,7 @@ function Results() {
         <div className="bg-gradient-to-r from-white to-[#eef4ff] dark:from-slate-800 dark:to-slate-800/90 rounded-2xl border border-[#d4deee] dark:border-slate-700 shadow-[0_10px_30px_rgba(15,23,42,0.08)] p-4 no-print">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#137fec]">badge</span>
+              <span className="material-symbols-outlined text-[#c79843]">badge</span>
               <div>
                 <p className="text-sm font-bold">Class {params.classValue || '--'} | Roll {params.roll || '--'}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -982,7 +772,7 @@ function Results() {
               </div>
             </div>
             {currentSummary?.status ? (
-              <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-gradient-to-r from-[#137fec]/15 to-[#1f5fb8]/15 text-[#0f5fc6] border border-[#137fec]/20">
+              <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-gradient-to-r from-[#1f3f7a]/14 to-[#355fa8]/12 text-[#244f97] border border-[#1f3f7a]/25">
                 <span className="material-symbols-outlined text-sm">verified</span>
                 {currentSummary.status}
               </span>
@@ -1013,60 +803,73 @@ function Results() {
             <div className="print-card-only">
               <div
                 ref={cardRef}
-                className="relative isolate bg-[#f6f7fb] dark:bg-slate-800 border-2 border-[#c8d2e1] dark:border-slate-600 rounded-[30px] overflow-hidden shadow-[0_28px_80px_rgba(15,23,42,0.18)] result-print print-card text-[13px] sm:text-[14px] leading-[1.45]"
-                style={{ maxWidth: '980px', margin: '0 auto' }}
+                data-result-card-capture="true"
+                className="relative isolate overflow-hidden rounded-[34px] border border-[#d8c39a] bg-[radial-gradient(circle_at_top_right,#fff7e5_0%,#f7fbff_42%,#eef4ff_100%)] shadow-[0_24px_68px_rgba(37,52,93,0.18)] ring-1 ring-white/75 result-print print-card text-[13px] sm:text-[14px] leading-[1.45]"
+                style={{ width: '100%', maxWidth: '980px', margin: '0 auto' }}
               >
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <p className="select-none text-[38px] sm:text-[64px] font-medium tracking-[0.1em] uppercase text-slate-400/10 -rotate-[30deg]">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#1f3f7a] via-[#c79843] to-[#2f63ad]" />
+                <div className="result-watermark pointer-events-none absolute inset-0 flex items-center justify-center">
+                  <p className="select-none text-[38px] sm:text-[72px] font-semibold tracking-[0.12em] uppercase text-[#1f3f7a]/8 -rotate-[28deg]">
                     {SCHOOL_NAME}
                   </p>
                 </div>
-                <div className="pointer-events-none absolute -top-16 -right-12 h-48 w-48 rounded-full bg-[#1f6fd7]/14 blur-3xl" />
-                <div className="pointer-events-none absolute -bottom-20 -left-10 h-52 w-52 rounded-full bg-[#d09a3d]/12 blur-3xl" />
+                <div className="pointer-events-none absolute -top-20 -right-14 h-52 w-52 rounded-full bg-[#1f3f7a]/14 blur-3xl" />
+                <div className="pointer-events-none absolute -bottom-24 -left-14 h-56 w-56 rounded-full bg-[#c79843]/18 blur-3xl" />
 
                 <div className="relative z-10">
-                  <div className="border-b border-[#cfd5df] dark:border-slate-600 bg-[linear-gradient(180deg,#f8faff_0%,#eef3fa_100%)] dark:bg-slate-800">
+                  <div className="border-b border-[#d8c9a8] bg-[linear-gradient(180deg,#fffdf8_0%,#f8efdf_54%,#eef4ff_100%)]">
                     <div className="p-4 sm:p-6">
-                      <div className="flex items-center justify-center gap-3 sm:gap-7 rounded-2xl border border-[#d3dded] dark:border-slate-700 bg-white/55 dark:bg-slate-800/70 backdrop-blur-sm px-3 py-3 sm:px-5 sm:py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                      <div className="flex flex-col items-start gap-4 rounded-[26px] border border-[#dbc8a2] bg-white/78 px-3 py-3 shadow-[0_12px_28px_rgba(120,94,53,0.12)] sm:flex-row sm:items-center sm:justify-between sm:gap-7 sm:px-5 sm:py-4">
                         <div className="shrink-0">
-                          <div className="h-24 w-24 sm:h-28 sm:w-28 rounded-2xl border border-[#ccb46e] bg-gradient-to-br from-[#fff2c6] via-[#f3da86] to-[#c8a651] p-1.5 shadow-[0_10px_24px_rgba(168,128,43,0.35)]">
+                          <div className="h-24 w-24 rounded-2xl border border-[#ccb46e] bg-gradient-to-br from-[#fff3ce] via-[#f2d88f] to-[#c89d4c] p-1.5 shadow-[0_10px_24px_rgba(168,128,43,0.35)] sm:h-28 sm:w-28">
                             <img src={schoolLogo} alt="School logo" className="h-full w-full object-cover rounded-xl" />
                           </div>
                         </div>
 
                         <div className="min-w-0 text-left">
-                          <p className="inline-flex items-center rounded-full border border-[#d7e2f4] bg-white/80 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold tracking-[0.08em] text-[#40577d] uppercase">
+                          <p className="inline-flex items-center rounded-full border border-[#d6c39f] bg-[#fff6e4] px-2.5 py-0.5 text-[9px] font-semibold tracking-[0.1em] text-[#75501f] uppercase sm:text-[10px]">
                             Academic Result Card
                           </p>
-                          <h1 className="text-[18px] sm:text-[32px] font-bold leading-tight tracking-[0.01em] text-[#1f3460] uppercase print:text-xl" style={{ fontFamily: "'Cambria', 'Georgia', serif" }}>
+                          <h1 className="text-[18px] font-black leading-tight tracking-[0.02em] text-[#1a3261] uppercase print:text-xl sm:text-[32px]" style={{ fontFamily: "'Cambria', 'Georgia', serif" }}>
                             {SCHOOL_NAME}
                           </h1>
-                          <p className="text-[10px] sm:text-[13px] font-medium mt-1 text-[#334a73] print:text-xs" style={{ fontFamily: "'Cambria', 'Georgia', serif" }}>
+                          <p className="mt-1 text-[10px] font-medium text-[#3a5078] print:text-xs sm:text-[13px]" style={{ fontFamily: "'Cambria', 'Georgia', serif" }}>
                             {SCHOOL_ADDRESS}
                           </p>
-                          <p className="text-[12px] sm:text-[22px] font-semibold mt-1.5 text-[#2a3f67] uppercase print:text-sm" style={{ fontFamily: "'Cambria', 'Georgia', serif" }}>
+                          <p className="mt-1.5 text-[12px] font-semibold text-[#2a3f67] uppercase print:text-sm sm:text-[22px]" style={{ fontFamily: "'Cambria', 'Georgia', serif" }}>
                             {data.terminal} Examination Result - {sessionLabel}
                           </p>
+                          <div className="mt-2 flex flex-wrap gap-1.5 text-[10px] sm:text-[11px]">
+                            <span className="inline-flex items-center rounded-full border border-[#d3c09c] bg-[#fff9ed] px-2.5 py-0.5 font-semibold text-[#6a4a1f]">
+                              Class {student?.class ?? params.classValue ?? '--'}
+                            </span>
+                            <span className="inline-flex items-center rounded-full border border-[#c6d4ea] bg-[#eef4ff] px-2.5 py-0.5 font-semibold text-[#34517f]">
+                              Roll {student?.roll_no ?? params.roll ?? '--'}
+                            </span>
+                            <span className="inline-flex items-center rounded-full border border-[#d7caa9] bg-[#f8eedc] px-2.5 py-0.5 font-semibold text-[#7f5a23]">
+                              Section {(student?.section ?? params.section) || '--'}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <div className="px-4 sm:px-6 pt-4">
-                    <div className="rounded-2xl overflow-hidden border border-[#cfd5df] dark:border-slate-600 bg-white/90 dark:bg-slate-800/70 backdrop-blur-sm shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-                      <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-[#d9dfeb] dark:divide-slate-700">
+                    <div className="overflow-hidden rounded-2xl border border-[#d8c7a5]/75 bg-white/88 shadow-[0_12px_28px_rgba(76,93,128,0.12)]">
+                      <div className="grid grid-cols-1 divide-[#e4d8be] md:grid-cols-2 md:divide-x">
                         {[studentInfoLeft, studentInfoRight].map((group, groupIndex) => (
                           <div
                             key={groupIndex === 0 ? 'left-col' : 'right-col'}
-                            className={`${groupIndex === 1 ? 'border-t md:border-t-0 border-[#d9dfeb] dark:border-slate-700' : ''}`}
+                            className={`${groupIndex === 1 ? 'border-t border-[#e4d8be] md:border-t-0' : ''}`}
                           >
                             {group.map(([label, value]) => (
-                              <div key={label} className="grid grid-cols-[132px_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)] border-b border-[#dde3eb] dark:border-slate-700 last:border-b-0">
-                                <div className="px-3 sm:px-4 py-2.5 sm:py-3 font-semibold text-[#2d3c56] dark:text-slate-200 bg-[#eef2f8] dark:bg-slate-700 flex items-center gap-1.5">
-                                  <span className="material-symbols-outlined text-sm text-[#36598e] dark:text-slate-300">{getInfoIcon(label)}</span>
+                              <div key={label} className="grid grid-cols-[132px_minmax(0,1fr)] border-b border-[#ece1c8] last:border-b-0 sm:grid-cols-[180px_minmax(0,1fr)]">
+                                <div className="flex items-center gap-1.5 bg-gradient-to-r from-[#fff6e8] to-[#f7ebd8] px-3 py-2.5 font-semibold text-[#5d4324] sm:px-4 sm:py-3">
+                                  <span className="material-symbols-outlined text-sm text-[#8a6328]">{getInfoIcon(label)}</span>
                                   <span>{label}:</span>
                                 </div>
-                                <div className="px-3 sm:px-4 py-2.5 sm:py-3 font-medium text-[#1e2e46] dark:text-white">
+                                <div className="px-3 py-2.5 font-semibold text-[#243958] sm:px-4 sm:py-3">
                                   {value}
                                 </div>
                               </div>
@@ -1078,45 +881,45 @@ function Results() {
                   </div>
 
                   <div className="px-4 sm:px-6 pt-4">
-                    <div className="rounded-2xl overflow-hidden border border-[#cfd5df] dark:border-slate-600 bg-white/90 dark:bg-slate-800/70 backdrop-blur-sm shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-                      <div className="px-3 sm:px-4 py-2.5 bg-gradient-to-r from-[#eef2f8] to-[#e4ecfa] dark:from-slate-700 dark:to-slate-700 border-b border-[#d9dfeb] dark:border-slate-600 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <h3 className="text-sm font-semibold text-[#22334d] dark:text-white uppercase tracking-[0.06em]">Subject Details</h3>
+                    <div className="overflow-hidden rounded-2xl border border-[#d8c7a5]/75 bg-white/88 shadow-[0_12px_28px_rgba(76,93,128,0.12)]">
+                      <div className="flex flex-col gap-2 border-b border-[#e1d3b8] bg-gradient-to-r from-[#1f3f7a] via-[#2f5b97] to-[#b07f31] px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                        <h3 className="text-sm font-semibold uppercase tracking-[0.08em] text-[#fff3dc]">Subject Details</h3>
                         <div className="flex flex-wrap items-center gap-2 text-[11px]">
-                          <span className="inline-flex items-center rounded-full px-2 py-0.5 font-semibold bg-[#dce8ff] text-[#2d4f82] dark:bg-slate-800 dark:text-slate-300">{processedMarks.length} Subjects</span>
-                          <span className="inline-flex items-center rounded-full px-2 py-0.5 font-semibold bg-white text-[#3e4f6c] dark:bg-slate-800 dark:text-slate-300">Pass: 30</span>
-                          <span className="inline-flex items-center rounded-full px-2 py-0.5 font-semibold bg-[#fff2cf] text-[#8c5c16] dark:bg-amber-900/30 dark:text-amber-300">Drawing Pass: 15</span>
+                          <span className="inline-flex items-center rounded-full bg-white/92 px-2 py-0.5 font-semibold text-[#26426d]">{processedMarks.length} Subjects</span>
+                          <span className="inline-flex items-center rounded-full bg-[#fff3d8] px-2 py-0.5 font-semibold text-[#7d5520]">Pass: 30</span>
+                          <span className="inline-flex items-center rounded-full bg-[#f5dfb0] px-2 py-0.5 font-semibold text-[#704b18]">Drawing Pass: 15</span>
                         </div>
                       </div>
 
                       <div className="overflow-x-auto">
                         <table className="w-full min-w-[760px] text-[12px] sm:text-[13px]">
                           <thead>
-                            <tr className="bg-[#dfe9f9] dark:bg-slate-700 text-[#253750] dark:text-slate-100">
-                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-3 py-2.5 text-left font-semibold">Subject Details</th>
-                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Full Marks</th>
-                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Pass Marks</th>
-                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Ext</th>
-                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Int</th>
-                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Obtained</th>
-                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-2 py-2.5 text-center font-semibold">Result</th>
+                            <tr className="bg-[#f4ead5] text-[#4e3618]">
+                              <th className="border border-[#e0d3b8] px-3 py-2.5 text-left font-semibold">Subject Details</th>
+                              <th className="border border-[#e0d3b8] px-2 py-2.5 text-center font-semibold">Full Marks</th>
+                              <th className="border border-[#e0d3b8] px-2 py-2.5 text-center font-semibold">Pass Marks</th>
+                              <th className="border border-[#e0d3b8] px-2 py-2.5 text-center font-semibold">Ext</th>
+                              <th className="border border-[#e0d3b8] px-2 py-2.5 text-center font-semibold">Int</th>
+                              <th className="border border-[#e0d3b8] px-2 py-2.5 text-center font-semibold">Obtained</th>
+                              <th className="border border-[#e0d3b8] px-2 py-2.5 text-center font-semibold">Result</th>
                             </tr>
                           </thead>
                           <tbody>
                             {processedMarks.length === 0 && (
                               <tr>
-                                <td colSpan={7} className="text-center py-6 text-slate-600 dark:text-slate-400">No marks available</td>
+                                <td colSpan={7} className="py-6 text-center text-slate-600">No marks available</td>
                               </tr>
                             )}
 
                             {processedMarks.map((m, idx) => (
-                              <tr key={m.key} className={`${idx % 2 === 0 ? 'bg-white dark:bg-slate-800/60' : 'bg-[#f9fbff] dark:bg-slate-800/40'} hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors`}>
-                                <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1e2f48] dark:text-white">{m.subjectName}</td>
-                                <td className="border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-medium text-[#2a3d59] dark:text-slate-200">{m.fullMarks}</td>
-                                <td className="border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-medium text-[#3b527a] dark:text-slate-200">{m.passMarks}</td>
-                                <td className="border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-medium text-[#2a3a53] dark:text-slate-200">{m.externalDisplay}</td>
-                                <td className="border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-medium text-[#2a3a53] dark:text-slate-200">{m.internalDisplay}</td>
-                                <td className="border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-semibold text-[#1f3f67] dark:text-slate-100">{m.obtainedDisplay}</td>
-                                <td className={`border border-[#dde3ec] dark:border-slate-700 px-2 py-2.5 text-center font-semibold ${getStatusTextColor(m.status)}`}>{m.status}</td>
+                              <tr key={m.key} className={`${idx % 2 === 0 ? 'bg-white' : 'bg-[#fffbf2]'} transition-colors hover:bg-[#f2f8ff]`}>
+                                <td className="border border-[#e8dcc2] px-3 py-2.5 font-semibold text-[#233754]">{m.subjectName}</td>
+                                <td className="border border-[#e8dcc2] px-2 py-2.5 text-center font-medium text-[#2a3d59]">{m.fullMarks}</td>
+                                <td className="border border-[#e8dcc2] px-2 py-2.5 text-center font-medium text-[#3b527a]">{m.passMarks}</td>
+                                <td className="border border-[#e8dcc2] px-2 py-2.5 text-center font-medium text-[#2a3a53]">{m.externalDisplay}</td>
+                                <td className="border border-[#e8dcc2] px-2 py-2.5 text-center font-medium text-[#2a3a53]">{m.internalDisplay}</td>
+                                <td className="border border-[#e8dcc2] px-2 py-2.5 text-center font-semibold text-[#1f3f67]">{m.obtainedDisplay}</td>
+                                <td className={`border border-[#e8dcc2] px-2 py-2.5 text-center font-semibold ${getStatusTextColor(m.status)}`}>{m.status}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -1126,43 +929,43 @@ function Results() {
                   </div>
 
                   <div className="px-4 sm:px-6 pt-4">
-                    <div className="rounded-2xl overflow-hidden border border-[#cfd5df] dark:border-slate-600 bg-white/90 dark:bg-slate-800/70 backdrop-blur-sm shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
-                      <div className="px-3 sm:px-4 py-2.5 bg-gradient-to-r from-[#eef2f8] to-[#e4ecfa] dark:from-slate-700 dark:to-slate-700 border-b border-[#d9dfeb] dark:border-slate-600 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <h3 className="text-sm font-semibold text-[#22334d] dark:text-white uppercase tracking-[0.06em]">Summary Report</h3>
-                        <span className="inline-flex items-center rounded-full bg-[#dce8ff] dark:bg-slate-800 px-2.5 py-0.5 text-[11px] font-semibold text-[#3d5378] dark:text-blue-300">Rank Scope: Class + Section</span>
+                    <div className="overflow-hidden rounded-2xl border border-[#d8c7a5]/75 bg-white/88 shadow-[0_12px_28px_rgba(76,93,128,0.12)]">
+                      <div className="flex flex-col gap-2 border-b border-[#e1d3b8] bg-gradient-to-r from-[#1f3f7a] via-[#2f5b97] to-[#b07f31] px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                        <h3 className="text-sm font-semibold uppercase tracking-[0.08em] text-[#fff3dc]">Summary Report</h3>
+                        <span className="inline-flex items-center rounded-full bg-white/90 px-2.5 py-0.5 text-[11px] font-semibold text-[#355583]">Rank Scope: Class + Section</span>
                       </div>
 
                       <div className="overflow-x-auto">
                         <table className="w-full min-w-[690px] text-[12px] sm:text-[13px]">
                           <thead>
-                            <tr className="bg-[#dfe9f9] dark:bg-slate-700 text-[#253750] dark:text-slate-100">
-                              <th className="border border-[#d5dbe7] dark:border-slate-600 px-3 py-2.5 text-left font-semibold">Metric</th>
+                            <tr className="bg-[#f4ead5] text-[#4e3618]">
+                              <th className="border border-[#e0d3b8] px-3 py-2.5 text-left font-semibold">Metric</th>
                               {visibleTerminals.map((t) => (
-                                <th key={t} className="border border-[#d5dbe7] dark:border-slate-600 px-3 py-2.5 text-center font-semibold">{t} Term</th>
+                                <th key={t} className="border border-[#e0d3b8] px-3 py-2.5 text-center font-semibold">{t} Term</th>
                               ))}
                             </tr>
                           </thead>
                           <tbody>
-                            <tr className="hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
-                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Total Marks</td>
+                            <tr className="transition-colors hover:bg-[#f2f8ff]">
+                              <td className="border border-[#e8dcc2] px-3 py-2.5 font-semibold text-[#1f2f46]">Total Marks</td>
                               {visibleTerminals.map((t) => (
-                                <td key={t} className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-medium text-[#2a3d59] dark:text-slate-200">
+                                <td key={t} className="border border-[#e8dcc2] px-3 py-2.5 text-center font-medium text-[#2a3d59]">
                                   {getSummaryCellValue(t, termSummaries[t]?.total_max_marks)}
                                 </td>
                               ))}
                             </tr>
-                            <tr className="bg-[#f9fbff] dark:bg-slate-800/40 hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
-                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Marks Obtained</td>
+                            <tr className="bg-[#fffbf2] transition-colors hover:bg-[#f2f8ff]">
+                              <td className="border border-[#e8dcc2] px-3 py-2.5 font-semibold text-[#1f2f46]">Marks Obtained</td>
                               {visibleTerminals.map((t) => (
-                                <td key={t} className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-semibold text-[#1f406f] dark:text-blue-300">
+                                <td key={t} className="border border-[#e8dcc2] px-3 py-2.5 text-center font-semibold text-[#1f406f]">
                                   {getSummaryCellValue(t, termSummaries[t]?.total_obtained)}
                                 </td>
                               ))}
                             </tr>
-                            <tr className="hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
-                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Percentage</td>
+                            <tr className="transition-colors hover:bg-[#f2f8ff]">
+                              <td className="border border-[#e8dcc2] px-3 py-2.5 font-semibold text-[#1f2f46]">Percentage</td>
                               {visibleTerminals.map((t) => (
-                                <td key={t} className={`border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-semibold ${getDivisionColor(termSummaries[t]?.division)}`}>
+                                <td key={t} className={`border border-[#e8dcc2] px-3 py-2.5 text-center font-semibold ${getDivisionColor(termSummaries[t]?.division)}`}>
                                   {getSummaryCellValue(
                                     t,
                                     typeof termSummaries[t]?.percentage !== 'undefined' && termSummaries[t]?.percentage !== null
@@ -1172,28 +975,28 @@ function Results() {
                                 </td>
                               ))}
                             </tr>
-                            <tr className="bg-[#f9fbff] dark:bg-slate-800/40 hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
-                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Division</td>
+                            <tr className="bg-[#fffbf2] transition-colors hover:bg-[#f2f8ff]">
+                              <td className="border border-[#e8dcc2] px-3 py-2.5 font-semibold text-[#1f2f46]">Division</td>
                               {visibleTerminals.map((t) => (
-                                <td key={t} className={`border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-semibold ${getDivisionColor(termSummaries[t]?.division)}`}>
+                                <td key={t} className={`border border-[#e8dcc2] px-3 py-2.5 text-center font-semibold ${getDivisionColor(termSummaries[t]?.division)}`}>
                                   {getSummaryCellValue(t, termSummaries[t]?.division)}
                                 </td>
                               ))}
                             </tr>
-                            <tr className="hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
-                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Class &amp; Section Rank</td>
+                            <tr className="transition-colors hover:bg-[#f2f8ff]">
+                              <td className="border border-[#e8dcc2] px-3 py-2.5 font-semibold text-[#1f2f46]">Class &amp; Section Rank</td>
                               {visibleTerminals.map((t) => (
-                                <td key={t} className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-semibold text-[#2b456f] dark:text-blue-300">
+                                <td key={t} className="border border-[#e8dcc2] px-3 py-2.5 text-center font-semibold text-[#2b456f]">
                                   {getDisplayRank(t)}
                                 </td>
                               ))}
                             </tr>
-                            <tr className="bg-[#f9fbff] dark:bg-slate-800/40 hover:bg-[#edf4ff] dark:hover:bg-slate-700/40 transition-colors">
-                              <td className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 font-semibold text-[#1f2f46] dark:text-white">Published Date</td>
+                            <tr className="bg-[#fffbf2] transition-colors hover:bg-[#f2f8ff]">
+                              <td className="border border-[#e8dcc2] px-3 py-2.5 font-semibold text-[#1f2f46]">Published Date</td>
                               {visibleTerminals.map((t) => {
                                 const publishedDate = getPublishedDateFromSummary(termSummaries[t])
                                 return (
-                                  <td key={t} className="border border-[#dde3ec] dark:border-slate-700 px-3 py-2.5 text-center font-medium text-[#2a3d59] dark:text-slate-300">
+                                  <td key={t} className="border border-[#e8dcc2] px-3 py-2.5 text-center font-medium text-[#2a3d59]">
                                     {isTermAvailable(t) ? (
                                       publishedDate 
                                         ? new Date(publishedDate).toLocaleDateString('en-IN')
@@ -1212,34 +1015,34 @@ function Results() {
                   </div>
 
                   <div className="px-4 sm:px-6 pt-4 pb-5">
-                    <div className="rounded-2xl border border-[#cfd5df] dark:border-slate-600 bg-gradient-to-br from-white to-[#f3f7ff] dark:from-slate-800/80 dark:to-slate-800/60 px-4 sm:px-5 py-4 sm:py-5 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_230px] gap-5 shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
+                    <div className="grid grid-cols-1 gap-5 rounded-2xl border border-[#d8c7a5]/75 bg-gradient-to-br from-white to-[#f6eddc] px-4 py-4 shadow-[0_12px_28px_rgba(76,93,128,0.12)] sm:px-5 sm:py-5 lg:grid-cols-[minmax(0,1fr)_230px]">
                       <div>
-                        <p className="text-base font-semibold text-center lg:text-left text-[#243653] dark:text-white mb-3 uppercase tracking-[0.06em]">Important Information</p>
-                        <ul className="space-y-2 text-[12px] sm:text-[13px] text-[#37485f] dark:text-slate-300">
-                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>This is a computer-generated result marksheet and does not require any signature.</span></li>
-                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>The details shown here are based on official school records.</span></li>
-                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>Any discrepancy should be reported within 7 days of result declaration.</span></li>
-                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span><strong>AB</strong> denotes absent and <strong>NA</strong> denotes not applicable.</span></li>
-                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>Pass Marks: 30 for regular subjects and 15 for Drawing.</span></li>
-                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>Drawing is evaluated only by External marks (FM: 50).</span></li>
-                          <li className="flex gap-2"><span className="text-[#2f66b8]">-</span><span>Rank displayed above is calculated class and section wise.</span></li>
+                        <p className="mb-3 text-center text-base font-semibold uppercase tracking-[0.08em] text-[#5f421d] lg:text-left">Important Information</p>
+                        <ul className="space-y-2 text-[12px] text-[#3f5168] sm:text-[13px]">
+                          <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#8d6428]"></span><span>This is a computer-generated result marksheet and does not require any signature.</span></li>
+                          <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#8d6428]"></span><span>The details shown here are based on official school records.</span></li>
+                          <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#8d6428]"></span><span>Any discrepancy should be reported within 7 days of result declaration.</span></li>
+                          <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#8d6428]"></span><span><strong>AB</strong> denotes absent and <strong>NA</strong> denotes not applicable.</span></li>
+                          <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#8d6428]"></span><span>Pass Marks: 30 for regular subjects and 15 for Drawing.</span></li>
+                          <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#8d6428]"></span><span>Drawing is evaluated only by External marks (FM: 50).</span></li>
+                          <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#8d6428]"></span><span>Rank displayed above is calculated class and section wise.</span></li>
                         </ul>
                       </div>
 
                       <div className="flex flex-col justify-between">
-                        <div className="rounded-xl bg-[#eef2f8] dark:bg-slate-700 border border-[#d9dfeb] dark:border-slate-600 px-3 py-2 text-center">
-                          <p className="text-[11px] font-semibold uppercase text-[#3d5275] dark:text-slate-200">Generated On</p>
-                          <p className="text-sm font-semibold text-[#233650] dark:text-white">{todayLabel}</p>
+                        <div className="rounded-xl border border-[#d8c7a6] bg-[#fff7e8] px-3 py-2 text-center">
+                          <p className="text-[11px] font-semibold uppercase text-[#6d4b1f]">Generated On</p>
+                          <p className="text-sm font-semibold text-[#233650]">{todayLabel}</p>
                         </div>
                         <div className="mt-6 text-center">
-                          <div className="h-12 border-b-2 border-[#8b97ac] dark:border-slate-500"></div>
-                          <p className="mt-2 text-sm font-semibold text-[#233650] dark:text-slate-300">Principal&apos;s Signature &amp; Stamp</p>
+                          <div className="h-12 border-b-2 border-[#8b97ac]"></div>
+                          <p className="mt-2 text-sm font-semibold text-[#233650]">Principal&apos;s Signature &amp; Stamp</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="px-4 sm:px-6 pb-5 text-center text-[11px] font-semibold text-[#41516c] dark:text-slate-400 border-t border-[#d7e0ee] dark:border-slate-700 pt-3">
+                  <div className="border-t border-[#d8c8a8] px-4 pb-5 pt-3 text-center text-[11px] font-semibold text-[#5a4324] sm:px-6">
                     {SCHOOL_NAME} | {SCHOOL_ADDRESS}
                   </div>
                 </div>
@@ -1254,4 +1057,3 @@ function Results() {
 }
 
 export default Results
-

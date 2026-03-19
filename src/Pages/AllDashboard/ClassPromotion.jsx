@@ -99,15 +99,15 @@ function ClassPromotion() {
   return (
     <div className="space-y-4 sm:space-y-5">
       <div>
-        <h2 className="text-2xl sm:text-3xl font-black text-white">Class Promotion</h2>
+        <h2 className="text-2xl sm:text-3xl font-black text-black">Class Promotion</h2>
         <p className="text-xs sm:text-sm text-slate-300 mt-1">
           Promote an entire class to next academic session with server-side validation.
         </p>
       </div>
 
       <div className="rounded-xl border border-amber-300/40 bg-amber-400/15 p-3 sm:p-4">
-        <p className="text-xs sm:text-sm font-semibold text-amber-100 mb-2">Promotion Rules</p>
-        <ul className="space-y-1 text-xs sm:text-sm text-amber-100/95">
+        <p className="text-xs sm:text-sm font-semibold text-slate-900 mb-2">Promotion Rules</p>
+        <ul className="space-y-1 text-xs sm:text-sm text-slate-900">
           {helperNotes.map((note) => (
             <li key={note} className="flex items-start gap-2">
               <span className="mt-0.5">-</span>
@@ -137,7 +137,7 @@ function ClassPromotion() {
 
       <form
         onSubmit={handleOpenConfirm}
-        className="ryme-card rounded-xl border border-slate-200 p-4 sm:p-5 space-y-4"
+        className="gps-card rounded-xl border border-slate-200 p-4 sm:p-5 space-y-4"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <div>
@@ -199,7 +199,7 @@ function ClassPromotion() {
           <button
             type="submit"
             disabled={isSubmitDisabled}
-            className="ryme-button inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-60 disabled:cursor-not-allowed"
+            className="gps-button inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {submitting ? (
               <>
@@ -225,7 +225,7 @@ function ClassPromotion() {
               }
             }}
         >
-          <div className="w-full max-w-lg rounded-xl border border-slate-200 ryme-card p-4 sm:p-5 shadow-xl">
+          <div className="w-full max-w-lg rounded-xl border border-slate-200 gps-card p-4 sm:p-5 shadow-xl">
             <h3 className="text-lg font-bold text-white">Confirm Class Promotion</h3>
             <p className="text-xs sm:text-sm text-slate-300 mt-1">
               Please verify details before final submit.

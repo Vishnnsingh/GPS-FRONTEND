@@ -47,18 +47,18 @@ function ResultsPortal() {
       <div className="min-h-screen bg-slate-50 dark:bg-[#101922]">
         {/* Hero Section */}
         <section className="relative py-12 md:py-16 overflow-hidden">
-          <div className="absolute inset-0 bg-linear-to-br from-[#137fec]/10 via-transparent to-transparent pointer-events-none"></div>
+          <div className="absolute inset-0 bg-linear-to-br from-[#1f3f7a]/12 via-transparent to-transparent pointer-events-none"></div>
           
           <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             {/* Left Content */}
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 bg-[#137fec]/10 text-[#137fec] rounded-full px-4 py-1.5 mb-4 border border-[#137fec]/20">
+              <div className="inline-flex items-center gap-2 bg-[#c79843]/12 text-[#c79843] rounded-full px-4 py-1.5 mb-4 border border-[#c79843]/35">
                 <span className="material-symbols-outlined text-sm">verified_user</span>
                 <span className="text-xs font-bold">Secure Portal</span>
               </div>
 
               <h1 className="text-4xl md:text-5xl font-black text-[#0d141b] dark:text-white mb-4 leading-tight">
-                View Your <span className="text-[#137fec]">Results</span>
+                View Your <span className="text-[#c79843]">Results</span>
               </h1>
 
               <p className="text-slate-600 dark:text-slate-300 text-lg mb-6 leading-relaxed">
@@ -73,7 +73,7 @@ function ResultsPortal() {
                 ].map((item) => (
                   <div key={item.label} className="bg-white dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="material-symbols-outlined text-[#137fec] text-xl">{item.icon}</span>
+                      <span className="material-symbols-outlined text-[#c79843] text-xl">{item.icon}</span>
                       <p className="font-bold text-sm text-[#0d141b] dark:text-white">{item.label}</p>
                     </div>
                     <p className="text-xs text-slate-500 dark:text-slate-400">{item.desc}</p>
@@ -84,7 +84,7 @@ function ResultsPortal() {
 
             {/* Right: Form Card */}
             <div className="relative">
-              <div className="absolute -inset-4 bg-linear-to-r from-[#137fec]/20 to-transparent blur-2xl rounded-2xl"></div>
+              <div className="absolute -inset-4 bg-linear-to-r from-[#c79843]/20 to-transparent blur-2xl rounded-2xl"></div>
               
               <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
                 <h2 className="text-2xl font-black text-[#0d141b] dark:text-white mb-6">Enter Your Details</h2>
@@ -102,7 +102,7 @@ function ResultsPortal() {
                       value={formData.classValue}
                       onChange={handleChange}
                       placeholder="e.g., 1, 2, 10, 12, UKG"
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#137fec] transition-all"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#c79843] transition-all"
                       required
                     />
                   </div>
@@ -119,7 +119,7 @@ function ResultsPortal() {
                       value={formData.roll}
                       onChange={handleChange}
                       placeholder="Enter your roll number"
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#137fec] transition-all"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#c79843] transition-all"
                       required
                     />
                   </div>
@@ -134,7 +134,7 @@ function ResultsPortal() {
                       name="terminal"
                       value={formData.terminal}
                       onChange={handleChange}
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#137fec] transition-all"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#c79843] transition-all"
                     >
                       {terminals.map((t) => (
                         <option key={t} value={t}>
@@ -156,7 +156,7 @@ function ResultsPortal() {
                       value={formData.section}
                       onChange={handleChange}
                       placeholder="e.g., A, B, C"
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#137fec] transition-all"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#c79843] transition-all"
                     />
                   </div>
 
@@ -172,7 +172,7 @@ function ResultsPortal() {
                       value={formData.session}
                       onChange={handleChange}
                       placeholder="e.g., 2025-26"
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#137fec] transition-all"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#c79843] transition-all"
                     />
                   </div>
 
@@ -187,7 +187,7 @@ function ResultsPortal() {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full bg-[#137fec] hover:bg-[#137fec]/90 text-white font-bold py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#137fec]/30"
+                    className="w-full bg-[#1f3f7a] hover:bg-[#1f3f7a]/90 text-white font-bold py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#1f3f7a]/35"
                   >
                     <span className="material-symbols-outlined text-sm">search</span>
                     View My Result
@@ -200,7 +200,7 @@ function ResultsPortal() {
                   </p>
                   <Link
                     to="/contact"
-                    className="inline-flex items-center gap-1 text-sm font-bold text-[#137fec] hover:underline"
+                    className="inline-flex items-center gap-1 text-sm font-bold text-[#c79843] hover:underline"
                   >
                     <span className="material-symbols-outlined text-sm">call</span>
                     Contact Support
@@ -235,10 +235,10 @@ function ResultsPortal() {
             ].map((feature) => (
               <div
                 key={feature.title}
-                className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 hover:shadow-lg hover:border-[#137fec]/50 dark:hover:border-[#137fec]/30 transition-all"
+                className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 hover:shadow-lg hover:border-[#c79843]/55 dark:hover:border-[#c79843]/35 transition-all"
               >
-                <div className="bg-[#137fec]/10 rounded-lg w-12 h-12 flex items-center justify-center mb-4">
-                  <span className="material-symbols-outlined text-[#137fec]">{feature.icon}</span>
+                <div className="bg-[#c79843]/12 rounded-lg w-12 h-12 flex items-center justify-center mb-4">
+                  <span className="material-symbols-outlined text-[#c79843]">{feature.icon}</span>
                 </div>
                 <h3 className="font-black text-lg text-[#0d141b] dark:text-white mb-2">{feature.title}</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">{feature.desc}</p>
@@ -248,9 +248,9 @@ function ResultsPortal() {
         </section>
 
         {/* Info Section */}
-        <section className="max-w-4xl mx-auto px-4 py-12 bg-[#137fec]/5 dark:bg-[#137fec]/10 rounded-xl border border-[#137fec]/20 my-8">
+        <section className="max-w-4xl mx-auto px-4 py-12 bg-[#1f3f7a]/6 dark:bg-[#1f3f7a]/14 rounded-xl border border-[#1f3f7a]/28 my-8">
           <div className="flex items-start gap-4">
-            <span className="material-symbols-outlined text-[#137fec] text-2xl flex-shrink-0">info</span>
+            <span className="material-symbols-outlined text-[#c79843] text-2xl flex-shrink-0">info</span>
             <div>
               <h3 className="font-bold text-[#0d141b] dark:text-white mb-2">How to Access Your Results</h3>
               <ol className="text-sm text-slate-700 dark:text-slate-300 space-y-1 list-decimal list-inside">

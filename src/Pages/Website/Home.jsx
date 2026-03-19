@@ -70,30 +70,30 @@ function Home() {
 
   return (
     <WebsiteLayout>
-      <section className="ryme-section">
-        <div className="ryme-shell">
-          <div className="relative overflow-hidden rounded-[2rem] border border-cyan-100/25 bg-[#071429] p-6 sm:p-8 lg:p-10">
+      <section className="gps-section">
+        <div className="gps-shell">
+          <div className="relative overflow-hidden rounded-[2rem] border border-[#c79843]/30 bg-[#fff9ef] p-6 sm:p-8 lg:p-10">
             <div className="pointer-events-none absolute inset-0 bg-grid-fade opacity-65"></div>
-            <div className="pointer-events-none absolute -left-16 top-0 h-56 w-56 rounded-full bg-cyan-300/20 blur-3xl"></div>
-            <div className="pointer-events-none absolute right-0 top-0 h-64 w-64 rounded-full bg-sky-400/12 blur-3xl"></div>
-            <div className="pointer-events-none absolute bottom-[-140px] left-1/3 h-72 w-72 rounded-full bg-blue-500/18 blur-3xl"></div>
+            <div className="pointer-events-none absolute -left-16 top-0 h-56 w-56 rounded-full bg-[#d4ab5b]/22 blur-3xl"></div>
+            <div className="pointer-events-none absolute right-0 top-0 h-64 w-64 rounded-full bg-[#3562aa]/16 blur-3xl"></div>
+            <div className="pointer-events-none absolute bottom-[-140px] left-1/3 h-72 w-72 rounded-full bg-[#2a4c88]/20 blur-3xl"></div>
 
-            <div className="ryme-grid items-center gap-8 lg:grid-cols-[1.03fr_0.97fr]">
+            <div className="gps-grid items-center gap-8 lg:grid-cols-[1.03fr_0.97fr]">
               <div className="relative z-10">
-                <span className="inline-flex items-center gap-2 rounded-full border border-cyan-100/35 bg-cyan-100/10 px-4 py-1.5 text-xs font-semibold text-cyan-100 shadow-lg shadow-black/15 backdrop-blur-sm">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#c79843]/45 bg-[#f6ebd7] px-4 py-1.5 text-xs font-semibold text-[#805921] shadow-lg shadow-[#a07431]/10 backdrop-blur-sm">
                   <span className="material-symbols-outlined text-sm">auto_awesome</span>
                   {SCHOOL_NAME}
                 </span>
 
                 <h1 className="mt-5 text-4xl font-black leading-[1.05] tracking-[-0.03em] sm:text-5xl lg:text-6xl">
-                  <span className="text-white">Learning </span>
+                  <span className="text-[#1f2d45]">Learning </span>
                   <span className="text-gradient-brand">Amplified.</span>
                   <br />
-                  <span className="text-white">Future </span>
+                  <span className="text-[#1f2d45]">Future </span>
                   <span className="text-gradient-brand">Ready.</span>
                 </h1>
 
-                <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/92">
+                <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#425775]">
                   {SCHOOL_NAME} empowers students with disciplined academics, modern tools, transparent results and a
                   safe environment where every learner can grow with confidence.
                 </p>
@@ -101,22 +101,22 @@ function Home() {
                 <div className="mt-7 flex flex-wrap items-center gap-3">
                   <Link
                     to="/results-portal"
-                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#5ce6ff] to-[#1abef8] px-7 py-3 text-base font-extrabold text-[#04182d] shadow-xl shadow-cyan-500/25"
+                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#f0d4a0] via-[#d9ad63] to-[#bd8933] px-7 py-3 text-base font-extrabold text-[#1f2335] shadow-xl shadow-[#8d6326]/35"
                   >
                     Result
                   </Link>
                   <Link
                     to="/login"
-                    className="inline-flex items-center justify-center rounded-full border border-cyan-100/35 bg-[#0a1d34]/85 px-7 py-3 text-base font-bold text-white shadow-xl shadow-black/30 hover:bg-[#0f2b4a]"
+                    className="inline-flex items-center justify-center rounded-full border border-[#c79843]/38 bg-[#102850]/90 px-7 py-3 text-base font-bold text-white shadow-xl shadow-black/30 hover:bg-[#163566]"
                   >
                     Admin
                   </Link>
                 </div>
 
-                <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-cyan-100/95">
+                <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-[#334766]">
                   {heroPromises.map((promise) => (
                     <p key={promise} className="inline-flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-base text-cyan-200">check_box</span>
+                      <span className="material-symbols-outlined text-base text-[#dfbf78]">check_box</span>
                       {promise}
                     </p>
                   ))}
@@ -129,22 +129,22 @@ function Home() {
                   onMouseEnter={() => setIsAutoPlaying(false)}
                   onMouseLeave={() => setIsAutoPlaying(true)}
                 >
-                  <div className="absolute left-[-42px] top-7 hidden h-[78%] w-24 rotate-[-4deg] overflow-hidden rounded-3xl border border-white/20 bg-[#1f2546]/70 shadow-2xl md:block">
+                  <div className="absolute left-[-42px] top-7 hidden h-[78%] w-24 rotate-[-4deg] overflow-hidden rounded-3xl border border-[#d8c7a6]/65 bg-white/85 shadow-[0_16px_30px_rgba(120,94,53,0.2)] md:block">
                     <img
                       src={homeHeroSlides[(currentSlide - 1 + homeHeroSlides.length) % homeHeroSlides.length]}
                       alt="Previous story"
-                      className="h-full w-full object-cover opacity-70"
+                      className="h-full w-full object-cover opacity-75"
                     />
                   </div>
-                  <div className="absolute right-[-42px] top-7 hidden h-[78%] w-24 rotate-[4deg] overflow-hidden rounded-3xl border border-white/20 bg-[#1f2546]/70 shadow-2xl md:block">
+                  <div className="absolute right-[-42px] top-7 hidden h-[78%] w-24 rotate-[4deg] overflow-hidden rounded-3xl border border-[#d8c7a6]/65 bg-white/85 shadow-[0_16px_30px_rgba(120,94,53,0.2)] md:block">
                     <img
                       src={homeHeroSlides[(currentSlide + 1) % homeHeroSlides.length]}
                       alt="Next story"
-                      className="h-full w-full object-cover opacity-70"
+                      className="h-full w-full object-cover opacity-75"
                     />
                   </div>
 
-                  <div className="relative h-full overflow-hidden rounded-[2rem] border border-cyan-100/25 bg-[#08182e] shadow-[0_20px_50px_rgba(5,8,24,0.45)]">
+                  <div className="relative h-full overflow-hidden rounded-[2rem] border border-[#d8c7a6]/70 bg-white shadow-[0_20px_50px_rgba(120,94,53,0.18)]">
                     <div
                       className="flex h-full transition-transform duration-700 ease-out"
                       style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -173,7 +173,7 @@ function Home() {
                         key={index}
                         onClick={() => goToSlide(index)}
                         className={`h-2.5 rounded-full transition-all ${
-                          currentSlide === index ? 'w-6 bg-cyan-300' : 'w-2.5 bg-white/65'
+                          currentSlide === index ? 'w-6 bg-[#c79843]' : 'w-2.5 bg-[#c8d3e4]'
                         }`}
                         aria-label={`Go to slide ${index + 1}`}
                       />
@@ -183,14 +183,14 @@ function Home() {
                   <div className="mt-3 hidden items-center justify-center gap-2 md:flex">
                     <button
                       onClick={prevSlide}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white"
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#c79843]/38 bg-[#fff6e8] text-[#1f3f7a]"
                       aria-label="Previous slide"
                     >
                       <span className="material-symbols-outlined text-base">chevron_left</span>
                     </button>
                     <button
                       onClick={nextSlide}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white"
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#c79843]/38 bg-[#fff6e8] text-[#1f3f7a]"
                       aria-label="Next slide"
                     >
                       <span className="material-symbols-outlined text-base">chevron_right</span>
@@ -203,21 +203,21 @@ function Home() {
         </div>
       </section>
 
-      <section className="ryme-section pt-0">
-        <div className="ryme-shell">
+      <section className="gps-section pt-0">
+        <div className="gps-shell">
           <div className="mb-6 flex items-end justify-between gap-3">
             <div>
-              <span className="ryme-tag">Campus energy</span>
-              <h2 className="ryme-section-title mt-3">Everyday Moments</h2>
+              <span className="gps-tag">Campus energy</span>
+              <h2 className="gps-section-title mt-3">Everyday Moments</h2>
             </div>
-            <Link to="/gallery" className="ryme-button-ghost !px-4 !py-2 text-sm">
+            <Link to="/gallery" className="gps-button-ghost !px-4 !py-2 text-sm">
               View Full Gallery
             </Link>
           </div>
 
-          <div className="ryme-grid md:grid-cols-3">
+          <div className="gps-grid md:grid-cols-3">
             {homeFeaturePhotos.map((photo, index) => (
-              <article key={index} className="ryme-card group overflow-hidden">
+              <article key={index} className="gps-card group overflow-hidden">
                 <img
                   src={photo}
                   alt={`Campus moment ${index + 1}`}
@@ -235,11 +235,11 @@ function Home() {
         </div>
       </section>
 
-      <section className="ryme-section pt-0">
-        <div className="ryme-shell">
-          <div className="ryme-grid lg:grid-cols-[1fr_1.2fr]">
-            <div className="ryme-card p-6 sm:p-7">
-              <span className="ryme-tag">Why families choose us</span>
+      <section className="gps-section pt-0">
+        <div className="gps-shell">
+          <div className="gps-grid lg:grid-cols-[1fr_1.2fr]">
+            <div className="gps-card p-6 sm:p-7">
+              <span className="gps-tag">Why families choose us</span>
               <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">Strong foundation with modern systems</h2>
               <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-base">
                 The platform combines admissions support, student lifecycle, fees, marks upload and results under one
@@ -247,24 +247,24 @@ function Home() {
               </p>
               <div className="mt-5 space-y-2 text-sm text-slate-200">
                 <p className="inline-flex items-center gap-2">
-                  <span className="material-symbols-outlined text-cyan-300">check_circle</span>
+                  <span className="material-symbols-outlined text-[#d8b060]">check_circle</span>
                   Transparent result and records access
                 </p>
                 <p className="inline-flex items-center gap-2">
-                  <span className="material-symbols-outlined text-cyan-300">check_circle</span>
+                  <span className="material-symbols-outlined text-[#d8b060]">check_circle</span>
                   Admin, teacher and student specific workflows
                 </p>
                 <p className="inline-flex items-center gap-2">
-                  <span className="material-symbols-outlined text-cyan-300">check_circle</span>
+                  <span className="material-symbols-outlined text-[#d8b060]">check_circle</span>
                   Faster communication between school and families
                 </p>
               </div>
             </div>
 
-            <div className="ryme-grid sm:grid-cols-2 lg:grid-cols-3">
+            <div className="gps-grid sm:grid-cols-2 lg:grid-cols-3">
               {featureCards.map((card) => (
-                <article key={card.title} className="ryme-kpi-card p-5">
-                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-300/15 text-cyan-200">
+                <article key={card.title} className="gps-kpi-card p-5">
+                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#d8b060]/16 text-[#e8ca8f]">
                     <span className="material-symbols-outlined">{card.icon}</span>
                   </div>
                   <h3 className="mt-4 text-lg font-bold text-white">{card.title}</h3>
@@ -276,23 +276,23 @@ function Home() {
         </div>
       </section>
 
-      <section className="ryme-section pt-0">
-        <div className="ryme-shell">
-          <div className="ryme-card p-6 sm:p-8">
+      <section className="gps-section pt-0">
+        <div className="gps-shell">
+          <div className="gps-card p-6 sm:p-8">
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <span className="ryme-tag">Parent & student voice</span>
+                <span className="gps-tag">Parent & student voice</span>
                 <h2 className="mt-3 text-3xl font-extrabold text-white sm:text-4xl">Trusted by our community</h2>
               </div>
-              <Link to="/results-portal" className="ryme-button">
+              <Link to="/results-portal" className="gps-button">
                 Open Result Portal
               </Link>
             </div>
 
-            <div className="ryme-grid md:grid-cols-3">
+            <div className="gps-grid md:grid-cols-3">
               {testimonials.map((item) => (
-                <article key={item.name} className="ryme-card-soft p-4">
-                  <div className="mb-2 inline-flex items-center gap-0.5 text-cyan-300">
+                <article key={item.name} className="gps-card-soft p-4">
+                  <div className="mb-2 inline-flex items-center gap-0.5 text-[#d8b060]">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <span key={i} className="material-symbols-outlined text-base">
                         star
@@ -300,7 +300,7 @@ function Home() {
                     ))}
                   </div>
                   <p className="text-sm leading-relaxed text-slate-200">"{item.text}"</p>
-                  <p className="mt-4 text-xs font-bold uppercase tracking-[0.15em] text-cyan-100/90">{item.name}</p>
+                  <p className="mt-4 text-xs font-bold uppercase tracking-[0.15em] text-[#f0ddaf]/95">{item.name}</p>
                 </article>
               ))}
             </div>

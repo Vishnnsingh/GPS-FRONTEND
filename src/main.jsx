@@ -44,13 +44,13 @@ class AppErrorBoundary extends Component {
 
     return (
       <div className="app-shell min-h-screen flex items-center justify-center px-4">
-        <div className="ryme-card w-full max-w-lg p-6">
+        <div className="gps-card w-full max-w-lg p-6">
           <h1 className="text-xl font-bold text-white">Application crashed</h1>
           <p className="mt-2 text-sm text-slate-300">{this.state.message}</p>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="ryme-button mt-4"
+            className="gps-button mt-4"
           >
             Reload
           </button>

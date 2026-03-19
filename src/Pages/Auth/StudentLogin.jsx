@@ -51,13 +51,13 @@ function StudentLogin() {
   }
 
   return (
-    <div className="min-h-screen ryme-page text-slate-100">
+    <div className="min-h-screen gps-page text-slate-100">
       <WebsiteHeader />
       <main className="pb-10 pt-[92px] sm:pt-[98px]">
-        <div className="ryme-shell">
-          <div className="ryme-grid lg:grid-cols-[1fr_1fr]">
-            <article className="ryme-card p-6 sm:p-8">
-              <span className="ryme-tag">Student Portal</span>
+        <div className="gps-shell">
+          <div className="gps-grid lg:grid-cols-[1fr_1fr]">
+            <article className="gps-card p-6 sm:p-8">
+              <span className="gps-tag">Student Portal</span>
               <h1 className="mt-4 text-3xl font-extrabold leading-tight text-white sm:text-4xl">
                 Student dashboard login for results and records
               </h1>
@@ -79,7 +79,7 @@ function StudentLogin() {
                   { label: 'Results', value: 'Fast' },
                   { label: 'Access', value: 'Secure' },
                 ].map((item) => (
-                  <div key={item.label} className="ryme-card-soft p-3">
+                  <div key={item.label} className="gps-card-soft p-3">
                     <p className="text-sm font-bold text-cyan-100">{item.value}</p>
                     <p className="text-[11px] uppercase tracking-[0.15em] text-slate-300">{item.label}</p>
                   </div>
@@ -87,7 +87,7 @@ function StudentLogin() {
               </div>
             </article>
 
-            <article className="ryme-card p-6 sm:p-8">
+            <article className="gps-card p-6 sm:p-8">
               <h2 className="text-2xl font-extrabold text-white sm:text-3xl">Student Login</h2>
               <p className="mt-2 text-sm text-slate-300">Enter credentials to continue.</p>
 
@@ -110,7 +110,7 @@ function StudentLogin() {
                       name="rollNumber"
                       value={formData.rollNumber}
                       onChange={handleChange}
-                      className="ryme-input pl-11"
+                      className="gps-input pl-11"
                       placeholder="Enter your roll number"
                       type="text"
                       required
@@ -128,7 +128,7 @@ function StudentLogin() {
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="ryme-input pl-11"
+                      className="gps-input pl-11"
                       placeholder="Enter your password"
                       type="password"
                       required
@@ -146,7 +146,7 @@ function StudentLogin() {
                   </a>
                 </div>
 
-                <button type="submit" disabled={loading} className="ryme-button mt-2 w-full disabled:opacity-60">
+                <button type="submit" disabled={loading} className="gps-button mt-2 w-full disabled:opacity-60">
                   {loading ? (
                     <>
                       <span className="material-symbols-outlined animate-spin text-base">sync</span>

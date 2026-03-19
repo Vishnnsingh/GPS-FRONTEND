@@ -17,7 +17,7 @@ import { getAccessToken, getUser } from './Api/auth'
 function Unauthorized() {
   return (
     <div className="app-shell min-h-screen flex items-center justify-center px-4">
-      <div className="ryme-card w-full max-w-md p-6">
+      <div className="gps-card w-full max-w-md p-6">
         <h2 className="text-xl font-bold text-white">Access denied</h2>
         <p className="mt-2 text-sm text-slate-300">Your account does not have permission to view this page.</p>
       </div>
@@ -88,6 +88,33 @@ function ToastContainer() {
 }
 
 function App() {
+  useEffect(() => {
+    const isCalendarInput = (element) => {
+      if (!(element instanceof HTMLInputElement)) return false
+      return ['date', 'month', 'week', 'time', 'datetime-local'].includes(element.type)
+    }
+
+    const openPicker = (input) => {
+      if (typeof input.showPicker !== 'function') return
+      try {
+        input.showPicker()
+      } catch {
+        // Browser may block showPicker for unsupported scenarios.
+      }
+    }
+
+    const handleCalendarClick = (event) => {
+      const target = event.target
+      if (!isCalendarInput(target)) return
+      openPicker(target)
+    }
+
+    document.addEventListener('click', handleCalendarClick, true)
+    return () => {
+      document.removeEventListener('click', handleCalendarClick, true)
+    }
+  }, [])
+
   return (
     <Router>
       <ToastContainer />
