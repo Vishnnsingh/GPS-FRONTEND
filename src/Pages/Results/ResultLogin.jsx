@@ -58,11 +58,11 @@ function ResultLogin() {
 
   return (
     <WebsiteLayout>
-      <section className="ryme-section pt-8">
-        <div className="ryme-shell">
-          <div className="ryme-grid lg:grid-cols-[1.03fr_0.97fr]">
-            <article className="ryme-card p-6 sm:p-8">
-              <span className="ryme-tag">Result Portal</span>
+      <section className="gps-section pt-8">
+        <div className="gps-shell">
+          <div className="gps-grid lg:grid-cols-[1.03fr_0.97fr]">
+            <article className="gps-card p-6 sm:p-8">
+              <span className="gps-tag">Result Portal</span>
               <h1 className="mt-4 text-3xl font-extrabold leading-tight text-white sm:text-4xl">
                 View your result instantly with student details
               </h1>
@@ -72,17 +72,17 @@ function ResultLogin() {
               </p>
 
               <div className="mt-5 grid grid-cols-2 gap-3">
-                <div className="ryme-card-soft p-3">
-                  <p className="text-2xl font-extrabold text-cyan-100">100%</p>
+                <div className="gps-card-soft p-3">
+                  <p className="text-2xl font-extrabold text-[#f0d8a0]">100%</p>
                   <p className="text-xs uppercase tracking-[0.15em] text-slate-300">Online Access</p>
                 </div>
-                <div className="ryme-card-soft p-3">
-                  <p className="text-2xl font-extrabold text-cyan-100">24/7</p>
+                <div className="gps-card-soft p-3">
+                  <p className="text-2xl font-extrabold text-[#f0d8a0]">24/7</p>
                   <p className="text-xs uppercase tracking-[0.15em] text-slate-300">Availability</p>
                 </div>
               </div>
 
-              <div className="mt-6 overflow-hidden rounded-2xl border border-cyan-200/25">
+              <div className="mt-6 overflow-hidden rounded-2xl border border-[#c79843]/28">
                 <img
                   src={homeFeaturePhotos[2] || aboutPhotos.secondary}
                   alt="Students checking result"
@@ -91,7 +91,7 @@ function ResultLogin() {
               </div>
             </article>
 
-            <article className="ryme-card p-6 sm:p-8">
+            <article className="gps-card p-6 sm:p-8">
               <h2 className="text-2xl font-extrabold text-white sm:text-3xl">Result Login</h2>
               <p className="mt-2 text-sm text-slate-300">Fill student details to continue.</p>
 
@@ -108,7 +108,7 @@ function ResultLogin() {
                       name={name}
                       value={formData.classValue}
                       onChange={handleChange}
-                      className="ryme-input pl-11"
+                      className="gps-input pl-11"
                       placeholder="e.g. 1"
                       type="text"
                       inputMode="numeric"
@@ -123,7 +123,7 @@ function ResultLogin() {
                       name={name}
                       value={formData.roll}
                       onChange={handleChange}
-                      className="ryme-input pl-11"
+                      className="gps-input pl-11"
                       placeholder="e.g. 17"
                       type="text"
                       inputMode="numeric"
@@ -134,7 +134,7 @@ function ResultLogin() {
 
                 <ResultField label="Terminal" name="terminal" icon="event" required>
                   {(name) => (
-                    <select name={name} value={formData.terminal} onChange={handleChange} className="ryme-input pl-11" required>
+                    <select name={name} value={formData.terminal} onChange={handleChange} className="gps-input pl-11" required>
                       {terminals.map((terminal) => (
                         <option key={terminal} value={terminal}>
                           {terminal}
@@ -150,7 +150,7 @@ function ResultLogin() {
                       name={name}
                       value={formData.section}
                       onChange={handleChange}
-                      className="ryme-input pl-11"
+                      className="gps-input pl-11"
                       placeholder="e.g. A"
                       type="text"
                     />
@@ -163,14 +163,14 @@ function ResultLogin() {
                       name={name}
                       value={formData.session}
                       onChange={handleChange}
-                      className="ryme-input pl-11"
+                      className="gps-input pl-11"
                       placeholder="e.g. 2025-26"
                       type="text"
                     />
                   )}
                 </ResultField>
 
-                <button type="submit" className="ryme-button mt-2 w-full">
+                <button type="submit" className="gps-button mt-2 w-full">
                   View Result
                   <span className="material-symbols-outlined text-base">arrow_forward</span>
                 </button>
@@ -178,7 +178,7 @@ function ResultLogin() {
 
               <p className="mt-4 text-center text-sm text-slate-300">
                 Admin/Teacher login?{' '}
-                <Link to="/login" className="font-bold text-cyan-200 hover:text-cyan-100">
+                <Link to="/login" className="font-bold text-[#e7ca8f] hover:text-[#ffe7b6]">
                   Go to Login
                 </Link>
               </p>

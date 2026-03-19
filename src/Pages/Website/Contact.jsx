@@ -27,10 +27,10 @@ function Contact() {
 
   return (
     <WebsiteLayout>
-      <section className="ryme-section">
-        <div className="ryme-shell">
-          <div className="ryme-card p-6 sm:p-8">
-            <span className="ryme-tag">Contact desk</span>
+      <section className="gps-section">
+        <div className="gps-shell">
+          <div className="gps-card p-6 sm:p-8">
+            <span className="gps-tag">Contact desk</span>
             <h1 className="mt-4 text-4xl font-extrabold text-white sm:text-5xl">Talk to {SCHOOL_NAME}</h1>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-200 sm:text-base">
               For admissions, fees, transport, results or general school support, connect with us and the team will
@@ -40,10 +40,10 @@ function Contact() {
         </div>
       </section>
 
-      <section className="ryme-section pt-0">
-        <div className="ryme-shell">
-          <div className="ryme-grid lg:grid-cols-[0.9fr_1.1fr]">
-            <article className="ryme-card p-5 sm:p-6">
+      <section className="gps-section pt-0">
+        <div className="gps-shell">
+          <div className="gps-grid lg:grid-cols-[0.9fr_1.1fr]">
+            <article className="gps-card p-5 sm:p-6">
               <h2 className="text-2xl font-extrabold text-white">Reach out directly</h2>
               <p className="mt-2 text-sm text-slate-200">Use any preferred channel and we will assist you.</p>
 
@@ -56,19 +56,19 @@ function Contact() {
                     href={item.link}
                     target={item.link.startsWith('http') ? '_blank' : undefined}
                     rel={item.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    className="ryme-card-soft flex items-start gap-3 p-3"
+                    className="gps-card-soft flex items-start gap-3 p-3"
                   >
                     <span className="material-symbols-outlined text-cyan-300">{item.icon}</span>
                     <span>
                       <p className="text-xs uppercase tracking-[0.14em] text-cyan-100/80">{item.title}</p>
-                      <p className="text-sm text-slate-100/95">{item.value}</p>
+                      <p className="text-sm text-slate-600/95">{item.value}</p>
                     </span>
                   </a>
                 ))}
               </div>
             </article>
 
-            <article className="ryme-card p-5 sm:p-6">
+            <article className="gps-card p-5 sm:p-6">
               <h2 className="text-2xl font-extrabold text-white">Send a message</h2>
               <p className="mt-2 text-sm text-slate-200">Share your query and we will get back within one business day.</p>
 
@@ -87,7 +87,7 @@ function Contact() {
                     name="name"
                     value={form.name}
                     onChange={onChange}
-                    className="ryme-input"
+                    className="gps-input"
                     placeholder="Enter full name"
                     required
                   />
@@ -95,14 +95,14 @@ function Contact() {
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-200">
+                    <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-900">
                       Phone
                     </label>
                     <input
                       name="phone"
                       value={form.phone}
                       onChange={onChange}
-                      className="ryme-input"
+                      className="gps-input"
                       placeholder="9876543210"
                       required
                     />
@@ -116,7 +116,7 @@ function Contact() {
                       type="email"
                       value={form.email}
                       onChange={onChange}
-                      className="ryme-input"
+                      className="gps-input"
                       placeholder="name@email.com"
                       required
                     />
@@ -131,13 +131,13 @@ function Contact() {
                     name="message"
                     value={form.message}
                     onChange={onChange}
-                    className="ryme-input min-h-36 resize-none"
+                    className="gps-input min-h-36 resize-none"
                     placeholder="Write your question..."
                     required
                   />
                 </div>
 
-                <button type="submit" className="ryme-button w-full">
+                <button type="submit" className="gps-button w-full">
                   <span className="material-symbols-outlined text-base">send</span>
                   Submit Message
                 </button>
@@ -147,23 +147,23 @@ function Contact() {
         </div>
       </section>
 
-      <section className="ryme-section pt-0">
-        <div className="ryme-shell">
-          <div className="ryme-card overflow-hidden">
+      <section className="gps-section pt-0">
+        <div className="gps-shell">
+          <div className="gps-card overflow-hidden">
             <div className="relative h-72 sm:h-96">
               <img src={contactPhotos.location} alt="School campus location" className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#031223] via-[#031223]/58 to-[#031223]/15"></div>
               <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7">
-                <p className="text-xs uppercase tracking-[0.14em] text-cyan-100/90">Visit us</p>
-                <p className="mt-1 text-2xl font-bold text-white sm:text-4xl">School Campus Location</p>
-                <p className="mt-1 max-w-3xl text-sm text-slate-100/95 sm:text-lg">
+                <p className="text-xs uppercase tracking-[0.14em] text-[#d6ab5d]">Visit us</p>
+                <p className="mt-1 text-2xl font-bold text-[#f2d79f] sm:text-4xl">School Campus Location</p>
+                <p className="mt-1 max-w-3xl text-sm text-[#ecd3a1] sm:text-lg">
                   Belaspur Dainmanwa Road, Harinagar, West Champaran, Bihar
                 </p>
                 <a
                   href="https://maps.google.com/?q=Belaspur+Dainmanwa+Road+Harinagar+West+Champaran+Bihar"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-cyan-200/35 bg-cyan-400/15 px-4 py-2 text-sm font-semibold text-cyan-50 backdrop-blur-sm hover:bg-cyan-300/20"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#d6ab5d]/45 bg-[#d6ab5d]/12 px-4 py-2 text-sm font-semibold text-[#e7be71] backdrop-blur-sm hover:bg-[#d6ab5d]/20"
                 >
                   <span className="material-symbols-outlined text-base">near_me</span>
                   Open Directions

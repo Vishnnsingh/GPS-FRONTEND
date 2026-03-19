@@ -625,7 +625,7 @@ function Bills() {
               value={formData.month}
               onChange={(e) => setFormData({ ...formData, month: e.target.value })}
               placeholder="Select Month"
-              className="flex-1 px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
+              className="w-44 sm:w-52 px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 cursor-pointer"
             />
             <button
               onClick={handleCloseMonth}

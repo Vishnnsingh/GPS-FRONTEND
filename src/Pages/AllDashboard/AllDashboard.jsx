@@ -182,9 +182,9 @@ function Dashboard({ initialView = 'dashboard' }) {
           <div className="p-3 sm:p-4 lg:p-6 w-full max-w-full">
             {loginType !== 'student' && !isTeacher && activeView === 'dashboard' && (
               <div className="space-y-4 sm:space-y-6">
-                <div className="ryme-card p-5 sm:p-6">
+                <div className="gps-card p-5 sm:p-6">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/75">Control Center</p>
-                  <h2 className="mt-2 text-2xl font-extrabold text-white sm:text-3xl">Dashboard Analytics</h2>
+                  <h2 className="mt-2 text-2xl font-extrabold text-black sm:text-3xl">Dashboard Analytics</h2>
                   <p className="mt-2 text-sm text-slate-300">
                     Real-time overview of students, class setup and subject distribution across the school.
                   </p>
@@ -194,7 +194,7 @@ function Dashboard({ initialView = 'dashboard' }) {
                 {dashboardData.loading ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="ryme-kpi-card p-4 sm:p-5">
+                      <div key={i} className="gps-kpi-card p-4 sm:p-5">
                         <div className="flex items-center justify-center py-8">
                           <span className="material-symbols-outlined animate-spin text-2xl sm:text-3xl text-cyan-200">sync</span>
                         </div>
@@ -204,7 +204,7 @@ function Dashboard({ initialView = 'dashboard' }) {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {/* Total Students */}
-                    <div className="ryme-kpi-card p-4 sm:p-5">
+                    <div className="gps-kpi-card p-4 sm:p-5">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-xs sm:text-sm font-medium text-slate-300">Total Students</span>
                         <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-cyan-300/15 flex items-center justify-center flex-shrink-0">
@@ -215,7 +215,7 @@ function Dashboard({ initialView = 'dashboard' }) {
                     </div>
 
                     {/* Total Classes */}
-                    <div className="ryme-kpi-card p-4 sm:p-5">
+                    <div className="gps-kpi-card p-4 sm:p-5">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-xs sm:text-sm font-medium text-slate-300">Total Classes</span>
                         <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-300/15 flex items-center justify-center flex-shrink-0">
@@ -226,7 +226,7 @@ function Dashboard({ initialView = 'dashboard' }) {
                     </div>
 
                     {/* Total Subjects */}
-                    <div className="ryme-kpi-card p-4 sm:p-5">
+                    <div className="gps-kpi-card p-4 sm:p-5">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-xs sm:text-sm font-medium text-slate-300">Total Subjects</span>
                         <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-sky-300/15 flex items-center justify-center flex-shrink-0">
@@ -243,7 +243,7 @@ function Dashboard({ initialView = 'dashboard' }) {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                     {/* Students Distribution by Class */}
                     {dashboardData.studentsByClass.length > 0 && (
-                      <div className="ryme-card p-4 sm:p-6">
+                      <div className="gps-card p-4 sm:p-6">
                         <h3 className="text-base sm:text-lg font-bold text-white mb-4">Students Distribution by Class</h3>
                         <ResponsiveContainer width="100%" height={250}>
                           <BarChart data={dashboardData.studentsByClass}>
@@ -284,7 +284,7 @@ function Dashboard({ initialView = 'dashboard' }) {
 
                     {/* Students Distribution by Section */}
                     {dashboardData.studentsBySection.length > 0 && (
-                      <div className="ryme-card p-4 sm:p-6">
+                      <div className="gps-card p-4 sm:p-6">
                         <h3 className="text-base sm:text-lg font-bold text-white mb-4">Students Distribution by Section</h3>
                         <ResponsiveContainer width="100%" height={250}>
                           <PieChart>
@@ -313,7 +313,7 @@ function Dashboard({ initialView = 'dashboard' }) {
 
                     {/* Subjects per Class */}
                     {dashboardData.subjectsPerClass.length > 0 && (
-                      <div className="ryme-card p-4 sm:p-6 lg:col-span-2">
+                      <div className="gps-card p-4 sm:p-6 lg:col-span-2">
                         <h3 className="text-base sm:text-lg font-bold text-white mb-4">Subjects & Sections per Class</h3>
                         <ResponsiveContainer width="100%" height={250}>
                           <BarChart data={dashboardData.subjectsPerClass}>
@@ -356,7 +356,7 @@ function Dashboard({ initialView = 'dashboard' }) {
 
                     {/* Statistics Cards */}
                     <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:col-span-2">
-                      <div className="ryme-card-soft p-3 sm:p-4">
+                      <div className="gps-card-soft p-3 sm:p-4">
                         <div className="flex items-center justify-between gap-2">
                           <div className="min-w-0">
                             <p className="text-xs font-medium text-cyan-100 mb-1 truncate">Avg. Students/Class</p>
@@ -370,7 +370,7 @@ function Dashboard({ initialView = 'dashboard' }) {
                         </div>
                       </div>
 
-                      <div className="ryme-card-soft p-3 sm:p-4">
+                      <div className="gps-card-soft p-3 sm:p-4">
                         <div className="flex items-center justify-between gap-2">
                           <div className="min-w-0">
                             <p className="text-xs font-medium text-cyan-100 mb-1 truncate">Avg. Subjects/Class</p>
@@ -384,7 +384,7 @@ function Dashboard({ initialView = 'dashboard' }) {
                         </div>
                       </div>
 
-                      <div className="ryme-card-soft p-3 sm:p-4">
+                      <div className="gps-card-soft p-3 sm:p-4">
                         <div className="flex items-center justify-between gap-2">
                           <div className="min-w-0">
                             <p className="text-xs font-medium text-cyan-100 mb-1 truncate">Total Sections</p>
@@ -396,7 +396,7 @@ function Dashboard({ initialView = 'dashboard' }) {
                         </div>
                       </div>
 
-                      <div className="ryme-card-soft p-3 sm:p-4">
+                      <div className="gps-card-soft p-3 sm:p-4">
                         <div className="flex items-center justify-between gap-2">
                           <div className="min-w-0">
                             <p className="text-xs font-medium text-cyan-100 mb-1 truncate">Subject Coverage</p>

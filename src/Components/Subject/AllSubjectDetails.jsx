@@ -100,7 +100,7 @@ function AllSubjectDetails() {
   return (
     <div className="space-y-3 sm:space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="text-2xl sm:text-3xl font-black text-white">All Subject Details</h2>
+        <h2 className="text-2xl sm:text-3xl font-black text-black">All Subject Details</h2>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <button
             onClick={() => setIsCreateModalOpen(true)}
@@ -142,40 +142,40 @@ function AllSubjectDetails() {
 
       {!loading && !error && data?.summary && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          <div className="ryme-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+          <div className="gps-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs sm:text-sm font-medium text-slate-300">Total Classes</span>
+              <span className="text-xs sm:text-sm font-medium text-slate-600">Total Classes</span>
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-cyan-300/15 flex items-center justify-center flex-shrink-0">
                 <span className="material-symbols-outlined text-cyan-200 text-base sm:text-lg">class</span>
               </div>
             </div>
-            <p className="text-2xl sm:text-3xl font-black text-white">{data.summary.total_classes}</p>
+            <p className="text-2xl sm:text-3xl font-black text-black">{data.summary.total_classes}</p>
           </div>
 
-          <div className="ryme-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+          <div className="gps-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs sm:text-sm font-medium text-slate-300">Mappings</span>
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-cyan-300/15 flex items-center justify-center flex-shrink-0">
                 <span className="material-symbols-outlined text-cyan-200 text-base sm:text-lg">link</span>
               </div>
             </div>
-            <p className="text-2xl sm:text-3xl font-black text-white">{data.summary.total_subject_mappings}</p>
+            <p className="text-2xl sm:text-3xl font-black text-black">{data.summary.total_subject_mappings}</p>
           </div>
 
-          <div className="ryme-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+          <div className="gps-kpi-card rounded-xl p-4 sm:p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs sm:text-sm font-medium text-slate-300">Unique Subjects</span>
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-cyan-300/15 flex items-center justify-center flex-shrink-0">
                 <span className="material-symbols-outlined text-cyan-200 text-base sm:text-lg">book</span>
               </div>
             </div>
-            <p className="text-2xl sm:text-3xl font-black text-white">{data.summary.total_unique_subjects}</p>
+            <p className="text-2xl sm:text-3xl font-black text-black">{data.summary.total_unique_subjects}</p>
           </div>
         </div>
       )}
 
       {!loading && !error && data?.classes && (
-        <div className="ryme-card rounded-xl p-3 sm:p-4 shadow-sm border border-slate-200">
+        <div className="gps-card rounded-xl p-3 sm:p-4 shadow-sm border border-slate-200">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-200 mb-2">Filter by Class</label>
@@ -211,7 +211,7 @@ function AllSubjectDetails() {
             return (
               <div
                 key={classData.class}
-                className="ryme-card rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow"
+                className="gps-card rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow"
               >
                 <button
                   onClick={() => toggleClass(classData.class)}
@@ -238,7 +238,7 @@ function AllSubjectDetails() {
 
                 {expandedClasses.has(classData.class) && (
                   <div className="p-3 sm:p-5 bg-slate-50/50">
-                    <div className="ryme-card-soft rounded-lg p-3 sm:p-4 border border-slate-200">
+                    <div className="gps-card-soft rounded-lg p-3 sm:p-4 border border-slate-200">
                       {classSubjects.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
                           {classSubjects.map((subject, subjectIndex) => (

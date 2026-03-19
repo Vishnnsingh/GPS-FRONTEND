@@ -19,17 +19,17 @@ function WebsiteHeader() {
   const linkClass = ({ isActive }) =>
     `rounded-xl px-3.5 py-2 text-sm font-semibold transition-all ${
       isActive
-        ? 'bg-cyan-300/18 text-cyan-50 ring-1 ring-cyan-300/45'
-        : 'text-slate-200 hover:bg-slate-100/10 hover:text-white'
+        ? 'bg-[#c79843]/18 text-[#6f4b19] ring-1 ring-[#c79843]/45'
+        : 'text-[#334766] hover:bg-[#f2e8d5] hover:text-[#1f2d45]'
     }`
 
   return (
     <header className="fixed inset-x-0 top-0 z-[90]">
-      <div className="ryme-shell py-3">
-        <div className="ryme-glass rounded-2xl px-3 sm:px-4">
+      <div className="gps-shell py-3">
+        <div className="rounded-2xl border border-[#d8c7a6]/70 bg-white/90 px-3 sm:px-4 shadow-[0_10px_30px_rgba(118,94,56,0.14)] backdrop-blur-md">
           <div className="flex h-16 items-center justify-between gap-3">
             <Link to="/" className="flex min-w-0 items-center gap-3">
-              <div className="rounded-xl border border-cyan-200/35 bg-white/95 p-1.5">
+              <div className="rounded-xl border border-[#c79843]/45 bg-white/95 p-1.5 shadow-[0_6px_20px_rgba(151,111,43,0.25)]">
                 <img
                   src={logo}
                   alt={`${SCHOOL_NAME} Logo`}
@@ -37,10 +37,10 @@ function WebsiteHeader() {
                 />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-100/85 sm:text-xs">
+                <p className="truncate text-[10px] font-bold uppercase tracking-[0.18em] text-[#9d7a41] sm:text-xs">
                   Digital Campus
                 </p>
-                <h1 className="truncate text-sm font-bold text-white sm:text-base">{SCHOOL_NAME}</h1>
+                <h1 className="truncate text-sm font-bold text-[#1f2d45] sm:text-base">{SCHOOL_NAME}</h1>
               </div>
             </Link>
 
@@ -55,11 +55,11 @@ function WebsiteHeader() {
             <div className="hidden items-center gap-2 md:flex">
               <Link
                 to="/results-portal"
-                className="inline-flex items-center justify-center rounded-xl border border-cyan-300/35 px-3 py-2 text-xs font-semibold text-cyan-50 hover:bg-cyan-300/10"
+                className="inline-flex items-center justify-center rounded-xl border border-[#c79843]/50 px-3 py-2 text-xs font-semibold text-[#6f4b19] hover:bg-[#f6eddc]"
               >
                 Result
               </Link>
-              <Link to="/login" className="ryme-button !px-4 !py-2 !text-sm">
+              <Link to="/login" className="gps-button !px-4 !py-2 !text-sm">
                 Admin Panel
               </Link>
             </div>
@@ -67,7 +67,7 @@ function WebsiteHeader() {
             <button
               type="button"
               onClick={() => setOpen((prev) => !prev)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-200/30 text-cyan-100 md:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#c79843]/45 text-[#8b6832] md:hidden"
               aria-label="Toggle menu"
               aria-expanded={open}
             >
@@ -76,7 +76,7 @@ function WebsiteHeader() {
           </div>
 
           {open && (
-            <div className="border-t border-cyan-200/20 py-3 md:hidden">
+            <div className="border-t border-[#c79843]/35 py-3 md:hidden">
               <div className="flex flex-col gap-1.5">
                 {links.map((link) => (
                   <NavLink
@@ -93,15 +93,15 @@ function WebsiteHeader() {
                   <Link
                     to="/results-portal"
                     onClick={() => setOpen(false)}
-                    className="inline-flex items-center justify-center rounded-xl border border-cyan-300/35 px-3 py-2 text-sm font-semibold text-cyan-50"
+                    className="inline-flex items-center justify-center rounded-xl border border-[#c79843]/45 px-3 py-2 text-sm font-semibold text-[#6f4b19]"
                   >
                     Result
                   </Link>
-                  <Link to="/login" onClick={() => setOpen(false)} className="ryme-button !py-2 !text-sm">
+                  <Link to="/login" onClick={() => setOpen(false)} className="gps-button !py-2 !text-sm">
                     Admin
                   </Link>
                 </div>
-                <p className="mt-2 text-xs text-slate-300">
+                <p className="mt-2 text-xs text-slate-600">
                   Call: +91 7870225302 | Email: gpschool2025@gmail.com
                 </p>
               </div>

@@ -54,13 +54,13 @@ function AllLogin() {
   }
 
   return (
-    <div className="min-h-screen ryme-page text-slate-100">
+    <div className="min-h-screen gps-page text-slate-100">
       <WebsiteHeader />
       <main className="pb-10 pt-[92px] sm:pt-[98px]">
-        <div className="ryme-shell">
-          <div className="ryme-grid lg:grid-cols-[1.02fr_0.98fr]">
-            <article className="ryme-card p-6 sm:p-8">
-              <span className="ryme-tag">Admin & Teacher Login</span>
+        <div className="gps-shell">
+          <div className="gps-grid lg:grid-cols-[1.02fr_0.98fr]">
+            <article className="gps-card p-6 sm:p-8">
+              <span className="gps-tag">Admin & Teacher Login</span>
               <h1 className="mt-4 text-3xl font-extrabold leading-tight text-white sm:text-4xl">
                 Welcome back to your digital campus workspace
               </h1>
@@ -78,7 +78,7 @@ function AllLogin() {
                   { label: 'Teacher', value: 'Upload' },
                   { label: 'Records', value: 'Realtime' },
                 ].map((item) => (
-                  <div key={item.label} className="ryme-card-soft p-3">
+                  <div key={item.label} className="gps-card-soft p-3">
                     <p className="text-sm font-bold text-cyan-100">{item.value}</p>
                     <p className="text-[11px] uppercase tracking-[0.15em] text-slate-300">{item.label}</p>
                   </div>
@@ -86,7 +86,7 @@ function AllLogin() {
               </div>
             </article>
 
-            <article className="ryme-card p-6 sm:p-8">
+            <article className="gps-card p-6 sm:p-8">
               <h2 className="text-2xl font-extrabold text-white sm:text-3xl">Login</h2>
               <p className="mt-2 text-sm text-slate-300">Enter your credentials to continue.</p>
 
@@ -129,7 +129,7 @@ function AllLogin() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="ryme-input pl-11"
+                      className="gps-input pl-11"
                       placeholder="Enter your email"
                       type="email"
                       required
@@ -147,7 +147,7 @@ function AllLogin() {
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="ryme-input pl-11"
+                      className="gps-input pl-11"
                       placeholder="Enter your password"
                       type="password"
                       required
@@ -165,7 +165,7 @@ function AllLogin() {
                   </a>
                 </div> */}
 
-                <button type="submit" disabled={loading} className="ryme-button mt-2 w-full disabled:opacity-60">
+                <button type="submit" disabled={loading} className="gps-button mt-2 w-full disabled:opacity-60">
                   {loading ? (
                     <>
                       <span className="material-symbols-outlined animate-spin text-base">sync</span>

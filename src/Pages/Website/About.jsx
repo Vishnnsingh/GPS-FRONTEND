@@ -22,11 +22,11 @@ function About() {
 
   return (
     <WebsiteLayout>
-      <section className="ryme-section">
-        <div className="ryme-shell">
-          <div className="ryme-grid lg:grid-cols-[1fr_1.04fr]">
-            <div className="ryme-card p-6 sm:p-8">
-              <span className="ryme-tag">About school</span>
+      <section className="gps-section">
+        <div className="gps-shell">
+          <div className="gps-grid lg:grid-cols-[1fr_1.04fr]">
+            <div className="gps-card p-6 sm:p-8">
+              <span className="gps-tag">About school</span>
               <h1 className="mt-4 text-4xl font-extrabold text-white sm:text-5xl">{SCHOOL_NAME}</h1>
               <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-base">
                 We nurture confident learners through academics, values and practical skill-building. Our teachers and
@@ -34,25 +34,25 @@ function About() {
               </p>
 
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <div className="ryme-card-soft p-3">
+                <div className="gps-card-soft p-3">
                   <p className="text-2xl font-extrabold text-cyan-200">15+</p>
                   <p className="text-xs uppercase tracking-[0.15em] text-slate-200/90">Years Journey</p>
                 </div>
-                <div className="ryme-card-soft p-3">
+                <div className="gps-card-soft p-3">
                   <p className="text-2xl font-extrabold text-cyan-200">95%</p>
                   <p className="text-xs uppercase tracking-[0.15em] text-slate-200/90">Academic Success</p>
                 </div>
               </div>
             </div>
 
-            <div className="ryme-grid grid-cols-2">
-              <div className="ryme-card col-span-2 overflow-hidden">
+            <div className="gps-grid grid-cols-2">
+              <div className="gps-card col-span-2 overflow-hidden">
                 <img src={aboutPhotos.hero} alt="School campus" className="h-72 w-full object-cover sm:h-80" />
               </div>
-              <div className="ryme-card overflow-hidden">
+              <div className="gps-card overflow-hidden">
                 <img src={aboutPhotos.secondary} alt="Classroom learning" className="h-52 w-full object-cover" />
               </div>
-              <div className="ryme-card p-5">
+              <div className="gps-card p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-cyan-100">Mission</p>
                 <p className="mt-2 text-sm leading-relaxed text-slate-100/95">
                   Deliver quality education with discipline, compassion and future-ready skills.
@@ -63,15 +63,15 @@ function About() {
         </div>
       </section>
 
-      <section className="ryme-section pt-0">
-        <div className="ryme-shell">
+      <section className="gps-section pt-0">
+        <div className="gps-shell">
           <div className="mb-6">
-            <span className="ryme-tag">Core values</span>
-            <h2 className="ryme-section-title mt-3">What drives our culture</h2>
+            <span className="gps-tag">Core values</span>
+            <h2 className="gps-section-title mt-3">What drives our culture</h2>
           </div>
-          <div className="ryme-grid sm:grid-cols-2 lg:grid-cols-4">
+          <div className="gps-grid sm:grid-cols-2 lg:grid-cols-4">
             {values.map((value) => (
-              <article key={value.title} className="ryme-kpi-card p-5">
+              <article key={value.title} className="gps-kpi-card p-5">
                 <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-300/15 text-cyan-200">
                   <span className="material-symbols-outlined">{value.icon}</span>
                 </div>
@@ -83,11 +83,11 @@ function About() {
         </div>
       </section>
 
-      <section className="ryme-section pt-0">
-        <div className="ryme-shell">
-          <div className="ryme-grid lg:grid-cols-[1.12fr_0.88fr]">
-            <article className="ryme-card p-6 sm:p-8">
-              <span className="ryme-tag">Our journey</span>
+      <section className="gps-section pt-0">
+        <div className="gps-shell">
+          <div className="gps-grid lg:grid-cols-[1.12fr_0.88fr]">
+            <article className="gps-card p-6 sm:p-8">
+              <span className="gps-tag">Our journey</span>
               <h2 className="mt-3 text-3xl font-extrabold text-white sm:text-4xl">Built with consistency and trust</h2>
               <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-base">
                 From a focused local institution to a structured school ecosystem, we have continuously improved
@@ -106,7 +106,7 @@ function About() {
               <img src={aboutPhotos.journey} alt="School journey" className="mt-5 h-56 w-full rounded-xl object-cover" />
             </article>
 
-            <article className="ryme-card p-6 sm:p-8">
+            <article className="gps-card p-6 sm:p-8">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-300/15 text-cyan-200">
                 <span className="material-symbols-outlined">format_quote</span>
               </div>
@@ -134,19 +134,19 @@ function About() {
         </div>
       </section>
 
-      <section className="ryme-section pt-0">
-        <div className="ryme-shell">
-          <div className="ryme-card p-7 text-center sm:p-9">
-            <span className="ryme-tag">Admissions open</span>
+      <section className="gps-section pt-0">
+        <div className="gps-shell">
+          <div className="gps-card p-7 text-center sm:p-9">
+            <span className="gps-tag">Admissions open</span>
             <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">Be part of our learning community</h2>
             <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-200 sm:text-base">
               Visit campus, meet our faculty and explore programs crafted for all-round student development.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <Link to="/contact" className="ryme-button">
+              <Link to="/contact" className="gps-button">
                 Contact School
               </Link>
-              <Link to="/gallery" className="ryme-button-ghost">
+              <Link to="/gallery" className="gps-button-ghost">
                 Explore Gallery
               </Link>
             </div>

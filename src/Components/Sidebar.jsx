@@ -79,26 +79,26 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
         } ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         <div className="h-full p-3 sm:p-4">
-          <div className="ryme-glass flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-200/25">
-            <div className="flex items-center justify-between border-b border-cyan-200/20 px-3 py-3">
+          <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#d8c8a7]/70 bg-white/92 shadow-[0_14px_34px_rgba(117,94,56,0.16)] backdrop-blur-md">
+            <div className="flex items-center justify-between border-b border-[#d8c8a7]/65 px-3 py-3">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                  className="hidden rounded-lg border border-cyan-200/30 p-1.5 text-cyan-100 hover:bg-cyan-300/10 lg:inline-flex"
+                  className="hidden rounded-lg border border-[#d2bf98]/75 bg-[#fffaf0] p-1.5 text-[#8c6a33] hover:bg-[#f3e8d0] lg:inline-flex"
                   title={sidebarCollapsed ? 'Expand' : 'Collapse'}
                 >
                   <span className="material-symbols-outlined text-base">{sidebarCollapsed ? 'menu_open' : 'menu'}</span>
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="rounded-lg border border-cyan-200/30 p-1.5 text-cyan-100 lg:hidden"
+                  className="rounded-lg border border-[#d2bf98]/75 bg-[#fffaf0] p-1.5 text-[#8c6a33] lg:hidden"
                   aria-label="Close sidebar"
                 >
                   <span className="material-symbols-outlined text-base">close</span>
                 </button>
               </div>
               <p
-                className={`text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-100/80 ${
+                className={`text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9b7a45] ${
                   collapsedDesktopOnly ? 'lg:hidden' : ''
                 }`}
               >
@@ -106,8 +106,8 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
               </p>
             </div>
 
-            <nav className="flex-1 overflow-hidden px-2 py-3">
-              <div className="sidebar-scroll h-full space-y-1.5 overflow-y-auto overflow-x-hidden pr-2">
+            <nav className="sidebar-scroll flex-1 overflow-y-auto overflow-x-hidden py-3">
+              <div className="space-y-1.5 px-2 pr-1">
                 {menuItems.map((item) => (
                   <button
                     key={item.id}
@@ -120,8 +120,8 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
                       collapsedDesktopOnly ? 'lg:justify-center' : ''
                     } ${
                       activeView === item.id
-                        ? 'bg-cyan-300 text-[#04213c] shadow-[0_8px_24px_rgba(0,169,245,0.35)]'
-                        : 'text-slate-200 hover:bg-cyan-300/10 hover:text-white'
+                        ? 'bg-gradient-to-r from-[#79d6f2] to-[#54c6e8] text-[#0f3d56] shadow-[0_8px_24px_rgba(83,184,219,0.35)]'
+                        : 'text-[#4b6182] hover:bg-[#edf7fc] hover:text-[#1f3556]'
                     }`}
                     title={collapsedDesktopOnly ? item.label : ''}
                   >
@@ -132,11 +132,11 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
               </div>
             </nav>
 
-            <div className="border-t border-cyan-200/20 p-2.5">
+            <div className="border-t border-[#d8c8a7]/65 p-2.5">
               <button
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className={`flex w-full items-center gap-2 rounded-xl border border-red-300/35 bg-red-400/10 px-3 py-2.5 text-sm font-semibold text-red-100 transition-all hover:bg-red-400/20 disabled:cursor-not-allowed disabled:opacity-60 ${
+                className={`flex w-full items-center gap-2 rounded-xl border border-[#f0c6cd] bg-[#fff1f3] px-3 py-2.5 text-sm font-semibold text-[#c15b6b] transition-all hover:bg-[#ffe8eb] disabled:cursor-not-allowed disabled:opacity-60 ${
                   collapsedDesktopOnly ? 'lg:justify-center' : ''
                 }`}
                 title={collapsedDesktopOnly ? 'Logout' : ''}
