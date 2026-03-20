@@ -66,11 +66,7 @@
   }
 
   .result-print.pdf-capture-mode {
-    width: 210mm !important;
-    min-width: 210mm !important;
-    max-width: 210mm !important;
-    min-height: 297mm !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
     transform: none !important;
   }
 
@@ -90,11 +86,52 @@
 
   .result-print.pdf-capture-mode table {
     width: 100% !important;
-    min-width: 100% !important;
   }
 
   .print-only {
     display: none;
+  }
+
+  .pdf-export-host {
+    position: fixed;
+    left: -99999px;
+    top: 0;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .result-print.pdf-export-mode {
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  .result-print.pdf-export-mode .overflow-x-auto,
+  .result-print.pdf-export-mode .overflow-y-auto,
+  .result-print.pdf-export-mode .table-scrollbar {
+    overflow: visible !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .result-print.pdf-export-mode .overflow-x-auto::-webkit-scrollbar,
+  .result-print.pdf-export-mode .overflow-y-auto::-webkit-scrollbar,
+  .result-print.pdf-export-mode .table-scrollbar::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .result-print.pdf-export-mode table {
+    width: 100% !important;
+  }
+
+  .result-print.pdf-export-mode .result-school-title {
+    max-width: none !important;
+    white-space: nowrap !important;
+    font-size: 35px !important;
+    line-height: 1 !important;
+    letter-spacing: 0.04em !important;
   }
 }
 
@@ -114,11 +151,20 @@
 
 .pdf-capture-mode table {
   width: 100% !important;
-  min-width: 100% !important;
 }
 
 .pdf-capture-mode .result-watermark {
   display: none !important;
+}
+
+@media print {
+  .print-card .result-school-title {
+    max-width: none !important;
+    white-space: nowrap !important;
+    font-size: 35px !important;
+    line-height: 1 !important;
+    letter-spacing: 0.04em !important;
+  }
 }
 
 .pdf-capture-mode.pdf-capture-aggressive *,

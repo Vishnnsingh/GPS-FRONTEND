@@ -25,9 +25,9 @@ function WebsiteHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-[90]">
-      <div className="gps-shell py-3">
-        <div className="rounded-2xl border border-[#d8c7a6]/70 bg-white/90 px-3 sm:px-4 shadow-[0_10px_30px_rgba(118,94,56,0.14)] backdrop-blur-md">
-          <div className="flex h-16 items-center justify-between gap-3">
+      <div className="gps-header-shell">
+        <div className="rounded-[1.75rem] border border-[#d8c7a6]/70 bg-white/90 px-4 sm:px-5 shadow-[0_10px_30px_rgba(118,94,56,0.14)] backdrop-blur-md">
+          <div className="flex min-h-[4.5rem] items-center justify-between gap-3 py-2 sm:min-h-[4.75rem]">
             <Link to="/" className="flex min-w-0 items-center gap-3">
               <div className="rounded-xl border border-[#c79843]/45 bg-white/95 p-1.5 shadow-[0_6px_20px_rgba(151,111,43,0.25)]">
                 <img

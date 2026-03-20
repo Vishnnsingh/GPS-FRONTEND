@@ -56,7 +56,7 @@ function AllLogin() {
   return (
     <div className="min-h-screen gps-page text-slate-100">
       <WebsiteHeader />
-      <main className="pb-10 pt-[92px] sm:pt-[98px]">
+      <main className="pb-10 pt-[104px] sm:pt-[112px]">
         <div className="gps-shell">
           <div className="gps-grid lg:grid-cols-[1.02fr_0.98fr]">
             <article className="gps-card p-6 sm:p-8">

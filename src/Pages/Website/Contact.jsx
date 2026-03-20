@@ -103,7 +103,7 @@ function Contact() {
                       value={form.phone}
                       onChange={onChange}
                       className="gps-input"
-                      placeholder="9876543210"
+                      placeholder="Enter Phone Number"
                       required
                     />
                   </div>
