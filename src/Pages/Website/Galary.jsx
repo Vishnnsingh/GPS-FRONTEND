@@ -1,119 +1,128 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
-import { campusPhotos } from '../../assets/websiteImages'
-
-const galleryHighlights = ['Academic Focus', 'Creative Activities', 'Sports Spirit', 'Community Events']
-
-const galleryCaptions = [
-  { title: 'Morning Rhythm', note: 'Assembly moments that set discipline and confidence for the day.' },
-  { title: 'Curious Classroom', note: 'Focused teaching with active questions and student participation.' },
-  { title: 'Culture in Motion', note: 'Festive performances that build expression and teamwork.' },
-  { title: 'Campus Walkway', note: 'Safe and organized spaces that support daily movement.' },
-  { title: 'Student Spotlight', note: 'Presentations that strengthen communication and leadership.' },
-  { title: 'Reading Corner', note: 'Library hours that nurture habit, language and imagination.' },
-  { title: 'Field Energy', note: 'Sports sessions that shape fitness and sportsmanship.' },
-  { title: 'Lab Discovery', note: 'Practical exploration through science-based activities.' },
-  { title: 'Team Learning', note: 'Peer collaboration where students solve and learn together.' },
-  { title: 'Campus Event', note: 'Celebrations and gatherings that create lifelong memories.' },
-  { title: 'Annual Stage', note: 'Cultural showcases that reflect student confidence and talent.' },
-  { title: 'Proud Display', note: 'Moments that celebrate school values and student growth.' },
-  { title: 'Engaged Minds', note: 'Hands-on participation across co-curricular experiences.' },
-  { title: 'Beyond Books', note: 'Activities that blend creativity with real-world learning.' },
-  { title: 'Creative Lab', note: 'Workshops designed to spark ideas and practical skills.' },
-  { title: 'Value First', note: 'Discipline, respect and responsibility in daily practice.' },
-  { title: 'Achievement Lens', note: 'Recognizing milestones and motivating every learner.' },
-  { title: 'Campus Pride', note: 'A visual story of identity, effort and belonging.' },
-]
+import { galleryRows, schoolProfile, siteMedia } from './siteContent'
 
 function Galary() {
-  const getCardSpan = (index, photo) => {
-    if (index === 0) return 'sm:col-span-2 lg:col-span-2 lg:row-span-2'
-    if (photo.orientation === 'portrait' && index % 4 !== 0) return 'sm:row-span-2'
-    if (index % 6 === 4) return 'lg:col-span-2'
-    return ''
-  }
+  const previewCards = [
+    { src: siteMedia.galleryFeature[0], alt: 'School building exterior', title: 'Campus exterior' },
+    { src: siteMedia.galleryFeature[1], alt: 'Open hall and learning space', title: 'Open learning space' },
+    { src: siteMedia.galleryFeature[2], alt: 'Students gathered inside campus', title: 'Student presence' },
+  ]
 
-  const getCardTone = (index) => {
-    const tones = [
-      'from-[#031223]/88 via-[#031223]/34 to-transparent',
-      'from-[#1f1408]/82 via-[#1f1408]/35 to-transparent',
-      'from-[#0d1a30]/84 via-[#0d1a30]/36 to-transparent',
-      'from-[#2a1708]/82 via-[#2a1708]/35 to-transparent',
-    ]
-    return tones[index % tones.length]
-  }
+  const previewNotes = [
+    'Uniform image sizing keeps the gallery cleaner across screen sizes.',
+    'Horizontal scrolling works better than uneven collage gaps on mobile and desktop.',
+    'The page now presents campus moments in a more controlled and readable rhythm.',
+  ]
 
   return (
     <WebsiteLayout>
-      <section className="gps-section">
-        <div className="gps-shell">
-          <div className="relative overflow-hidden rounded-[2rem] border border-[#d3bd92]/65 bg-gradient-to-br from-[#fffaf1] via-[#f9f0de] to-[#f5e8d0] p-6 sm:p-8">
-            <div className="pointer-events-none absolute -left-14 top-0 h-52 w-52 rounded-full bg-[#d5ab5a]/20 blur-3xl"></div>
-            <div className="pointer-events-none absolute right-[-34px] top-10 h-56 w-56 rounded-full bg-[#3a63a8]/12 blur-3xl"></div>
-
-            <div className="relative z-10">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#c79843]/45 bg-[#f7ecd9] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.15em] text-[#7d5620]">
+      <section className="gps-site-section pt-6">
+        <div className="gps-site-shell">
+          <div className="grid gap-5 xl:grid-cols-[0.84fr_1.16fr] xl:items-stretch">
+            <article className="gps-site-panel min-w-0 p-6 sm:p-8 lg:p-10">
+              <span className="gps-site-label">
                 <span className="material-symbols-outlined text-sm">photo_library</span>
-                Campus Gallery
+                Campus gallery
               </span>
-
-              <h1 className="mt-4 text-4xl font-black tracking-[-0.03em] text-[#1f2d45] sm:text-5xl">
-                Stories From
-                <span className="ml-2 text-[#b07f31]">Every School Day</span>
-              </h1>
-
-              <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#4d6486] sm:text-base">
-                A refreshed visual wall of classrooms, sports, celebrations and student life that captures the spirit
-                of learning at our campus.
+              <h1 className="gps-site-heading mt-5 text-2xl sm:text-3xl">Scrollable collage of everyday school life</h1>
+              <p className="gps-site-copy mt-5">
+                Instead of scattering photos randomly across the site, the gallery now gathers them into cleaner visual
+                bands. Each row is grouped like a small story so visitors can move through academics, activities and
+                campus spaces with better context.
               </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link to="/admission" className="gps-site-button">
+                  Visit admission page
+                </Link>
+                <Link to="/contact" className="gps-site-button-secondary">
+                  Contact the school
+                </Link>
+              </div>
+            </article>
 
-              <div className="mt-5 flex flex-wrap gap-2.5">
-                {galleryHighlights.map((item) => (
-                  <span
-                    key={item}
-                    className="inline-flex items-center rounded-full border border-[#d1b27d]/65 bg-white/70 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#6c4b1d]"
-                  >
-                    {item}
-                  </span>
+            <article className="gps-site-panel-muted flex min-w-0 h-full flex-col p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-700">Campus preview</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Swipe horizontally</p>
+              </div>
+
+              <div className="gps-site-scrollbar mt-4 w-full overflow-x-auto pb-3">
+                <div className="flex min-w-max gap-4 pr-2">
+                  {previewCards.map((card) => (
+                    <article key={card.src} className="shrink-0">
+                      <div className="gps-site-photo-frame h-[300px] w-[220px] sm:h-[340px] sm:w-[250px] lg:h-[360px] lg:w-[260px]">
+                        <img src={card.src} alt={card.alt} className="h-full w-full object-cover" />
+                      </div>
+                      <p className="mt-3 text-sm font-semibold text-slate-700">{card.title}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                {previewNotes.map((note) => (
+                  <div key={note} className="rounded-[1.2rem] border border-slate-200/80 bg-white/78 p-4">
+                    <p className="text-sm leading-relaxed text-slate-600">{note}</p>
+                  </div>
                 ))}
               </div>
-            </div>
+            </article>
           </div>
         </div>
       </section>
 
-      <section className="gps-section pt-0">
-        <div className="gps-shell">
-          <div className="rounded-[1.6rem] border border-[#d8c6a2]/60 bg-gradient-to-b from-[#fffdf7] to-[#f6eddb] p-3 sm:p-4">
-            <div className="grid auto-rows-[210px] grid-cols-1 gap-4 sm:auto-rows-[220px] sm:grid-cols-2 lg:auto-rows-[210px] lg:grid-cols-4">
-              {campusPhotos.map((photo, index) => (
-                <article
-                  key={photo.id}
-                  className={`group relative overflow-hidden rounded-[1.35rem] border border-[#d8c6a2]/70 bg-white shadow-[0_14px_30px_rgba(118,94,56,0.16)] ${getCardSpan(index, photo)}`}
-                >
-                  <img
-                    src={photo.src}
-                    alt={photo.title}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.08]"
-                  />
+      <section className="gps-site-section pt-0">
+        <div className="gps-site-shell space-y-8">
+          {galleryRows.map((row, index) => (
+            <article key={row.title} className="gps-site-panel min-w-0 p-5 sm:p-6">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                <div className="max-w-3xl">
+                  <span className="gps-site-label">Gallery row 0{index + 1}</span>
+                  <h2 className="mt-4 text-3xl font-extrabold text-slate-900">{row.title}</h2>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">{row.description}</p>
+                </div>
+                <p className="text-sm font-semibold text-slate-500">{row.photos.length} curated frames</p>
+              </div>
 
-                  <div className="absolute left-3 top-3 rounded-full border border-[#f0cf92]/65 bg-[#141619]/58 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#f0cf92] backdrop-blur-sm">
-                    Frame {String(index + 1).padStart(2, '0')}
-                  </div>
+              <div className="gps-site-scrollbar mt-6 w-full overflow-x-auto pb-4">
+                <div className="flex min-w-max items-stretch gap-4 pr-2">
+                  {row.photos.map((photo) => (
+                    <article
+                      key={`${row.title}-${photo.title}`}
+                      className="flex w-[220px] shrink-0 flex-col overflow-hidden rounded-[1.45rem] border border-slate-200/80 bg-white shadow-[0_18px_34px_rgba(15,23,42,0.08)] sm:w-[250px] lg:w-[260px]"
+                    >
+                      <img src={photo.src} alt={photo.title} className="h-[280px] w-full object-cover sm:h-[300px] lg:h-[320px]" />
+                      <div className="flex min-h-[120px] flex-col p-4">
+                        <p className="line-clamp-2 text-sm font-bold uppercase tracking-[0.18em] text-cyan-700">{photo.title}</p>
+                        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-600">{photo.note}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
-                  <div className={`absolute inset-x-0 bottom-0 bg-gradient-to-t ${getCardTone(index)} p-3.5 sm:p-4`}>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#d9b87b]">
-                      {index % 2 === 0 ? 'Campus Life' : 'Learning Zone'}
-                    </p>
-                    <p className="mt-1 text-base font-extrabold text-[#f3dcae] sm:text-lg">
-                      {galleryCaptions[index]?.title || photo.title}
-                    </p>
-                    <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[#f6ebd2]/90">
-                      {galleryCaptions[index]?.note || 'Students learning, exploring and growing together on campus.'}
-                    </p>
-                  </div>
-                </article>
-              ))}
+      <section className="gps-site-section pt-0">
+        <div className="gps-site-shell">
+          <div className="gps-site-panel p-7 text-center sm:p-10">
+            <span className="gps-site-label">Campus story</span>
+            <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">A school is best understood through the rhythm of its real days.</h2>
+            <p className="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">
+              If these visuals match the kind of school environment you want for your child, the next meaningful step is
+              to speak with <span className="font-semibold text-sm">{schoolProfile.name}</span> about admissions and campus guidance.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Link to="/admission" className="gps-site-button">
+                Admission details
+              </Link>
+              <Link to="/contact" className="gps-site-button-secondary">
+                Contact office
+              </Link>
             </div>
           </div>
         </div>

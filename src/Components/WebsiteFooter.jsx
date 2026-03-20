@@ -1,126 +1,94 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
-import { sharedImages } from '../assets/websiteImages'
+import { schoolProfile, siteMedia, siteNavLinks } from '../Pages/Website/siteContent'
 
 function WebsiteFooter() {
-  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
   const year = new Date().getFullYear()
 
-  const quickLinks = useMemo(
-    () => [
-      { to: '/', label: 'Home' },
-      { to: '/about', label: 'About' },
-      { to: '/gallery', label: 'Gallery' },
-      { to: '/contact', label: 'Contact' },
-      { to: '/login', label: 'Admin Login' },
-    ],
-    []
-  )
-
-  const whatsappNumber = '7870225302'
-  const whatsappUrl = `https://wa.me/91${whatsappNumber}`
-
   return (
-    <footer className="relative mt-16 border-t border-[#d7c6a4]/70 bg-[#f5eee1]">
-      {/* WhatsApp Floating Button - Right Corner */}
+    <footer className="relative mt-8 border-t border-[var(--site-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.3),rgba(255,255,255,0.84))]">
       <a
-        href={whatsappUrl}
+        href={schoolProfile.whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-[#25D366]/50 transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-[#25D366]/60 active:scale-95"
+        className="fixed bottom-5 right-5 z-[110] inline-flex items-center gap-2 rounded-full bg-slate-900 px-3 py-3 text-sm font-semibold text-white shadow-[0_18px_36px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 sm:px-4"
         aria-label="Contact us on WhatsApp"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="white"
-          className="h-7 w-7"
-        >
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-        </svg>
+        <span className="material-symbols-outlined text-lg">chat</span>
+        <span className="hidden sm:inline">WhatsApp</span>
       </a>
 
-      <div className="gps-shell py-12">
-        <div className="gps-card p-6 sm:p-8">
-          <div className="grid gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-5">
-              <div className="flex items-center gap-3">
-                <div className="rounded-xl border border-[#c79843]/45 bg-white/90 p-1.5 shadow-[0_8px_24px_rgba(151,111,43,0.28)]">
-                  <img
-                    src={sharedImages.schoolLogo}
-                    alt={`${SCHOOL_NAME} logo`}
-                    className="h-14 w-14 rounded-lg object-cover sm:h-16 sm:w-16"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-[#1f2d45]">{SCHOOL_NAME}</h3>
-                  <p className="text-xs uppercase tracking-[0.16em] text-[#9d7a41]">Learning | Discipline | Growth</p>
-                </div>
+      <div className="gps-site-shell py-14">
+        <div className="grid gap-5 lg:grid-cols-[1.15fr_0.75fr_0.9fr]">
+          <div className="gps-site-panel p-6 sm:p-8">
+            <div className="flex items-center gap-3">
+              <div className="rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
+                <img src={siteMedia.logo} alt={`${schoolProfile.name} logo`} className="h-14 w-14 rounded-xl object-cover sm:h-16 sm:w-16" />
               </div>
-
-              <p className="mt-5 max-w-md text-sm leading-relaxed text-[#425775]">
-                Student-first campus with modern classrooms, strong academics, activities, and transparent digital systems
-                for students, parents, teachers and admin teams.
-              </p>
-
-              <div className="mt-5 flex flex-wrap gap-2">
-                {['Smart Classes', 'Labs', 'Sports', 'Safe Campus'].map((tag) => (
-                  <span key={tag} className="gps-tag !text-[0.64rem] !tracking-[0.15em]">
-                    {tag}
-                  </span>
-                ))}
+              <div>
+                <h3 className="text-xl font-extrabold text-slate-900">{schoolProfile.name}</h3>
+                <p className="text-xs uppercase tracking-[0.22em] text-cyan-700">Calm campus, clear systems, steady growth</p>
               </div>
             </div>
 
-            <div className="lg:col-span-3">
-              <h4 className="text-base font-bold text-[#1f2d45]">Explore</h4>
-              <div className="mt-3 flex flex-col gap-2">
-                {quickLinks.map((link) => (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    className="inline-flex w-fit items-center gap-1.5 text-sm text-[#425775] hover:text-[#8b6832]"
-                  >
-                    <span className="material-symbols-outlined text-sm">arrow_right_alt</span>
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            <p className="mt-5 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-base">
+              {schoolProfile.tagline} The website is intentionally kept clear and text-led so families can find the right
+              information quickly without unnecessary clutter.
+            </p>
 
-            <div className="lg:col-span-4">
-              <h4 className="text-base font-bold text-[#1f2d45]">Reach Us</h4>
-              <div className="mt-3 space-y-2.5 text-sm text-[#425775]">
-                <a
-                  href="https://maps.google.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-start gap-2 hover:text-[#8b6832]"
+            <div className="mt-6 flex flex-wrap gap-2.5">
+              {['Admissions guidance', 'Result access', 'Parent communication', 'Student-first routine'].map((tag) => (
+                <span key={tag} className="gps-site-chip">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="gps-site-panel-muted p-6">
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-cyan-700">Explore</p>
+            <div className="mt-4 flex flex-col gap-2.5">
+              {siteNavLinks.concat([{ to: '/login', label: 'Admin Login' }]).map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900"
                 >
-                  <span className="material-symbols-outlined text-base text-[#d8b060]">location_on</span>
-                  <span>Belaspur Dainmanwa Road, Harinagar, West Champaran, Bihar 845103</span>
-                </a>
-                <a href="tel:+917870225302" className="inline-flex items-center gap-2 hover:text-[#8b6832]">
-                  <span className="material-symbols-outlined text-base text-[#d8b060]">call</span>
-                  +91 7870225302
-                </a>
-                <a href="mailto:gpschool2025@gmail.com" className="inline-flex items-center gap-2 hover:text-[#8b6832]">
-                  <span className="material-symbols-outlined text-base text-[#d8b060]">mail</span>
-                  gpschool2025@gmail.com
-                </a>
+                  <span className="material-symbols-outlined text-base text-cyan-700">arrow_forward</span>
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="gps-site-panel-muted p-6">
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-cyan-700">Reach us</p>
+            <div className="mt-4 space-y-4 text-sm text-slate-600">
+              <a href={schoolProfile.mapsHref} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 hover:text-slate-900">
+                <span className="material-symbols-outlined mt-0.5 text-cyan-700">location_on</span>
+                <span>{schoolProfile.address}</span>
+              </a>
+              <a href={schoolProfile.phoneHref} className="flex items-center gap-3 hover:text-slate-900">
+                <span className="material-symbols-outlined text-cyan-700">call</span>
+                <span>{schoolProfile.phone}</span>
+              </a>
+              <a href={schoolProfile.emailHref} className="flex items-center gap-3 hover:text-slate-900">
+                <span className="material-symbols-outlined text-cyan-700">mail</span>
+                <span>{schoolProfile.email}</span>
+              </a>
+              <div className="flex items-start gap-3">
+                <span className="material-symbols-outlined mt-0.5 text-cyan-700">schedule</span>
+                <span>{schoolProfile.hours}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-5 flex flex-col items-center justify-between gap-2 text-xs text-[#6d7f9c] sm:flex-row">
+        <div className="mt-5 flex flex-col items-start justify-between gap-2 border-t border-slate-200/80 pt-5 text-xs text-slate-500 sm:flex-row sm:items-center">
           <p>
-            (c) {year} <span className="font-semibold text-[#2a3e5c]">{SCHOOL_NAME}</span>. All rights reserved.
+            (c) {year} <span className="font-semibold text-slate-800">{schoolProfile.name}</span>. All rights reserved.
           </p>
-          <p className="inline-flex items-center gap-1.5">
-            {/* <img src={sharedImages.websiteTechIcon} alt="Technology" className="h-4 w-4" /> */}
-            Powered by Kavion Innovation
-          </p>
+          <p>Powered by Kavion Innovation</p>
         </div>
       </div>
     </footer>

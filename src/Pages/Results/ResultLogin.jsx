@@ -6,7 +6,7 @@ import { aboutPhotos, homeFeaturePhotos } from '../../assets/websiteImages'
 function ResultField({ label, name, icon, required, children }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-300">
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-700">
         {label}
         {required ? ' *' : ''}
       </span>
@@ -61,28 +61,28 @@ function ResultLogin() {
       <section className="gps-section pt-8">
         <div className="gps-shell">
           <div className="gps-grid lg:grid-cols-[1.03fr_0.97fr]">
-            <article className="gps-card p-6 sm:p-8">
-              <span className="gps-tag">Result Portal</span>
-              <h1 className="mt-4 text-3xl font-extrabold leading-tight text-white sm:text-4xl">
+            <article className="gps-auth-card p-6 sm:p-8">
+              <span className="gps-auth-tag">Result Portal</span>
+              <h1 className="mt-4 text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl">
                 View your result instantly with student details
               </h1>
-              <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-base">
+              <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">
                 Enter class, roll number and terminal to open the published result. Optional section and session fields
                 help narrow records quickly.
               </p>
 
               <div className="mt-5 grid grid-cols-2 gap-3">
-                <div className="gps-card-soft p-3">
-                  <p className="text-2xl font-extrabold text-[#f0d8a0]">100%</p>
-                  <p className="text-xs uppercase tracking-[0.15em] text-slate-300">Online Access</p>
+                <div className="gps-auth-card-soft p-3">
+                  <p className="text-2xl font-extrabold text-sky-700">100%</p>
+                  <p className="text-xs uppercase tracking-[0.15em] text-slate-500">Online Access</p>
                 </div>
-                <div className="gps-card-soft p-3">
-                  <p className="text-2xl font-extrabold text-[#f0d8a0]">24/7</p>
-                  <p className="text-xs uppercase tracking-[0.15em] text-slate-300">Availability</p>
+                <div className="gps-auth-card-soft p-3">
+                  <p className="text-2xl font-extrabold text-sky-700">24/7</p>
+                  <p className="text-xs uppercase tracking-[0.15em] text-slate-500">Availability</p>
                 </div>
               </div>
 
-              <div className="mt-6 overflow-hidden rounded-2xl border border-[#c79843]/28">
+              <div className="mt-6 overflow-hidden rounded-2xl border border-sky-100">
                 <img
                   src={homeFeaturePhotos[2] || aboutPhotos.secondary}
                   alt="Students checking result"
@@ -91,13 +91,13 @@ function ResultLogin() {
               </div>
             </article>
 
-            <article className="gps-card p-6 sm:p-8">
-              <h2 className="text-2xl font-extrabold text-white sm:text-3xl">Result Login</h2>
-              <p className="mt-2 text-sm text-slate-300">Fill student details to continue.</p>
+            <article className="gps-auth-card p-6 sm:p-8">
+              <h2 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">Result Login</h2>
+              <p className="mt-2 text-sm text-slate-600">Fill student details to continue.</p>
 
               {error ? (
-                <div className="mt-4 rounded-xl border border-red-300/40 bg-red-400/15 p-3">
-                  <p className="text-sm text-red-100">{error}</p>
+                <div className="mt-4 rounded-xl border border-red-300/40 bg-red-50 p-3">
+                  <p className="text-sm text-red-700">{error}</p>
                 </div>
               ) : null}
 
@@ -108,7 +108,7 @@ function ResultLogin() {
                       name={name}
                       value={formData.classValue}
                       onChange={handleChange}
-                      className="gps-input pl-11"
+                      className="gps-input gps-auth-input pl-11"
                       placeholder="e.g. 1"
                       type="text"
                       inputMode="numeric"
@@ -123,7 +123,7 @@ function ResultLogin() {
                       name={name}
                       value={formData.roll}
                       onChange={handleChange}
-                      className="gps-input pl-11"
+                      className="gps-input gps-auth-input pl-11"
                       placeholder="e.g. 17"
                       type="text"
                       inputMode="numeric"
@@ -134,7 +134,13 @@ function ResultLogin() {
 
                 <ResultField label="Terminal" name="terminal" icon="event" required>
                   {(name) => (
-                    <select name={name} value={formData.terminal} onChange={handleChange} className="gps-input pl-11" required>
+                    <select
+                      name={name}
+                      value={formData.terminal}
+                      onChange={handleChange}
+                      className="gps-input gps-auth-input pl-11"
+                      required
+                    >
                       {terminals.map((terminal) => (
                         <option key={terminal} value={terminal}>
                           {terminal}
@@ -150,7 +156,7 @@ function ResultLogin() {
                       name={name}
                       value={formData.section}
                       onChange={handleChange}
-                      className="gps-input pl-11"
+                      className="gps-input gps-auth-input pl-11"
                       placeholder="e.g. A"
                       type="text"
                     />
@@ -163,22 +169,22 @@ function ResultLogin() {
                       name={name}
                       value={formData.session}
                       onChange={handleChange}
-                      className="gps-input pl-11"
+                      className="gps-input gps-auth-input pl-11"
                       placeholder="e.g. 2025-26"
                       type="text"
                     />
                   )}
                 </ResultField>
 
-                <button type="submit" className="gps-button mt-2 w-full">
+                <button type="submit" className="gps-auth-button mt-2 w-full">
                   View Result
                   <span className="material-symbols-outlined text-base">arrow_forward</span>
                 </button>
               </form>
 
-              <p className="mt-4 text-center text-sm text-slate-300">
+              <p className="mt-4 text-center text-sm text-slate-500">
                 Admin/Teacher login?{' '}
-                <Link to="/login" className="font-bold text-[#e7ca8f] hover:text-[#ffe7b6]">
+                <Link to="/login" className="font-bold text-sky-700 hover:text-sky-800">
                   Go to Login
                 </Link>
               </p>

@@ -54,21 +54,21 @@ function AllLogin() {
   }
 
   return (
-    <div className="min-h-screen gps-page text-slate-100">
+    <div className="gps-auth-page min-h-screen text-slate-900">
       <WebsiteHeader />
       <main className="pb-10 pt-[104px] sm:pt-[112px]">
         <div className="gps-shell">
           <div className="gps-grid lg:grid-cols-[1.02fr_0.98fr]">
-            <article className="gps-card p-6 sm:p-8">
-              <span className="gps-tag">Admin & Teacher Login</span>
-              <h1 className="mt-4 text-3xl font-extrabold leading-tight text-white sm:text-4xl">
+            <article className="gps-auth-card p-6 sm:p-8">
+              <span className="gps-auth-tag">Admin & Teacher Login</span>
+              <h1 className="mt-4 text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl">
                 Welcome back to your digital campus workspace
               </h1>
-              <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-base">
+              <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">
                 Access dashboard, student lifecycle, class management, fees, marks and reports from one secure login.
               </p>
 
-              <div className="mt-6 overflow-hidden rounded-2xl border border-cyan-200/25">
+              <div className="mt-6 overflow-hidden rounded-2xl border border-sky-100">
                 <img src={aboutPhotos.secondary} alt="Students in class" className="h-64 w-full object-cover sm:h-72" />
               </div>
 
@@ -78,40 +78,40 @@ function AllLogin() {
                   { label: 'Teacher', value: 'Upload' },
                   { label: 'Records', value: 'Realtime' },
                 ].map((item) => (
-                  <div key={item.label} className="gps-card-soft p-3">
-                    <p className="text-sm font-bold text-cyan-100">{item.value}</p>
-                    <p className="text-[11px] uppercase tracking-[0.15em] text-slate-300">{item.label}</p>
+                  <div key={item.label} className="gps-auth-card-soft p-3">
+                    <p className="text-sm font-bold text-sky-700">{item.value}</p>
+                    <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500">{item.label}</p>
                   </div>
                 ))}
               </div>
             </article>
 
-            <article className="gps-card p-6 sm:p-8">
-              <h2 className="text-2xl font-extrabold text-white sm:text-3xl">Login</h2>
-              <p className="mt-2 text-sm text-slate-300">Enter your credentials to continue.</p>
+            <article className="gps-auth-card p-6 sm:p-8">
+              <h2 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">Login</h2>
+              <p className="mt-2 text-sm text-slate-600">Enter your credentials to continue.</p>
 
               {error ? (
-                <div className="mt-4 rounded-xl border border-red-300/40 bg-red-400/15 p-3">
-                  <p className="text-sm text-red-100">{error}</p>
+                <div className="mt-4 rounded-xl border border-red-300/40 bg-red-50 p-3">
+                  <p className="text-sm text-red-700">{error}</p>
                 </div>
               ) : null}
 
               {savedCreds.length > 0 ? (
-                <div className="mt-4 rounded-xl border border-cyan-200/25 bg-cyan-300/8 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-300">Saved Credentials</p>
+                <div className="gps-auth-card-soft mt-4 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-700">Saved Credentials</p>
                   <div className="mt-2 space-y-2">
                     {savedCreds.map((cred, index) => (
                       <button
                         key={`${cred.email}-${index}`}
                         type="button"
                         onClick={() => handleUseSavedCreds(cred.email, cred.password)}
-                        className="flex w-full items-center justify-between rounded-lg border border-cyan-200/20 bg-cyan-300/10 px-3 py-2 text-left hover:bg-cyan-300/16"
+                        className="flex w-full items-center justify-between rounded-lg border border-sky-200/70 bg-white px-3 py-2 text-left hover:bg-sky-50"
                       >
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-white">{cred.email}</p>
-                          <p className="text-xs text-slate-300">Click to use</p>
+                          <p className="truncate text-sm font-semibold text-slate-900">{cred.email}</p>
+                          <p className="text-xs text-slate-600">Click to use</p>
                         </div>
-                        <span className="material-symbols-outlined text-slate-300">arrow_forward</span>
+                        <span className="material-symbols-outlined text-slate-600">arrow_forward</span>
                       </button>
                     ))}
                   </div>
@@ -120,7 +120,7 @@ function AllLogin() {
 
               <form onSubmit={handleSubmit} className="mt-4 space-y-3">
                 <label className="block">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-300">Email</span>
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-700">Email</span>
                   <div className="relative">
                     <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                       mail
@@ -129,7 +129,7 @@ function AllLogin() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="gps-input pl-11"
+                      className="gps-input gps-auth-input pl-11"
                       placeholder="Enter your email"
                       type="email"
                       required
@@ -138,7 +138,7 @@ function AllLogin() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-300">Password</span>
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-700">Password</span>
                   <div className="relative">
                     <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                       lock
@@ -147,7 +147,7 @@ function AllLogin() {
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="gps-input pl-11"
+                      className="gps-input gps-auth-input pl-11"
                       placeholder="Enter your password"
                       type="password"
                       required
@@ -165,7 +165,7 @@ function AllLogin() {
                   </a>
                 </div> */}
 
-                <button type="submit" disabled={loading} className="gps-button mt-2 w-full disabled:opacity-60">
+                <button type="submit" disabled={loading} className="gps-auth-button mt-2 w-full disabled:opacity-60">
                   {loading ? (
                     <>
                       <span className="material-symbols-outlined animate-spin text-base">sync</span>

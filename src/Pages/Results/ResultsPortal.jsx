@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 
 function ResultsPortal() {
-  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'GJ Public School'
+  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
   const navigate = useNavigate()
+  const terminals = useMemo(() => ['First', 'Second', 'Third', 'Annual'], [])
 
   const [formData, setFormData] = useState({
     classValue: '',
@@ -16,16 +17,14 @@ function ResultsPortal() {
 
   const [error, setError] = useState('')
 
-  const terminals = useMemo(() => ['First', 'Second', 'Third', 'Annual'], [])
-
-  const handleChange = (e) => {
-    const { name, value } = e.target
+  const handleChange = (event) => {
+    const { name, value } = event.target
     setFormData((prev) => ({ ...prev, [name]: value }))
     setError('')
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = (event) => {
+    event.preventDefault()
 
     if (!formData.classValue || !formData.roll || !formData.terminal) {
       setError('Please fill Class, Roll No and Terminal.')
@@ -44,56 +43,56 @@ function ResultsPortal() {
 
   return (
     <WebsiteLayout>
-      <div className="min-h-screen bg-slate-50 dark:bg-[#101922]">
-        {/* Hero Section */}
-        <section className="relative py-12 md:py-16 overflow-hidden">
-          <div className="absolute inset-0 bg-linear-to-br from-[#1f3f7a]/12 via-transparent to-transparent pointer-events-none"></div>
-          
-          <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            {/* Left Content */}
-            <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 bg-[#c79843]/12 text-[#c79843] rounded-full px-4 py-1.5 mb-4 border border-[#c79843]/35">
+      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fcff_0%,#eff6fb_50%,#f7fafc_100%)]">
+        <section className="relative overflow-hidden py-12 md:py-16">
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(14,165,233,0.08),transparent_42%,rgba(15,118,110,0.08))]"></div>
+
+          <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-8 px-4 lg:grid-cols-2">
+            <div>
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-sky-50/90 px-4 py-1.5 text-cyan-700">
                 <span className="material-symbols-outlined text-sm">verified_user</span>
-                <span className="text-xs font-bold">Secure Portal</span>
+                <span className="text-xs font-bold uppercase tracking-[0.18em]">Secure Portal</span>
               </div>
 
-              <h1 className="text-4xl md:text-5xl font-black text-[#0d141b] dark:text-white mb-4 leading-tight">
-                View Your <span className="text-[#c79843]">Results</span>
+              <h1 className="mb-4 text-4xl font-black leading-tight text-slate-900 md:text-5xl">
+                View Your <span className="text-cyan-700">Results</span>
               </h1>
 
-              <p className="text-slate-600 dark:text-slate-300 text-lg mb-6 leading-relaxed">
-                Access your academic performance with just a few details. Check your marks, division, and percentage instantly.
+              <p className="mb-6 text-lg leading-relaxed text-slate-600">
+                Access your academic performance with just a few details. Check your marks, division, and percentage
+                instantly.
               </p>
 
-              <div className="grid grid-cols-3 gap-4 mb-8">
+              <div className="mb-8 grid grid-cols-3 gap-4">
                 {[
                   { icon: 'check_circle', label: 'Instant', desc: 'Real-time results' },
                   { icon: 'security', label: 'Secure', desc: 'Safe access' },
                   { icon: 'trending_up', label: 'Track', desc: 'Performance' },
                 ].map((item) => (
-                  <div key={item.label} className="bg-white dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="material-symbols-outlined text-[#c79843] text-xl">{item.icon}</span>
-                      <p className="font-bold text-sm text-[#0d141b] dark:text-white">{item.label}</p>
+                  <div
+                    key={item.label}
+                    className="rounded-lg border border-slate-200 bg-white/92 p-3 shadow-sm shadow-slate-200/40"
+                  >
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="material-symbols-outlined text-xl text-cyan-700">{item.icon}</span>
+                      <p className="text-sm font-bold text-slate-900">{item.label}</p>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{item.desc}</p>
+                    <p className="text-xs text-slate-500">{item.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Right: Form Card */}
             <div className="relative">
-              <div className="absolute -inset-4 bg-linear-to-r from-[#c79843]/20 to-transparent blur-2xl rounded-2xl"></div>
-              
-              <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
-                <h2 className="text-2xl font-black text-[#0d141b] dark:text-white mb-6">Enter Your Details</h2>
+              <div className="absolute -inset-4 rounded-2xl bg-[linear-gradient(90deg,rgba(14,165,233,0.16),transparent)] blur-2xl"></div>
+
+              <div className="relative rounded-2xl border border-slate-200 bg-white/94 p-8 shadow-xl shadow-slate-300/30">
+                <h2 className="mb-6 text-2xl font-black text-slate-900">Enter Your Details</h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  {/* Class Input */}
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                      <span className="material-symbols-outlined text-sm align-middle mr-1">school</span>
+                    <label className="mb-2 block text-sm font-bold text-slate-700">
+                      <span className="material-symbols-outlined mr-1 align-middle text-sm text-cyan-700">school</span>
                       Class
                     </label>
                     <input
@@ -102,15 +101,14 @@ function ResultsPortal() {
                       value={formData.classValue}
                       onChange={handleChange}
                       placeholder="e.g., 1, 2, 10, 12, UKG"
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#c79843] transition-all"
+                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-100"
                       required
                     />
                   </div>
 
-                  {/* Roll Number Input */}
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                      <span className="material-symbols-outlined text-sm align-middle mr-1">badge</span>
+                    <label className="mb-2 block text-sm font-bold text-slate-700">
+                      <span className="material-symbols-outlined mr-1 align-middle text-sm text-cyan-700">badge</span>
                       Roll Number
                     </label>
                     <input
@@ -119,36 +117,34 @@ function ResultsPortal() {
                       value={formData.roll}
                       onChange={handleChange}
                       placeholder="Enter your roll number"
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#c79843] transition-all"
+                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-100"
                       required
                     />
                   </div>
 
-                  {/* Terminal Select */}
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                      <span className="material-symbols-outlined text-sm align-middle mr-1">calendar_today</span>
+                    <label className="mb-2 block text-sm font-bold text-slate-700">
+                      <span className="material-symbols-outlined mr-1 align-middle text-sm text-cyan-700">calendar_today</span>
                       Terminal/Exam
                     </label>
                     <select
                       name="terminal"
                       value={formData.terminal}
                       onChange={handleChange}
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#c79843] transition-all"
+                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 transition-all focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-100"
                     >
-                      {terminals.map((t) => (
-                        <option key={t} value={t}>
-                          {t} Terminal
+                      {terminals.map((terminal) => (
+                        <option key={terminal} value={terminal}>
+                          {terminal} Terminal
                         </option>
                       ))}
                     </select>
                   </div>
 
-                  {/* Section Input (Optional) */}
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                      <span className="material-symbols-outlined text-sm align-middle mr-1">layers</span>
-                      Section <span className="text-xs text-slate-500 dark:text-slate-400">(Optional)</span>
+                    <label className="mb-2 block text-sm font-bold text-slate-700">
+                      <span className="material-symbols-outlined mr-1 align-middle text-sm text-cyan-700">layers</span>
+                      Section <span className="text-xs text-slate-400">(Optional)</span>
                     </label>
                     <input
                       type="text"
@@ -156,15 +152,14 @@ function ResultsPortal() {
                       value={formData.section}
                       onChange={handleChange}
                       placeholder="e.g., A, B, C"
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#c79843] transition-all"
+                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-100"
                     />
                   </div>
 
-                  {/* Session Input (Optional) */}
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                      <span className="material-symbols-outlined text-sm align-middle mr-1">calendar_month</span>
-                      Session <span className="text-xs text-slate-500 dark:text-slate-400">(Optional)</span>
+                    <label className="mb-2 block text-sm font-bold text-slate-700">
+                      <span className="material-symbols-outlined mr-1 align-middle text-sm text-cyan-700">calendar_month</span>
+                      Session <span className="text-xs text-slate-400">(Optional)</span>
                     </label>
                     <input
                       type="text"
@@ -172,36 +167,29 @@ function ResultsPortal() {
                       value={formData.session}
                       onChange={handleChange}
                       placeholder="e.g., 2025-26"
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#c79843] transition-all"
+                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-100"
                     />
                   </div>
 
-                  {/* Error Message */}
-                  {error && (
-                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 flex items-start gap-3">
-                      <span className="material-symbols-outlined text-red-600 dark:text-red-400 text-xl flex-shrink-0 mt-0.5">error</span>
-                      <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+                  {error ? (
+                    <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-3">
+                      <span className="material-symbols-outlined mt-0.5 flex-shrink-0 text-xl text-red-600">error</span>
+                      <p className="text-sm text-red-700">{error}</p>
                     </div>
-                  )}
+                  ) : null}
 
-                  {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full bg-[#1f3f7a] hover:bg-[#1f3f7a]/90 text-white font-bold py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#1f3f7a]/35"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-[linear-gradient(135deg,#0f172a_0%,#155e75_100%)] px-4 py-2.5 font-bold text-white shadow-lg shadow-slate-900/15 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/18"
                   >
                     <span className="material-symbols-outlined text-sm">search</span>
                     View My Result
                   </button>
                 </form>
 
-                <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700 text-center">
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-                    Questions? Need help accessing your result?
-                  </p>
-                  <Link
-                    to="/contact"
-                    className="inline-flex items-center gap-1 text-sm font-bold text-[#c79843] hover:underline"
-                  >
+                <div className="mt-6 border-t border-slate-200 pt-6 text-center">
+                  <p className="mb-3 text-xs text-slate-500">Questions? Need help accessing your result?</p>
+                  <Link to="/contact" className="inline-flex items-center gap-1 text-sm font-bold text-cyan-700 hover:underline">
                     <span className="material-symbols-outlined text-sm">call</span>
                     Contact Support
                   </Link>
@@ -211,49 +199,47 @@ function ResultsPortal() {
           </div>
         </section>
 
-        {/* Features Section */}
-        <section className="max-w-6xl mx-auto px-4 py-16 border-t border-slate-200 dark:border-slate-800">
-          <h2 className="text-3xl font-black text-center text-[#0d141b] dark:text-white mb-12">Features</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <section className="mx-auto max-w-6xl border-t border-slate-200 px-4 py-16">
+          <h2 className="mb-12 text-center text-3xl font-black text-slate-900">Features</h2>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {[
               {
                 icon: 'timeline',
                 title: 'Subject-wise Marks',
-                desc: 'View detailed marks for each subject including external and internal assessments'
+                desc: 'View detailed marks for each subject including external and internal assessments',
               },
               {
                 icon: 'percent',
                 title: 'Performance Analytics',
-                desc: 'Track your percentage, division, and overall performance at a glance'
+                desc: 'Track your percentage, division, and overall performance at a glance',
               },
               {
                 icon: 'print',
                 title: 'Printable Results',
-                desc: 'Download and print your result card for official use'
+                desc: 'Download and print your result card for official use',
               },
             ].map((feature) => (
               <div
                 key={feature.title}
-                className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 hover:shadow-lg hover:border-[#c79843]/55 dark:hover:border-[#c79843]/35 transition-all"
+                className="rounded-xl border border-slate-200 bg-white/92 p-6 shadow-lg shadow-slate-200/30 transition-all hover:border-cyan-200 hover:shadow-slate-300/30"
               >
-                <div className="bg-[#c79843]/12 rounded-lg w-12 h-12 flex items-center justify-center mb-4">
-                  <span className="material-symbols-outlined text-[#c79843]">{feature.icon}</span>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-50">
+                  <span className="material-symbols-outlined text-cyan-700">{feature.icon}</span>
                 </div>
-                <h3 className="font-black text-lg text-[#0d141b] dark:text-white mb-2">{feature.title}</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">{feature.desc}</p>
+                <h3 className="mb-2 text-lg font-black text-slate-900">{feature.title}</h3>
+                <p className="text-sm text-slate-600">{feature.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Info Section */}
-        <section className="max-w-4xl mx-auto px-4 py-12 bg-[#1f3f7a]/6 dark:bg-[#1f3f7a]/14 rounded-xl border border-[#1f3f7a]/28 my-8">
+        <section className="mx-auto my-8 max-w-4xl rounded-xl border border-cyan-100 bg-cyan-50/65 px-4 py-12 shadow-sm shadow-cyan-100/60">
           <div className="flex items-start gap-4">
-            <span className="material-symbols-outlined text-[#c79843] text-2xl flex-shrink-0">info</span>
+            <span className="material-symbols-outlined flex-shrink-0 text-2xl text-cyan-700">info</span>
             <div>
-              <h3 className="font-bold text-[#0d141b] dark:text-white mb-2">How to Access Your Results</h3>
-              <ol className="text-sm text-slate-700 dark:text-slate-300 space-y-1 list-decimal list-inside">
+              <h3 className="mb-2 font-bold text-slate-900">How to Access Your Results</h3>
+              <ol className="list-inside list-decimal space-y-1 text-sm text-slate-700">
                 <li>Enter your class number exactly as provided in school records</li>
                 <li>Provide your roll number</li>
                 <li>Select the appropriate terminal/exam period</li>

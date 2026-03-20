@@ -12,6 +12,7 @@ import Home from './Pages/Website/Home'
 import About from './Pages/Website/About'
 import Contact from './Pages/Website/Contact'
 import Galary from './Pages/Website/Galary'
+import Admission from './Pages/Website/Admission'
 import { getAccessToken, getUser } from './Api/auth'
 
 function Unauthorized() {
@@ -121,6 +122,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/admission" element={<Admission />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/gallery" element={<Galary />} />
         <Route path="/login" element={<AllLogin />} />

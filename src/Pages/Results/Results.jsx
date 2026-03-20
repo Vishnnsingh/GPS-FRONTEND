@@ -814,9 +814,9 @@ function Results() {
                       </div>
 
                       <div className="min-w-0 text-center sm:px-1">
-                        <p className="text-[10px] font-black uppercase tracking-[0.32em] text-[#6a7f95] sm:text-[11px]">
+                        {/* <p className="text-[10px] font-black uppercase tracking-[0.32em] text-[#6a7f95] sm:text-[11px]">
                           Academic Report
-                        </p>
+                        </p> */}
                         <h1
                           className="result-school-title mx-auto mt-2 max-w-[780px] text-[22px] font-black uppercase leading-[1.02] tracking-[0.06em] text-[#12284b] sm:text-[40px]"
                           style={{ fontFamily: "'Baskerville Old Face', 'Book Antiqua', 'Palatino Linotype', 'Georgia', serif" }}

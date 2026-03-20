@@ -51,21 +51,21 @@ function StudentLogin() {
   }
 
   return (
-    <div className="min-h-screen gps-page text-slate-100">
+    <div className="gps-auth-page min-h-screen text-slate-900">
       <WebsiteHeader />
       <main className="pb-10 pt-[104px] sm:pt-[112px]">
         <div className="gps-shell">
           <div className="gps-grid lg:grid-cols-[1fr_1fr]">
-            <article className="gps-card p-6 sm:p-8">
-              <span className="gps-tag">Student Portal</span>
-              <h1 className="mt-4 text-3xl font-extrabold leading-tight text-white sm:text-4xl">
+            <article className="gps-auth-card p-6 sm:p-8">
+              <span className="gps-auth-tag">Student Portal</span>
+              <h1 className="mt-4 text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl">
                 Student dashboard login for results and records
               </h1>
-              <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-base">
+              <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">
                 Log in with roll number and password to access your personal result view and academic information.
               </p>
 
-              <div className="mt-6 overflow-hidden rounded-2xl border border-cyan-200/25">
+              <div className="mt-6 overflow-hidden rounded-2xl border border-sky-100">
                 <img
                   src={homeFeaturePhotos[1] || homeFeaturePhotos[0]}
                   alt="Students in school activity"
@@ -79,27 +79,27 @@ function StudentLogin() {
                   { label: 'Results', value: 'Fast' },
                   { label: 'Access', value: 'Secure' },
                 ].map((item) => (
-                  <div key={item.label} className="gps-card-soft p-3">
-                    <p className="text-sm font-bold text-cyan-100">{item.value}</p>
-                    <p className="text-[11px] uppercase tracking-[0.15em] text-slate-300">{item.label}</p>
+                  <div key={item.label} className="gps-auth-card-soft p-3">
+                    <p className="text-sm font-bold text-sky-700">{item.value}</p>
+                    <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500">{item.label}</p>
                   </div>
                 ))}
               </div>
             </article>
 
-            <article className="gps-card p-6 sm:p-8">
-              <h2 className="text-2xl font-extrabold text-white sm:text-3xl">Student Login</h2>
-              <p className="mt-2 text-sm text-slate-300">Enter credentials to continue.</p>
+            <article className="gps-auth-card p-6 sm:p-8">
+              <h2 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">Student Login</h2>
+              <p className="mt-2 text-sm text-slate-600">Enter credentials to continue.</p>
 
               {error ? (
-                <div className="mt-4 rounded-xl border border-red-300/40 bg-red-400/15 p-3">
-                  <p className="text-sm text-red-100">{error}</p>
+                <div className="mt-4 rounded-xl border border-red-300/40 bg-red-50 p-3">
+                  <p className="text-sm text-red-700">{error}</p>
                 </div>
               ) : null}
 
               <form onSubmit={handleSubmit} className="mt-4 space-y-3">
                 <label className="block">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-300">
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-700">
                     Roll Number
                   </span>
                   <div className="relative">
@@ -110,7 +110,7 @@ function StudentLogin() {
                       name="rollNumber"
                       value={formData.rollNumber}
                       onChange={handleChange}
-                      className="gps-input pl-11"
+                      className="gps-input gps-auth-input pl-11"
                       placeholder="Enter your roll number"
                       type="text"
                       required
@@ -119,7 +119,7 @@ function StudentLogin() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-300">Password</span>
+                  <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-700">Password</span>
                   <div className="relative">
                     <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                       lock
@@ -128,7 +128,7 @@ function StudentLogin() {
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="gps-input pl-11"
+                      className="gps-input gps-auth-input pl-11"
                       placeholder="Enter your password"
                       type="password"
                       required
@@ -137,16 +137,16 @@ function StudentLogin() {
                 </label>
 
                 <div className="flex items-center justify-between pt-1">
-                  <label className="inline-flex items-center gap-2 text-sm text-slate-300">
-                    <input type="checkbox" className="h-4 w-4 rounded border-cyan-300/50 bg-transparent" />
+                  <label className="inline-flex items-center gap-2 text-sm text-slate-500">
+                    <input type="checkbox" className="h-4 w-4 rounded border-sky-300/60 bg-white" />
                     Remember me
                   </label>
-                  <a href="#" className="text-sm font-semibold text-cyan-200 hover:text-cyan-100">
+                  <a href="#" className="text-sm font-semibold text-sky-700 hover:text-sky-800">
                     Forgot Password?
                   </a>
                 </div>
 
-                <button type="submit" disabled={loading} className="gps-button mt-2 w-full disabled:opacity-60">
+                <button type="submit" disabled={loading} className="gps-auth-button mt-2 w-full disabled:opacity-60">
                   {loading ? (
                     <>
                       <span className="material-symbols-outlined animate-spin text-base">sync</span>
@@ -161,9 +161,9 @@ function StudentLogin() {
                 </button>
               </form>
 
-              <p className="mt-4 text-center text-sm text-slate-300">
+              <p className="mt-4 text-center text-sm text-slate-500">
                 Don't have an account?{' '}
-                <Link to="/register" className="font-bold text-cyan-200 hover:text-cyan-100">
+                <Link to="/register" className="font-bold text-sky-700 hover:text-sky-800">
                   Sign Up
                 </Link>
               </p>
