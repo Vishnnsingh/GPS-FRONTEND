@@ -80,6 +80,13 @@
     margin-inline: auto;
   }
 
+  .gps-header-shell {
+    width: min(1160px, calc(100% - 2.5rem));
+    margin-inline: auto;
+    padding-top: 0.85rem;
+    padding-bottom: 1rem;
+  }
+
   .gps-grid {
     display: grid;
     gap: clamp(1rem, 2vw, 1.6rem);
@@ -547,6 +554,20 @@
   .dropdown-cyan:focus {
     outline: none !important;
     border-color: rgb(6, 182, 212) !important;
+  }
+
+  @media (min-width: 640px) {
+    .gps-header-shell {
+      width: min(1180px, calc(100% - 4rem));
+      padding-top: 1rem;
+      padding-bottom: 1.15rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .gps-header-shell {
+      width: min(1220px, calc(100% - 5rem));
+    }
   }
 }
 

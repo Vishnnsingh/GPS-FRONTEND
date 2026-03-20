@@ -53,7 +53,7 @@ function StudentLogin() {
   return (
     <div className="min-h-screen gps-page text-slate-100">
       <WebsiteHeader />
-      <main className="pb-10 pt-[92px] sm:pt-[98px]">
+      <main className="pb-10 pt-[104px] sm:pt-[112px]">
         <div className="gps-shell">
           <div className="gps-grid lg:grid-cols-[1fr_1fr]">
             <article className="gps-card p-6 sm:p-8">
