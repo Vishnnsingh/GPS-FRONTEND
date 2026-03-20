@@ -1,153 +1,155 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
-import { aboutPhotos } from '../../assets/websiteImages'
-
-const values = [
-  { icon: 'workspace_premium', title: 'Excellence', text: 'High academic standards with accountable progress tracking.' },
-  { icon: 'security', title: 'Discipline', text: 'Respectful campus culture with clear systems and routines.' },
-  { icon: 'lightbulb', title: 'Innovation', text: 'Modern teaching tools and practical problem-solving exposure.' },
-  { icon: 'groups', title: 'Inclusion', text: 'Supportive classrooms where every child is guided and heard.' },
-]
-
-const achievements = [
-  'Consistent board performance with strong subject outcomes.',
-  'Growing digital adoption for exams, marks and reporting.',
-  'Balanced focus on sports, events and co-curricular activities.',
-  'Parent trust built through transparency and communication.',
-]
+import { aboutLearningBlocks, aboutMilestones, aboutValues, schoolProfile, siteMedia } from './siteContent'
 
 function About() {
-  const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
-
   return (
     <WebsiteLayout>
-      <section className="gps-section">
-        <div className="gps-shell">
-          <div className="gps-grid lg:grid-cols-[1fr_1.04fr]">
-            <div className="gps-card p-6 sm:p-8">
-              <span className="gps-tag">About school</span>
-              <h1 className="mt-4 text-4xl font-extrabold text-white sm:text-5xl">{SCHOOL_NAME}</h1>
-              <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-base">
-                We nurture confident learners through academics, values and practical skill-building. Our teachers and
-                systems work together to ensure that every student gets structure, support and consistent growth.
+      <section className="gps-site-section pt-6">
+        <div className="gps-site-shell">
+          <div className="grid gap-5 lg:grid-cols-[1fr_0.96fr]">
+            <article className="gps-site-panel p-6 sm:p-8 lg:p-10">
+              <span className="gps-site-label">About the school</span>
+              <h1 className="gps-site-heading mt-5 text-2xl sm:text-3xl">{schoolProfile.name}</h1>
+              <p className="gps-site-copy mt-5">
+                The school has grown with a straightforward belief: children do best when expectations are clear,
+                teachers remain approachable and the campus atmosphere stays disciplined without feeling cold. That is
+                why our identity is not built on loud promises. It is built on routine, trust and consistent attention
+                to student development.
               </p>
 
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <div className="gps-card-soft p-3">
-                  <p className="text-2xl font-extrabold text-cyan-200">15+</p>
-                  <p className="text-xs uppercase tracking-[0.15em] text-slate-200/90">Years Journey</p>
+              <div className="mt-7 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-[1.4rem] border border-slate-200/80 bg-white/78 p-4">
+                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-700">Mission</p>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                    To provide disciplined, thoughtful education that helps students grow in understanding, confidence
+                    and responsibility.
+                  </p>
                 </div>
-                <div className="gps-card-soft p-3">
-                  <p className="text-2xl font-extrabold text-cyan-200">95%</p>
-                  <p className="text-xs uppercase tracking-[0.15em] text-slate-200/90">Academic Success</p>
+                <div className="rounded-[1.4rem] border border-slate-200/80 bg-white/78 p-4">
+                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-700">Approach</p>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                    A student-first environment where classroom practice, culture and communication stay aligned for
+                    families throughout the session.
+                  </p>
                 </div>
               </div>
-            </div>
+            </article>
 
-            <div className="gps-grid grid-cols-2">
-              <div className="gps-card col-span-2 overflow-hidden">
-                <img src={aboutPhotos.hero} alt="School campus" className="h-72 w-full object-cover sm:h-80" />
+            <article className="gps-site-panel p-4 sm:p-5">
+              <div className="gps-site-photo-frame h-72 sm:h-80">
+                <img src={siteMedia.aboutHero} alt="School campus and students" className="h-full w-full object-cover" />
               </div>
-              <div className="gps-card overflow-hidden">
-                <img src={aboutPhotos.secondary} alt="Classroom learning" className="h-52 w-full object-cover" />
+              <div className="mt-4 grid gap-4 sm:grid-cols-[0.82fr_1fr]">
+                <div className="gps-site-photo-frame h-48 sm:h-full">
+                  <img src={siteMedia.aboutSupport} alt="Students learning in class" className="h-full w-full object-cover" />
+                </div>
+                <div className="rounded-[1.45rem] border border-slate-200/80 bg-[linear-gradient(180deg,rgba(240,249,255,0.9),rgba(255,255,255,0.9))] p-5">
+                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-700">What families notice</p>
+                  <p className="mt-3 text-base font-semibold text-slate-900">
+                    The campus feels calmer when teaching, behaviour and communication are handled with the same care.
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                    That steady feeling matters. It helps children focus and gives parents a more dependable school
+                    experience across admissions, academics and reporting.
+                  </p>
+                </div>
               </div>
-              <div className="gps-card p-5">
-                <p className="text-xs uppercase tracking-[0.16em] text-cyan-100">Mission</p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-100/95">
-                  Deliver quality education with discipline, compassion and future-ready skills.
-                </p>
-              </div>
-            </div>
+            </article>
           </div>
         </div>
       </section>
 
-      <section className="gps-section pt-0">
-        <div className="gps-shell">
+      <section className="gps-site-section pt-0">
+        <div className="gps-site-shell">
           <div className="mb-6">
-            <span className="gps-tag">Core values</span>
-            <h2 className="gps-section-title mt-3">What drives our culture</h2>
+            <span className="gps-site-label">Core values</span>
+            <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">What shapes the school culture every day</h2>
           </div>
-          <div className="gps-grid sm:grid-cols-2 lg:grid-cols-4">
-            {values.map((value) => (
-              <article key={value.title} className="gps-kpi-card p-5">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-300/15 text-cyan-200">
-                  <span className="material-symbols-outlined">{value.icon}</span>
-                </div>
-                <h3 className="mt-4 text-lg font-bold text-white">{value.title}</h3>
-                <p className="mt-2 text-sm text-slate-200/95">{value.text}</p>
+          <div className="grid gap-4 lg:grid-cols-4">
+            {aboutValues.map((value) => (
+              <article key={value.title} className="gps-site-panel p-6">
+                <h3 className="text-xl font-extrabold text-slate-900">{value.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">{value.text}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="gps-section pt-0">
-        <div className="gps-shell">
-          <div className="gps-grid lg:grid-cols-[1.12fr_0.88fr]">
-            <article className="gps-card p-6 sm:p-8">
-              <span className="gps-tag">Our journey</span>
-              <h2 className="mt-3 text-3xl font-extrabold text-white sm:text-4xl">Built with consistency and trust</h2>
-              <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-base">
-                From a focused local institution to a structured school ecosystem, we have continuously improved
-                infrastructure, faculty practices and digital processes to support students and families.
-              </p>
+      <section className="gps-site-section pt-0">
+        <div className="gps-site-shell">
+          <div className="grid gap-5 lg:grid-cols-[1.04fr_0.96fr]">
+            <article className="gps-site-panel p-6 sm:p-8">
+              <span className="gps-site-label">School journey</span>
+              <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">Growth built through steady improvement, not sudden noise</h2>
 
-              <div className="mt-5 space-y-3">
-                {achievements.map((item) => (
-                  <p key={item} className="inline-flex items-start gap-2 text-sm text-slate-200">
-                    <span className="material-symbols-outlined mt-0.5 text-base text-cyan-300">check_circle</span>
-                    {item}
-                  </p>
+              <div className="mt-6 space-y-5">
+                {aboutMilestones.map((item) => (
+                  <div key={item.title} className="grid gap-3 rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 sm:grid-cols-[110px_1fr]">
+                    <p className="text-sm font-bold uppercase tracking-[0.2em] text-cyan-700">{item.year}</p>
+                    <div>
+                      <p className="text-base font-semibold text-slate-900">{item.title}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.text}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
-
-              <img src={aboutPhotos.journey} alt="School journey" className="mt-5 h-56 w-full rounded-xl object-cover" />
             </article>
 
-            <article className="gps-card p-6 sm:p-8">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-300/15 text-cyan-200">
-                <span className="material-symbols-outlined">format_quote</span>
+            <article className="gps-site-panel-muted p-5 sm:p-6">
+              <div className="gps-site-photo-frame h-72 sm:h-80">
+                <img src={siteMedia.aboutLead} alt="School achievement and celebration" className="h-full w-full object-cover" />
               </div>
-              <h3 className="mt-4 text-2xl font-extrabold text-white">Principal&apos;s message</h3>
-              <p className="mt-4 text-sm leading-relaxed text-slate-100/95 sm:text-base">
-                Education is not only about marks. It is about confidence, values and readiness for life. We guide each
-                student with personal attention so they grow with skill, discipline and purpose.
-              </p>
-
-              <div className="mt-6 flex items-center gap-3 rounded-xl border border-cyan-200/20 bg-cyan-300/5 p-3">
-                <img src={aboutPhotos.principal} alt="Principal portrait" className="h-14 w-14 rounded-full object-cover" />
-                <div>
-                  <p className="text-sm font-bold text-white">Principal</p>
-                  <p className="text-xs text-slate-200/90">{SCHOOL_NAME}</p>
-                </div>
+              <div className="mt-5 rounded-[1.45rem] border border-slate-200/80 bg-white/82 p-5">
+                <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-700">Leadership view</p>
+                <p className="mt-3 text-lg font-semibold text-slate-900">
+                  Education should help children become capable, respectful and comfortable with responsibility.
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                  That principle shapes our expectations inside the classroom and also outside it, in communication,
+                  participation and everyday conduct across the campus.
+                </p>
               </div>
-
-              <img
-                src={aboutPhotos.achievements}
-                alt="School achievement moments"
-                className="mt-6 h-52 w-full rounded-xl object-cover"
-              />
             </article>
           </div>
         </div>
       </section>
 
-      <section className="gps-section pt-0">
-        <div className="gps-shell">
-          <div className="gps-card p-7 text-center sm:p-9">
-            <span className="gps-tag">Admissions open</span>
-            <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">Be part of our learning community</h2>
-            <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-200 sm:text-base">
-              Visit campus, meet our faculty and explore programs crafted for all-round student development.
+      <section className="gps-site-section pt-0">
+        <div className="gps-site-shell">
+          <div className="mb-6">
+            <span className="gps-site-label">Learning environment</span>
+            <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">What learning looks like inside this school</h2>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            {aboutLearningBlocks.map((block) => (
+              <article key={block.title} className="gps-site-panel p-6">
+                <h3 className="text-xl font-extrabold text-slate-900">{block.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">{block.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="gps-site-section pt-0">
+        <div className="gps-site-shell">
+          <div className="gps-site-panel p-7 text-center sm:p-10">
+            <span className="gps-site-label">Next step</span>
+            <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">If this school feels aligned with your family, begin with admission guidance.</h2>
+            <p className="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">
+              The admission page now explains the process in a calmer, more useful way so families can move forward
+              without second-guessing the next step.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <Link to="/contact" className="gps-button">
-                Contact School
+              <Link to="/admission" className="gps-site-button">
+                Open admission page
               </Link>
-              <Link to="/gallery" className="gps-button-ghost">
-                Explore Gallery
+              <Link to="/gallery" className="gps-site-button-secondary">
+                View campus gallery
               </Link>
             </div>
           </div>
