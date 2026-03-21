@@ -63,11 +63,8 @@ function Home() {
               Apply for admission
             </Link>
 
-            <Link
-              to="/results-portal"
-              className="gps-site-button-secondary text-white"
-            >
-              Open result portal
+            <Link to="/results-portal" className="gps-site-button">
+              Result portal
             </Link>
           </div>
 

@@ -795,18 +795,18 @@ function Results() {
               <div
                 ref={cardRef}
                 data-result-card-capture="true"
-                className="result-print print-card relative overflow-hidden border border-[#98a5b3] bg-white text-[13px] leading-[1.34] text-[#1d2630] sm:text-[14px]"
-                style={{ width: '100%', maxWidth: '980px', margin: '0 auto' }}
+                className="result-print print-card relative overflow-hidden border border-[#98a5b3] bg-white text-[12px] leading-[1.3] text-[#1d2630] sm:text-[13px]"
+                style={{ width: '100%', maxWidth: '920px', margin: '0 auto' }}
               >
-                <div className="px-3.5 py-4 sm:px-5 sm:py-5">
+                <div className="px-3 py-3 sm:px-4 sm:py-4">
                   <div
-                    className="border-b border-[#aebccc] px-1 pb-4 sm:px-2 sm:pb-5"
+                    className="border-b border-[#aebccc] px-1 pb-3 sm:px-2 sm:pb-4"
                     style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fbff 70%, #f2f7fd 100%)' }}
                   >
-                    <div className="grid gap-3 sm:grid-cols-[96px_minmax(0,1fr)_96px] sm:items-center sm:gap-5">
+                    <div className="grid gap-2.5 sm:grid-cols-[82px_minmax(0,1fr)_82px] sm:items-center sm:gap-4">
                       <div className="mx-auto w-fit sm:mx-0 sm:justify-self-start">
                         <div
-                          className="flex h-[76px] w-[76px] items-center justify-center rounded-full border-[2px] border-[#c8a15f] bg-[#f7eed7] p-2 shadow-[inset_0_0_0_4px_rgba(255,255,255,0.94)] sm:h-[90px] sm:w-[90px]"
+                          className="flex h-[64px] w-[64px] items-center justify-center rounded-full border-[2px] border-[#c8a15f] bg-[#f7eed7] p-1.5 shadow-[inset_0_0_0_4px_rgba(255,255,255,0.94)] sm:h-[78px] sm:w-[78px]"
                           style={{ background: 'radial-gradient(circle at top, #fffdf7 0%, #f8eed8 58%, #eed7a7 100%)' }}
                         >
                           <img src={schoolLogo} alt="School logo" className="h-full w-full rounded-full bg-white object-contain p-1" />
@@ -818,35 +818,35 @@ function Results() {
                           Academic Report
                         </p> */}
                         <h1
-                          className="result-school-title mx-auto mt-2 max-w-[780px] text-[22px] font-black uppercase leading-[1.02] tracking-[0.06em] text-[#12284b] sm:text-[40px]"
+                          className="result-school-title mx-auto mt-1.5 max-w-[760px] text-[20px] font-black uppercase leading-[1.02] tracking-[0.05em] text-[#12284b] sm:text-[34px]"
                           style={{ fontFamily: "'Baskerville Old Face', 'Book Antiqua', 'Palatino Linotype', 'Georgia', serif" }}
                         >
                           {SCHOOL_NAME}
                         </h1>
-                        <p className="mx-auto mt-1.5 max-w-[680px] text-[10px] font-semibold text-[#4c6175] sm:text-[12px]">
+                        <p className="mx-auto mt-1 max-w-[640px] text-[9px] font-semibold text-[#4c6175] sm:text-[11px]">
                           {SCHOOL_ADDRESS}
                         </p>
-                        <div className="mt-3 space-y-1.5">
-                          <p className="text-[12px] font-black uppercase tracking-[0.13em] text-[#203754] sm:text-[15px]">
+                        <div className="mt-2 space-y-1">
+                          <p className="text-[11px] font-black uppercase tracking-[0.12em] text-[#203754] sm:text-[14px]">
                             {data.terminal} Examination Result
                           </p>
-                          <p className="text-[11px] font-bold text-[#4f6374] sm:text-[13px]">
+                          <p className="text-[10px] font-bold text-[#4f6374] sm:text-[12px]">
                             Academic Session : {sessionLabel}
                           </p>
                         </div>
                       </div>
 
-                      <div aria-hidden="true" className="hidden h-[90px] w-[90px] sm:block sm:justify-self-end" />
+                      <div aria-hidden="true" className="hidden h-[78px] w-[78px] sm:block sm:justify-self-end" />
                     </div>
                   </div>
                   
 
-                    <div className="mt-4 border border-[#c8d3df] bg-white">
+                    <div className="mt-3 border border-[#c8d3df] bg-white">
                       <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x md:divide-[#c7d0d8]">
                         {studentInfoColumns.map((column, columnIndex) => (
                           <div key={columnIndex === 0 ? 'student-left' : 'student-right'} className={columnIndex === 1 ? 'border-t border-[#c7d0d8] md:border-t-0' : ''}>
                             {column.map(([label, value]) => (
-                              <div key={label} className="grid grid-cols-[122px_10px_minmax(0,1fr)] border-b border-[#d8dee4] px-2.5 py-2 text-[11px] last:border-b-0 sm:grid-cols-[144px_12px_minmax(0,1fr)] sm:px-3.5 sm:py-2.5 sm:text-[13px]">
+                              <div key={label} className="grid grid-cols-[108px_10px_minmax(0,1fr)] border-b border-[#d8dee4] px-2 py-1.5 text-[10px] last:border-b-0 sm:grid-cols-[128px_12px_minmax(0,1fr)] sm:px-3 sm:py-2 sm:text-[12px]">
                                 <div className="font-black text-[#2d4054]">{label}</div>
                                 <div className="font-black text-[#566b7f]">:</div>
                                 <div className="font-bold text-[#1d2732]">{toDisplayValue(value)}</div>
@@ -857,10 +857,10 @@ function Results() {
                       </div>
                     </div>
 
-                    <div className="mt-4 overflow-hidden border border-[#c8d3df] bg-white">
-                      <div className="flex flex-col gap-1 border-b border-[#c8d3df] bg-[#edf4fb] px-2.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-3.5">
-                        <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#213549] sm:text-[13px]">Scholastic Areas</h3>
-                        <div className="flex flex-wrap gap-2.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#4f6376] sm:text-[11px]">
+                    <div className="mt-3 overflow-hidden border border-[#c8d3df] bg-white">
+                      <div className="flex flex-col gap-1 border-b border-[#c8d3df] bg-[#edf4fb] px-2 py-2 sm:flex-row sm:items-center sm:justify-between sm:px-3">
+                        <h3 className="text-[11px] font-black uppercase tracking-[0.16em] text-[#213549] sm:text-[12px]">Scholastic Areas</h3>
+                        <div className="flex flex-wrap gap-2 text-[9px] font-bold uppercase tracking-[0.06em] text-[#4f6376] sm:text-[10px]">
                           <span>Subjects : {processedMarks.length}</span>
                           <span>Pass : 30</span>
                           <span>Drawing Pass : 15</span>
@@ -868,16 +868,16 @@ function Results() {
                       </div>
 
                       <div className="overflow-x-auto">
-                        <table className="w-full min-w-[760px] border-collapse border-spacing-0 text-[11px] sm:text-[12px]">
+                        <table className="w-full min-w-[690px] border-collapse border-spacing-0 text-[10px] sm:text-[11px]">
                           <thead>
                             <tr className="bg-[#f6f9fc] text-[#213446]">
-                              <th className="border border-[#d2dbe5] px-3 py-2.5 text-left font-black uppercase tracking-[0.08em]">Subject</th>
-                              <th className="border border-[#d2dbe5] px-2 py-2.5 text-center font-black uppercase tracking-[0.08em]">FM</th>
-                              <th className="border border-[#d2dbe5] px-2 py-2.5 text-center font-black uppercase tracking-[0.08em]">Pass</th>
-                              <th className="border border-[#d2dbe5] px-2 py-2.5 text-center font-black uppercase tracking-[0.08em]">Ext</th>
-                              <th className="border border-[#d2dbe5] px-2 py-2.5 text-center font-black uppercase tracking-[0.08em]">Int</th>
-                              <th className="border border-[#d2dbe5] px-2 py-2.5 text-center font-black uppercase tracking-[0.08em]">Total</th>
-                              <th className="border border-[#d2dbe5] px-2 py-2.5 text-center font-black uppercase tracking-[0.08em]">Result</th>
+                              <th className="border border-[#d2dbe5] px-2.5 py-2 text-left font-black uppercase tracking-[0.06em]">Subject</th>
+                              <th className="border border-[#d2dbe5] px-2 py-2 text-center font-black uppercase tracking-[0.06em]">FM</th>
+                              <th className="border border-[#d2dbe5] px-2 py-2 text-center font-black uppercase tracking-[0.06em]">Pass</th>
+                              <th className="border border-[#d2dbe5] px-2 py-2 text-center font-black uppercase tracking-[0.06em]">Ext</th>
+                              <th className="border border-[#d2dbe5] px-2 py-2 text-center font-black uppercase tracking-[0.06em]">Int</th>
+                              <th className="border border-[#d2dbe5] px-2 py-2 text-center font-black uppercase tracking-[0.06em]">Total</th>
+                              <th className="border border-[#d2dbe5] px-2 py-2 text-center font-black uppercase tracking-[0.06em]">Result</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -889,13 +889,13 @@ function Results() {
 
                             {processedMarks.map((m, idx) => (
                               <tr key={m.key} className={idx % 2 === 0 ? 'bg-white' : 'bg-[#fafcff]'}>
-                                <td className="border border-[#d5dde6] px-3 py-2.5 font-bold uppercase text-[#1e2b37]">{m.subjectName}</td>
-                                <td className="border border-[#d5dde6] px-2 py-2.5 text-center font-semibold">{m.fullMarks}</td>
-                                <td className="border border-[#d5dde6] px-2 py-2.5 text-center font-semibold">{m.passMarks}</td>
-                                <td className="border border-[#d5dde6] px-2 py-2.5 text-center font-semibold">{m.externalDisplay}</td>
-                                <td className="border border-[#d5dde6] px-2 py-2.5 text-center font-semibold">{m.internalDisplay}</td>
-                                <td className="border border-[#d5dde6] px-2 py-2.5 text-center font-black text-[#233f5f]">{m.obtainedDisplay}</td>
-                                <td className={`border border-[#d5dde6] px-2 py-2.5 text-center font-black ${getStatusTextColor(m.status)}`}>{m.status}</td>
+                                <td className="border border-[#d5dde6] px-2.5 py-2 font-bold uppercase text-[#1e2b37]">{m.subjectName}</td>
+                                <td className="border border-[#d5dde6] px-2 py-2 text-center font-semibold">{m.fullMarks}</td>
+                                <td className="border border-[#d5dde6] px-2 py-2 text-center font-semibold">{m.passMarks}</td>
+                                <td className="border border-[#d5dde6] px-2 py-2 text-center font-semibold">{m.externalDisplay}</td>
+                                <td className="border border-[#d5dde6] px-2 py-2 text-center font-semibold">{m.internalDisplay}</td>
+                                <td className="border border-[#d5dde6] px-2 py-2 text-center font-black text-[#233f5f]">{m.obtainedDisplay}</td>
+                                <td className={`border border-[#d5dde6] px-2 py-2 text-center font-black ${getStatusTextColor(m.status)}`}>{m.status}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -903,14 +903,14 @@ function Results() {
                       </div>
                     </div>
 
-                    <div className="mt-2.5 overflow-x-auto border border-[#c8d3df] bg-white">
-                      <table className="w-full min-w-[720px] border-collapse border-spacing-0 text-[11px] sm:text-[12px]">
+                    <div className="mt-2 overflow-x-auto border border-[#c8d3df] bg-white">
+                      <table className="w-full min-w-[640px] border-collapse border-spacing-0 text-[10px] sm:text-[11px]">
                         <tbody>
                           <tr>
                             {performanceSummaryItems.map(([label, value]) => (
-                              <td key={label} className="border border-[#d5dde6] px-2.5 py-2.5 text-center align-middle">
-                                <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#617487] sm:text-[10px]">{label}</p>
-                                <p className="mt-1 text-[12px] font-black text-[#1e2c3a] sm:text-[14px]">{value}</p>
+                              <td key={label} className="border border-[#d5dde6] px-2 py-2 text-center align-middle">
+                                <p className="text-[8px] font-black uppercase tracking-[0.12em] text-[#617487] sm:text-[9px]">{label}</p>
+                                <p className="mt-0.5 text-[11px] font-black text-[#1e2c3a] sm:text-[13px]">{value}</p>
                               </td>
                             ))}
                           </tr>
@@ -918,43 +918,43 @@ function Results() {
                       </table>
                     </div>
 
-                    <div className="mt-4 overflow-hidden border border-[#c8d3df] bg-white">
-                      <div className="flex flex-col gap-1 border-b border-[#c8d3df] bg-[#edf4fb] px-2.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-3.5">
-                        <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#213549] sm:text-[13px]">Summary Report</h3>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#4f6376] sm:text-[11px]">Rank Scope : Class + Section</span>
+                    <div className="mt-3 overflow-hidden border border-[#c8d3df] bg-white">
+                      <div className="flex flex-col gap-1 border-b border-[#c8d3df] bg-[#edf4fb] px-2 py-2 sm:flex-row sm:items-center sm:justify-between sm:px-3">
+                        <h3 className="text-[11px] font-black uppercase tracking-[0.16em] text-[#213549] sm:text-[12px]">Summary Report</h3>
+                        <span className="text-[9px] font-bold uppercase tracking-[0.06em] text-[#4f6376] sm:text-[10px]">Rank Scope : Class + Section</span>
                       </div>
 
                       <div className="overflow-x-auto">
-                        <table className="w-full min-w-[690px] border-collapse border-spacing-0 text-[11px] sm:text-[12px]">
+                        <table className="w-full min-w-[620px] border-collapse border-spacing-0 text-[10px] sm:text-[11px]">
                           <thead>
                             <tr className="bg-[#f6f9fc] text-[#213446]">
-                              <th className="border border-[#d2dbe5] px-3 py-2.5 text-left font-black uppercase tracking-[0.08em]">Metric</th>
+                              <th className="border border-[#d2dbe5] px-2.5 py-2 text-left font-black uppercase tracking-[0.06em]">Metric</th>
                               {visibleTerminals.map((t) => (
-                                <th key={t} className="border border-[#d2dbe5] px-2.5 py-2.5 text-center font-black uppercase tracking-[0.08em]">{t} Term</th>
+                                <th key={t} className="border border-[#d2dbe5] px-2 py-2 text-center font-black uppercase tracking-[0.06em]">{t} Term</th>
                               ))}
                             </tr>
                           </thead>
                           <tbody>
                             <tr className="bg-white">
-                              <td className="border border-[#d5dde6] px-3 py-2.5 font-black uppercase text-[#213446]">Total Marks</td>
+                              <td className="border border-[#d5dde6] px-2.5 py-2 font-black uppercase text-[#213446]">Total Marks</td>
                               {visibleTerminals.map((t) => (
-                                <td key={t} className="border border-[#d5dde6] px-2.5 py-2.5 text-center font-semibold text-[#2a3d59]">
+                                <td key={t} className="border border-[#d5dde6] px-2 py-2 text-center font-semibold text-[#2a3d59]">
                                   {getSummaryCellValue(t, termSummaries[t]?.total_max_marks)}
                                 </td>
                               ))}
                             </tr>
                             <tr className="bg-[#fafcff]">
-                              <td className="border border-[#d5dde6] px-3 py-2.5 font-black uppercase text-[#213446]">Marks Obtained</td>
+                              <td className="border border-[#d5dde6] px-2.5 py-2 font-black uppercase text-[#213446]">Marks Obtained</td>
                               {visibleTerminals.map((t) => (
-                                <td key={t} className="border border-[#d5dde6] px-2.5 py-2.5 text-center font-black text-[#1f406f]">
+                                <td key={t} className="border border-[#d5dde6] px-2 py-2 text-center font-black text-[#1f406f]">
                                   {getSummaryCellValue(t, termSummaries[t]?.total_obtained)}
                                 </td>
                               ))}
                             </tr>
                             <tr className="bg-white">
-                              <td className="border border-[#d5dde6] px-3 py-2.5 font-black uppercase text-[#213446]">Percentage</td>
+                              <td className="border border-[#d5dde6] px-2.5 py-2 font-black uppercase text-[#213446]">Percentage</td>
                               {visibleTerminals.map((t) => (
-                                <td key={t} className={`border border-[#d5dde6] px-2.5 py-2.5 text-center font-black ${getDivisionColor(termSummaries[t]?.division)}`}>
+                                <td key={t} className={`border border-[#d5dde6] px-2 py-2 text-center font-black ${getDivisionColor(termSummaries[t]?.division)}`}>
                                   {getSummaryCellValue(
                                     t,
                                     typeof termSummaries[t]?.percentage !== 'undefined' && termSummaries[t]?.percentage !== null
@@ -965,27 +965,27 @@ function Results() {
                               ))}
                             </tr>
                             <tr className="bg-[#fafcff]">
-                              <td className="border border-[#d5dde6] px-3 py-2.5 font-black uppercase text-[#213446]">Division</td>
+                              <td className="border border-[#d5dde6] px-2.5 py-2 font-black uppercase text-[#213446]">Division</td>
                               {visibleTerminals.map((t) => (
-                                <td key={t} className={`border border-[#d5dde6] px-2.5 py-2.5 text-center font-black ${getDivisionColor(termSummaries[t]?.division)}`}>
+                                <td key={t} className={`border border-[#d5dde6] px-2 py-2 text-center font-black ${getDivisionColor(termSummaries[t]?.division)}`}>
                                   {getSummaryCellValue(t, termSummaries[t]?.division)}
                                 </td>
                               ))}
                             </tr>
                             <tr className="bg-white">
-                              <td className="border border-[#d5dde6] px-3 py-2.5 font-black uppercase text-[#213446]">Class &amp; Section Rank</td>
+                              <td className="border border-[#d5dde6] px-2.5 py-2 font-black uppercase text-[#213446]">Class &amp; Section Rank</td>
                               {visibleTerminals.map((t) => (
-                                <td key={t} className="border border-[#d5dde6] px-2.5 py-2.5 text-center font-black text-[#2b456f]">
+                                <td key={t} className="border border-[#d5dde6] px-2 py-2 text-center font-black text-[#2b456f]">
                                   {getDisplayRank(t)}
                                 </td>
                               ))}
                             </tr>
                             <tr className="bg-[#fafcff]">
-                              <td className="border border-[#d5dde6] px-3 py-2.5 font-black uppercase text-[#213446]">Published Date</td>
+                              <td className="border border-[#d5dde6] px-2.5 py-2 font-black uppercase text-[#213446]">Published Date</td>
                               {visibleTerminals.map((t) => {
                                 const publishedDate = getPublishedDateFromSummary(termSummaries[t])
                                 return (
-                                  <td key={t} className="border border-[#d5dde6] px-2.5 py-2.5 text-center font-semibold text-[#2a3d59]">
+                                  <td key={t} className="border border-[#d5dde6] px-2 py-2 text-center font-semibold text-[#2a3d59]">
                                     {isTermAvailable(t) ? (
                                       publishedDate 
                                         ? new Date(publishedDate).toLocaleDateString('en-IN')
@@ -1002,10 +1002,10 @@ function Results() {
                       </div>
                     </div>
 
-                    <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_280px]">
-                      <div className="border border-[#c8d3df] bg-white px-3 py-2.5">
-                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#33485e] sm:text-[12px]">Instructions</p>
-                        <div className="mt-1.5 space-y-1.5 text-[11px] leading-[1.5] text-[#324455] sm:text-[12px]">
+                    <div className="mt-3 grid gap-2.5 lg:grid-cols-[minmax(0,1fr)_236px]">
+                      <div className="border border-[#c8d3df] bg-white px-3 py-2">
+                        <p className="text-[10px] font-black uppercase tracking-[0.15em] text-[#33485e] sm:text-[11px]">Instructions</p>
+                        <div className="mt-1 space-y-1 text-[10px] leading-[1.4] text-[#324455] sm:text-[11px]">
                           <p>1. This is a computer-generated result marksheet for official school use.</p>
                           <p>2. The details shown here are based on official school records.</p>
                           <p>3. Any discrepancy should be reported within 7 days of result declaration.</p>
@@ -1015,24 +1015,24 @@ function Results() {
                         </div>
                       </div>
 
-                      <div className="border border-[#c8d3df] bg-white px-3 py-3">
-                        <div className="flex min-h-[170px] items-end justify-center sm:min-h-[200px]">
-                          <div className="w-full max-w-[190px] text-center text-[10px] font-black uppercase tracking-[0.1em] text-[#516579] sm:text-[11px]">
-                            <div className="mb-3 flex justify-center">
+                      <div className="border border-[#c8d3df] bg-white px-2.5 py-2.5">
+                        <div className="flex min-h-[136px] items-end justify-center sm:min-h-[156px]">
+                          <div className="w-full max-w-[168px] text-center text-[9px] font-black uppercase tracking-[0.08em] text-[#516579] sm:text-[10px]">
+                            <div className="mb-2 flex justify-center">
                               <img
                                 src={schoolLogo}
                                 alt="Temporary principal sign and stamp placeholder"
-                                className="h-[96px] w-[96px] rounded-full border border-[#d7e0e8] bg-[#f8fbff] p-1.5 object-cover opacity-80 sm:h-[118px] sm:w-[118px]"
+                                className="h-[78px] w-[78px] rounded-full border border-[#d7e0e8] bg-[#f8fbff] p-1.5 object-cover opacity-80 sm:h-[92px] sm:w-[92px]"
                               />
                             </div>
-                            <div className="h-8 border-b border-[#73879b]" />
-                            <p className="mt-1.5">Principal Sign &amp; Stamp</p>
+                            <div className="h-7 border-b border-[#73879b]" />
+                            <p className="mt-1">Principal Sign &amp; Stamp</p>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-4 border-t border-[#bcc8d2] pt-2.5 text-center text-[9px] font-black uppercase tracking-[0.16em] text-[#5a6f82] sm:text-[10px]">
+                    <div className="mt-3 border-t border-[#bcc8d2] pt-2 text-center text-[8px] font-black uppercase tracking-[0.12em] text-[#5a6f82] sm:text-[9px]">
                       {SCHOOL_NAME} | {SCHOOL_ADDRESS}
                     </div>
                 </div>

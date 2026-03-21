@@ -358,25 +358,25 @@
 
   .gps-card {
     border-radius: 1.35rem;
-    border: 1px solid rgba(188, 153, 85, 0.42);
-    background: linear-gradient(155deg, rgba(255, 255, 255, 0.98), rgba(250, 243, 229, 0.96));
-    color: #1f2d45;
+    border: 1px solid rgba(186, 230, 253, 0.92);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.99), rgba(240, 249, 255, 0.96));
+    color: #0f172a;
     box-shadow:
-      0 12px 30px rgba(120, 94, 53, 0.14),
+      0 12px 30px rgba(14, 116, 144, 0.1),
       inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   }
 
   .gps-card-soft {
     border-radius: 1.1rem;
-    border: 1px solid rgba(188, 153, 85, 0.35);
-    background: rgba(255, 252, 245, 0.9);
-    color: #263753;
+    border: 1px solid rgba(186, 230, 253, 0.88);
+    background: linear-gradient(180deg, rgba(240, 249, 255, 0.92), rgba(255, 255, 255, 0.96));
+    color: #1e3a5f;
     backdrop-filter: blur(12px);
   }
 
   .gps-glass {
-    border: 1px solid rgba(190, 155, 82, 0.4);
-    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(186, 230, 253, 0.82);
+    background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(14px);
   }
 
@@ -386,9 +386,9 @@
     gap: 0.45rem;
     padding: 0.38rem 0.85rem;
     border-radius: 999px;
-    border: 1px solid rgba(184, 141, 67, 0.45);
-    background: rgba(212, 171, 91, 0.18);
-    color: #7d5620;
+    border: 1px solid rgba(125, 211, 252, 0.92);
+    background: rgba(224, 242, 254, 0.96);
+    color: #0369a1;
     font-size: 0.74rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -403,16 +403,16 @@
     border-radius: 0.9rem;
     padding: 0.72rem 1.2rem;
     font-weight: 700;
-    color: #1f2335;
-    background: linear-gradient(135deg, #efd39b 0%, #d6ad60 52%, #b9862f 100%);
-    box-shadow: 0 14px 34px rgba(152, 109, 37, 0.42);
+    color: #ffffff;
+    background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+    box-shadow: 0 14px 34px rgba(14, 165, 233, 0.28);
     transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
   }
 
   .gps-button:hover {
     transform: translateY(-1px);
-    box-shadow: 0 16px 36px rgba(152, 109, 37, 0.5);
-    filter: brightness(1.03);
+    box-shadow: 0 18px 36px rgba(14, 165, 233, 0.34);
+    filter: brightness(1.02);
   }
 
   .gps-button-ghost {
@@ -423,23 +423,22 @@
     border-radius: 0.9rem;
     padding: 0.68rem 1.15rem;
     font-weight: 700;
-    color: var(--ry-text);
-    border: 1px solid rgba(184, 141, 67, 0.48);
-    background: rgba(255, 252, 244, 0.95);
-    color: #2a3d5b;
+    border: 1px solid rgba(186, 230, 253, 0.96);
+    background: rgba(255, 255, 255, 0.96);
+    color: #0f172a;
   }
 
   .gps-button-ghost:hover {
-    border-color: rgba(227, 191, 119, 0.72);
-    background: rgba(246, 238, 220, 0.98);
+    border-color: rgba(125, 211, 252, 0.96);
+    background: rgba(240, 249, 255, 0.98);
   }
 
   .gps-input {
     width: 100%;
     border-radius: 0.82rem;
-    border: 1px solid rgba(184, 141, 67, 0.38);
+    border: 1px solid rgba(186, 230, 253, 0.94);
     background: rgba(255, 255, 255, 0.98);
-    color: #1f2d45;
+    color: #0f172a;
     padding: 0.7rem 0.9rem;
     outline: none;
     font-size: 0.92rem;
@@ -450,8 +449,8 @@
   }
 
   .gps-input:focus {
-    border-color: rgba(218, 182, 108, 0.86);
-    box-shadow: 0 0 0 4px rgba(212, 171, 91, 0.18);
+    border-color: rgba(56, 189, 248, 0.95);
+    box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.24);
   }
 
   .gps-section {
@@ -468,22 +467,22 @@
 
   .gps-kpi-card {
     border-radius: 1rem;
-    border: 1px solid rgba(194, 157, 81, 0.34);
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(252, 245, 233, 0.97));
-    color: #1f2d45;
-    box-shadow: 0 12px 26px rgba(120, 94, 53, 0.12);
+    border: 1px solid rgba(186, 230, 253, 0.9);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(239, 248, 255, 0.97));
+    color: #0f172a;
+    box-shadow: 0 12px 26px rgba(14, 116, 144, 0.1);
   }
 
   .gps-page [class*="text-cyan-"] {
-    color: #8a6730 !important;
+    color: #0284c7 !important;
   }
 
   .gps-page [class*="border-cyan-"] {
-    border-color: rgba(197, 151, 62, 0.45) !important;
+    border-color: rgba(56, 189, 248, 0.42) !important;
   }
 
   .gps-page [class*="bg-cyan-"] {
-    background-color: rgba(197, 151, 62, 0.16) !important;
+    background-color: rgba(224, 242, 254, 0.76) !important;
   }
 
   .gps-page .gps-card .text-white,
@@ -501,7 +500,7 @@
   .gps-page .gps-card .text-slate-200,
   .gps-page .gps-card-soft .text-slate-200,
   .gps-page .gps-kpi-card .text-slate-200 {
-    color: #425775 !important;
+    color: #475569 !important;
   }
 
   .gps-page .gps-card [class*="text-slate-200"],
@@ -513,7 +512,7 @@
   .gps-page .gps-card .text-slate-300,
   .gps-page .gps-card-soft .text-slate-300,
   .gps-page .gps-kpi-card .text-slate-300 {
-    color: #5f7391 !important;
+    color: #64748b !important;
   }
 
   .gps-page .gps-card [class*="text-slate-300"],
@@ -524,10 +523,10 @@
 
   .app-shell {
     background:
-      radial-gradient(circle at 8% 2%, rgba(212, 171, 91, 0.18), transparent 30%),
-      radial-gradient(circle at 92% 8%, rgba(84, 124, 191, 0.11), transparent 35%),
-      linear-gradient(160deg, #fffef9 0%, #f8f2e6 56%, #f3ead7 100%);
-    color: #1f2d45;
+      radial-gradient(circle at 8% 2%, rgba(125, 211, 252, 0.2), transparent 30%),
+      radial-gradient(circle at 92% 8%, rgba(191, 219, 254, 0.18), transparent 35%),
+      linear-gradient(160deg, #fbfdff 0%, #f4faff 56%, #edf7ff 100%);
+    color: #0f172a;
   }
 
   .app-shell [class~="text-[#0d141b]"],
@@ -568,23 +567,59 @@
   }
 
   .app-shell [class*="text-cyan-"] {
-    color: #8a6730 !important;
+    color: #0284c7 !important;
   }
 
   .app-shell [class*="border-cyan-"] {
-    border-color: rgba(184, 141, 67, 0.48) !important;
+    border-color: rgba(56, 189, 248, 0.48) !important;
+  }
+
+  .app-shell .gps-card .text-white,
+  .app-shell .gps-card-soft .text-white,
+  .app-shell .gps-kpi-card .text-white {
+    color: #0f172a !important;
+  }
+
+  .app-shell .gps-card [class*="text-white"],
+  .app-shell .gps-card-soft [class*="text-white"],
+  .app-shell .gps-kpi-card [class*="text-white"] {
+    color: #0f172a !important;
+  }
+
+  .app-shell .gps-card .text-slate-200,
+  .app-shell .gps-card-soft .text-slate-200,
+  .app-shell .gps-kpi-card .text-slate-200 {
+    color: #475569 !important;
+  }
+
+  .app-shell .gps-card [class*="text-slate-200"],
+  .app-shell .gps-card-soft [class*="text-slate-200"],
+  .app-shell .gps-kpi-card [class*="text-slate-200"] {
+    color: #475569 !important;
+  }
+
+  .app-shell .gps-card .text-slate-300,
+  .app-shell .gps-card-soft .text-slate-300,
+  .app-shell .gps-kpi-card .text-slate-300 {
+    color: #64748b !important;
+  }
+
+  .app-shell .gps-card [class*="text-slate-300"],
+  .app-shell .gps-card-soft [class*="text-slate-300"],
+  .app-shell .gps-kpi-card [class*="text-slate-300"] {
+    color: #64748b !important;
   }
 
   .app-shell .gps-glass {
-    background: rgba(255, 255, 255, 0.88) !important;
-    border-color: rgba(176, 154, 118, 0.48) !important;
-    box-shadow: 0 12px 26px rgba(125, 101, 62, 0.12) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-color: rgba(186, 230, 253, 0.82) !important;
+    box-shadow: 0 12px 26px rgba(14, 116, 144, 0.1) !important;
   }
 
   .app-shell .bg-white,
   .app-shell .bg-slate-50,
   .app-shell .bg-slate-100 {
-    background: linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(249, 243, 231, 0.95)) !important;
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.99), rgba(242, 249, 255, 0.95)) !important;
   }
 
   .app-shell .from-white {
@@ -594,13 +629,13 @@
 
   .app-shell .to-slate-50,
   .app-shell .to-slate-100 {
-    --tw-gradient-to: rgba(249, 243, 231, 0.96) var(--tw-gradient-to-position) !important;
+    --tw-gradient-to: rgba(242, 249, 255, 0.96) var(--tw-gradient-to-position) !important;
   }
 
   .app-shell .from-slate-50,
   .app-shell .from-slate-100 {
-    --tw-gradient-from: rgba(255, 250, 240, 0.98) var(--tw-gradient-from-position) !important;
-    --tw-gradient-to: rgba(255, 250, 240, 0) var(--tw-gradient-to-position) !important;
+    --tw-gradient-from: rgba(248, 252, 255, 0.98) var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgba(248, 252, 255, 0) var(--tw-gradient-to-position) !important;
   }
 
   .app-shell .to-white {
@@ -608,15 +643,15 @@
   }
 
   .app-shell .bg-blue-50 {
-    background: rgba(68, 122, 193, 0.14) !important;
+    background: rgba(224, 242, 254, 0.82) !important;
   }
 
   .app-shell .bg-green-50 {
-    background: rgba(30, 157, 113, 0.14) !important;
+    background: rgba(236, 252, 255, 0.82) !important;
   }
 
   .app-shell .bg-amber-50 {
-    background: rgba(191, 134, 47, 0.16) !important;
+    background: rgba(240, 249, 255, 0.84) !important;
   }
 
   .app-shell .bg-red-50 {
@@ -624,16 +659,16 @@
   }
 
   .app-shell .bg-purple-50 {
-    background: rgba(105, 85, 176, 0.13) !important;
+    background: rgba(239, 246, 255, 0.82) !important;
   }
 
   .app-shell .bg-orange-50 {
-    background: rgba(183, 102, 44, 0.14) !important;
+    background: rgba(236, 248, 255, 0.82) !important;
   }
 
   .app-shell .border-slate-200,
   .app-shell .border-slate-300 {
-    border-color: rgba(179, 159, 126, 0.45) !important;
+    border-color: rgba(186, 230, 253, 0.86) !important;
   }
 
   .app-shell .border-blue-200 {
@@ -676,15 +711,15 @@
   .app-shell .shadow-md,
   .app-shell .shadow-lg,
   .app-shell .shadow-xl {
-    box-shadow: 0 12px 28px rgba(125, 101, 62, 0.15) !important;
+    box-shadow: 0 12px 28px rgba(14, 116, 144, 0.12) !important;
   }
 
   .app-shell table thead tr {
-    background: linear-gradient(135deg, #1a3d7d, #b9862f) !important;
+    background: linear-gradient(135deg, #eff8ff, #dbeffd) !important;
   }
 
   .app-shell table th {
-    color: #021527 !important;
+    color: #0f3d56 !important;
     font-weight: 700 !important;
   }
 
@@ -693,15 +728,15 @@
   }
 
   .app-shell table tbody tr:hover {
-    background: rgba(197, 151, 62, 0.14) !important;
+    background: rgba(224, 242, 254, 0.58) !important;
   }
 
   .app-shell input,
   .app-shell select,
   .app-shell textarea {
-    border-color: rgba(184, 161, 126, 0.5) !important;
+    border-color: rgba(186, 230, 253, 0.96) !important;
     background: rgba(255, 255, 255, 0.95) !important;
-    color: #1f2d45 !important;
+    color: #0f172a !important;
   }
 
   .app-shell input[type="date"],
@@ -720,7 +755,7 @@
   .sidebar-scroll {
     scrollbar-gutter: stable;
     scrollbar-width: thin;
-    scrollbar-color: rgba(176, 151, 103, 0.42) rgba(248, 241, 227, 0.95);
+    scrollbar-color: rgba(96, 165, 250, 0.42) rgba(239, 248, 255, 0.95);
   }
 
   .sidebar-scroll::-webkit-scrollbar {
@@ -729,13 +764,13 @@
 
   .sidebar-scroll::-webkit-scrollbar-track {
     border-radius: 999px;
-    background: rgba(248, 241, 227, 0.95);
+    background: rgba(239, 248, 255, 0.95);
   }
 
   .sidebar-scroll::-webkit-scrollbar-thumb {
     border: 2px solid transparent;
     border-radius: 999px;
-    background: rgba(176, 151, 103, 0.42);
+    background: rgba(96, 165, 250, 0.42);
     background-clip: content-box;
   }
 

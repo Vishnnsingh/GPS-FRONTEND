@@ -44,26 +44,26 @@ function ResultsPortal() {
   return (
     <WebsiteLayout>
       <div className="min-h-screen bg-[linear-gradient(180deg,#f8fcff_0%,#eff6fb_50%,#f7fafc_100%)]">
-        <section className="relative overflow-hidden py-12 md:py-16">
+        <section className="relative overflow-hidden py-8 md:py-10">
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(14,165,233,0.08),transparent_42%,rgba(15,118,110,0.08))]"></div>
 
-          <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-8 px-4 lg:grid-cols-2">
-            <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-sky-50/90 px-4 py-1.5 text-cyan-700">
-                <span className="material-symbols-outlined text-sm">verified_user</span>
-                <span className="text-xs font-bold uppercase tracking-[0.18em]">Secure Portal</span>
+          <div className="relative mx-auto max-w-4xl px-4">
+            <div className="mx-auto mb-4 max-w-2xl text-center sm:mb-5">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan-200 bg-sky-50/90 px-2.5 py-1 text-cyan-700">
+                <span className="material-symbols-outlined text-[12px]">verified_user</span>
+                <span className="text-[9px] font-bold uppercase tracking-[0.14em]">Secure Portal</span>
               </div>
 
-              <h1 className="mb-4 text-4xl font-black leading-tight text-slate-900 md:text-5xl">
+              <h1 className="mt-2 text-lg font-black leading-tight text-slate-900 sm:text-xl">
                 View Your <span className="text-cyan-700">Results</span>
               </h1>
 
-              <p className="mb-6 text-lg leading-relaxed text-slate-600">
+              <p className="mx-auto mt-2 max-w-xl text-xs leading-relaxed text-slate-600 sm:text-[13px]">
                 Access your academic performance with just a few details. Check your marks, division, and percentage
                 instantly.
               </p>
 
-              <div className="mb-8 grid grid-cols-3 gap-4">
+              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {[
                   { icon: 'check_circle', label: 'Instant', desc: 'Real-time results' },
                   { icon: 'security', label: 'Secure', desc: 'Safe access' },
@@ -71,67 +71,70 @@ function ResultsPortal() {
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className="rounded-lg border border-slate-200 bg-white/92 p-3 shadow-sm shadow-slate-200/40"
+                    className="rounded-lg border border-slate-200 bg-white/92 p-2 shadow-sm shadow-slate-200/30"
                   >
-                    <div className="mb-2 flex items-center gap-2">
-                      <span className="material-symbols-outlined text-xl text-cyan-700">{item.icon}</span>
-                      <p className="text-sm font-bold text-slate-900">{item.label}</p>
+                    <div className="mb-1 flex items-center justify-center gap-1.5">
+                      <span className="material-symbols-outlined text-[16px] text-cyan-700">{item.icon}</span>
+                      <p className="text-xs font-bold text-slate-900">{item.label}</p>
                     </div>
-                    <p className="text-xs text-slate-500">{item.desc}</p>
+                    <p className="text-[11px] text-slate-500">{item.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="relative">
-              <div className="absolute -inset-4 rounded-2xl bg-[linear-gradient(90deg,rgba(14,165,233,0.16),transparent)] blur-2xl"></div>
+            <div className="relative mx-auto max-w-[500px]">
+              <div className="absolute -inset-2.5 rounded-[24px] bg-[linear-gradient(90deg,rgba(14,165,233,0.14),transparent)] blur-2xl"></div>
 
-              <div className="relative rounded-2xl border border-slate-200 bg-white/94 p-8 shadow-xl shadow-slate-300/30">
-                <h2 className="mb-6 text-2xl font-black text-slate-900">Enter Your Details</h2>
+              <div className="relative rounded-[20px] border border-slate-200 bg-white/95 p-4 shadow-xl shadow-slate-300/20 sm:p-5">
+                <h2 className="text-lg font-black text-slate-900 sm:text-xl">Enter Your Details</h2>
+                <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">Fill in the student details to search your result.</p>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label className="mb-2 block text-sm font-bold text-slate-700">
-                      <span className="material-symbols-outlined mr-1 align-middle text-sm text-cyan-700">school</span>
-                      Class
-                    </label>
-                    <input
-                      type="text"
-                      name="classValue"
-                      value={formData.classValue}
-                      onChange={handleChange}
-                      placeholder="e.g., 1, 2, 10, 12, UKG"
-                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-100"
-                      required
-                    />
+                <form onSubmit={handleSubmit} className="mt-3 space-y-2.5">
+                  <div className="grid gap-2.5 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-[11px] font-bold uppercase tracking-[0.08em] text-slate-700">
+                        <span className="material-symbols-outlined mr-1 align-middle text-[14px] text-cyan-700">school</span>
+                        Class
+                      </label>
+                      <input
+                        type="text"
+                        name="classValue"
+                        value={formData.classValue}
+                        onChange={handleChange}
+                        placeholder="e.g., 1 or UKG"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-1 block text-[11px] font-bold uppercase tracking-[0.08em] text-slate-700">
+                        <span className="material-symbols-outlined mr-1 align-middle text-[14px] text-cyan-700">badge</span>
+                        Roll Number
+                      </label>
+                      <input
+                        type="number"
+                        name="roll"
+                        value={formData.roll}
+                        onChange={handleChange}
+                        placeholder="Roll no."
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-bold text-slate-700">
-                      <span className="material-symbols-outlined mr-1 align-middle text-sm text-cyan-700">badge</span>
-                      Roll Number
-                    </label>
-                    <input
-                      type="number"
-                      name="roll"
-                      value={formData.roll}
-                      onChange={handleChange}
-                      placeholder="Enter your roll number"
-                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-100"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="mb-2 block text-sm font-bold text-slate-700">
-                      <span className="material-symbols-outlined mr-1 align-middle text-sm text-cyan-700">calendar_today</span>
+                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-[0.08em] text-slate-700">
+                      <span className="material-symbols-outlined mr-1 align-middle text-[14px] text-cyan-700">calendar_today</span>
                       Terminal/Exam
                     </label>
                     <select
                       name="terminal"
                       value={formData.terminal}
                       onChange={handleChange}
-                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 transition-all focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-900 transition-all focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
                     >
                       {terminals.map((terminal) => (
                         <option key={terminal} value={terminal}>
@@ -141,56 +144,58 @@ function ResultsPortal() {
                     </select>
                   </div>
 
-                  <div>
-                    <label className="mb-2 block text-sm font-bold text-slate-700">
-                      <span className="material-symbols-outlined mr-1 align-middle text-sm text-cyan-700">layers</span>
-                      Section <span className="text-xs text-slate-400">(Optional)</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="section"
-                      value={formData.section}
-                      onChange={handleChange}
-                      placeholder="e.g., A, B, C"
-                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-100"
-                    />
-                  </div>
+                  <div className="grid gap-2.5 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-[11px] font-bold uppercase tracking-[0.08em] text-slate-700">
+                        <span className="material-symbols-outlined mr-1 align-middle text-[14px] text-cyan-700">layers</span>
+                        Section <span className="text-[10px] text-slate-400 normal-case">(Optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="section"
+                        value={formData.section}
+                        onChange={handleChange}
+                        placeholder="e.g., A"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="mb-2 block text-sm font-bold text-slate-700">
-                      <span className="material-symbols-outlined mr-1 align-middle text-sm text-cyan-700">calendar_month</span>
-                      Session <span className="text-xs text-slate-400">(Optional)</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="session"
-                      value={formData.session}
-                      onChange={handleChange}
-                      placeholder="e.g., 2025-26"
-                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-100"
-                    />
+                    <div>
+                      <label className="mb-1 block text-[11px] font-bold uppercase tracking-[0.08em] text-slate-700">
+                        <span className="material-symbols-outlined mr-1 align-middle text-[14px] text-cyan-700">calendar_month</span>
+                        Session <span className="text-[10px] text-slate-400 normal-case">(Optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="session"
+                        value={formData.session}
+                        onChange={handleChange}
+                        placeholder="e.g., 2025-26"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+                      />
+                    </div>
                   </div>
 
                   {error ? (
-                    <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-3">
-                      <span className="material-symbols-outlined mt-0.5 flex-shrink-0 text-xl text-red-600">error</span>
-                      <p className="text-sm text-red-700">{error}</p>
+                    <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-2">
+                      <span className="material-symbols-outlined mt-0.5 flex-shrink-0 text-lg text-red-600">error</span>
+                      <p className="text-xs text-red-700">{error}</p>
                     </div>
                   ) : null}
 
                   <button
                     type="submit"
-                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-[linear-gradient(135deg,#0f172a_0%,#155e75_100%)] px-4 py-2.5 font-bold text-white shadow-lg shadow-slate-900/15 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/18"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-[linear-gradient(135deg,#0f172a_0%,#155e75_100%)] px-4 py-2 text-[13px] font-bold text-white shadow-lg shadow-slate-900/15 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/18"
                   >
                     <span className="material-symbols-outlined text-sm">search</span>
                     View My Result
                   </button>
                 </form>
 
-                <div className="mt-6 border-t border-slate-200 pt-6 text-center">
-                  <p className="mb-3 text-xs text-slate-500">Questions? Need help accessing your result?</p>
-                  <Link to="/contact" className="inline-flex items-center gap-1 text-sm font-bold text-cyan-700 hover:underline">
-                    <span className="material-symbols-outlined text-sm">call</span>
+                <div className="mt-3 border-t border-slate-200 pt-3 text-center">
+                  <p className="mb-1.5 text-[10px] text-slate-500">Questions? Need help accessing your result?</p>
+                  <Link to="/contact" className="inline-flex items-center gap-1 text-[13px] font-bold text-cyan-700 hover:underline">
+                    <span className="material-symbols-outlined text-[14px]">call</span>
                     Contact Support
                   </Link>
                 </div>
