@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 import { aboutPhotos, homeFeaturePhotos } from '../../assets/websiteImages'
+import { useResultSearchOptions } from './useResultSearchOptions'
 
 function ResultField({ label, name, icon, required, children }) {
   return (
@@ -32,12 +33,51 @@ function ResultLogin() {
     session: '',
   })
   const [error, setError] = useState('')
+  const {
+    classOptions,
+    sectionOptions,
+    sessionOptions,
+    recentSessionOptions,
+    olderSessionOptions,
+    loading: loadingSearchOptions,
+    error: searchOptionsError,
+  } = useResultSearchOptions(formData.classValue)
 
   const handleChange = (event) => {
     const { name, value } = event.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    setFormData((prev) => {
+      if (name === 'classValue') {
+        return {
+          ...prev,
+          classValue: value,
+          section: '',
+        }
+      }
+
+      return { ...prev, [name]: value }
+    })
     setError('')
   }
+
+  useEffect(() => {
+    if (formData.section && !sectionOptions.includes(formData.section)) {
+      setFormData((prev) => ({ ...prev, section: '' }))
+    }
+  }, [formData.section, sectionOptions])
+
+  useEffect(() => {
+    const nextDefaultSession = sessionOptions[0] || ''
+    if (!nextDefaultSession) {
+      if (formData.session) {
+        setFormData((prev) => ({ ...prev, session: '' }))
+      }
+      return
+    }
+
+    if (!formData.session || !sessionOptions.includes(formData.session)) {
+      setFormData((prev) => ({ ...prev, session: nextDefaultSession }))
+    }
+  }, [formData.session, sessionOptions])
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -104,16 +144,23 @@ function ResultLogin() {
               <form onSubmit={handleSubmit} className="mt-5 space-y-3">
                 <ResultField label="Class" name="classValue" icon="groups" required>
                   {(name) => (
-                    <input
+                    <select
                       name={name}
                       value={formData.classValue}
                       onChange={handleChange}
                       className="gps-input gps-auth-input pl-11"
-                      placeholder="e.g. 1"
-                      type="text"
-                      inputMode="numeric"
+                      disabled={loadingSearchOptions}
                       required
-                    />
+                    >
+                      <option value="">
+                        {loadingSearchOptions ? 'Loading classes...' : classOptions.length > 0 ? 'Select class' : 'No classes found'}
+                      </option>
+                      {classOptions.map((classValue) => (
+                        <option key={classValue} value={classValue}>
+                          {classValue}
+                        </option>
+                      ))}
+                    </select>
                   )}
                 </ResultField>
 
@@ -152,29 +199,75 @@ function ResultLogin() {
 
                 <ResultField label="Section (optional)" name="section" icon="grid_view">
                   {(name) => (
-                    <input
+                    <select
                       name={name}
                       value={formData.section}
                       onChange={handleChange}
                       className="gps-input gps-auth-input pl-11"
-                      placeholder="e.g. A"
-                      type="text"
-                    />
+                      disabled={!formData.classValue || loadingSearchOptions}
+                    >
+                      <option value="">
+                        {!formData.classValue
+                          ? 'Select class first'
+                          : loadingSearchOptions
+                            ? 'Loading sections...'
+                            : sectionOptions.length > 0
+                              ? 'All sections'
+                              : 'No sections found'}
+                      </option>
+                      {sectionOptions.map((sectionValue) => (
+                        <option key={sectionValue} value={sectionValue}>
+                          {sectionValue}
+                        </option>
+                      ))}
+                    </select>
                   )}
                 </ResultField>
 
                 <ResultField label="Session (optional)" name="session" icon="calendar_month">
                   {(name) => (
-                    <input
+                    <select
                       name={name}
                       value={formData.session}
                       onChange={handleChange}
                       className="gps-input gps-auth-input pl-11"
-                      placeholder="e.g. 2025-26"
-                      type="text"
-                    />
+                      disabled={loadingSearchOptions}
+                    >
+                      {sessionOptions.length === 0 ? (
+                        <option value="">
+                          {loadingSearchOptions ? 'Loading sessions...' : 'No sessions found'}
+                        </option>
+                      ) : (
+                        <>
+                          {recentSessionOptions.length > 0 ? (
+                            <optgroup label="Recent Sessions">
+                              {recentSessionOptions.map((sessionValue) => (
+                                <option key={sessionValue} value={sessionValue}>
+                                  {sessionValue}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ) : null}
+                          {olderSessionOptions.length > 0 ? (
+                            <optgroup label="Older Sessions">
+                              {olderSessionOptions.map((sessionValue) => (
+                                <option key={sessionValue} value={sessionValue}>
+                                  {sessionValue}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ) : null}
+                        </>
+                      )}
+                    </select>
                   )}
                 </ResultField>
+
+                {searchOptionsError ? (
+                  <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2">
+                    <p className="text-xs text-amber-700">{searchOptionsError}</p>
+                  </div>
+                ) : null}
 
                 <button type="submit" className="gps-auth-button mt-2 w-full">
                   View Result

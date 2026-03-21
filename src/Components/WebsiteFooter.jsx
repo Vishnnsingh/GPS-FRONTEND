@@ -1,9 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { schoolProfile, siteMedia, siteNavLinks } from '../Pages/Website/siteContent'
+import { scrollToPageTop } from '../utils/scrollToPageTop'
 
 function WebsiteFooter() {
   const year = new Date().getFullYear()
+  const handleSiteNavigation = () => {
+    scrollToPageTop()
+  }
 
   return (
     <footer className="relative mt-8 border-t border-[var(--site-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.3),rgba(255,255,255,0.84))]">
@@ -52,6 +56,7 @@ function WebsiteFooter() {
                 <Link
                   key={link.to}
                   to={link.to}
+                  onClick={handleSiteNavigation}
                   className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900"
                 >
                   <span className="material-symbols-outlined text-base text-cyan-700">arrow_forward</span>

@@ -178,7 +178,7 @@ function Dashboard({ initialView = 'dashboard' }) {
       />
       
       {/* Main Content Area */}
-      <main className="relative z-10 flex-1 overflow-y-auto w-full">
+      <main className="relative z-10 flex-1 overflow-y-auto w-full" data-route-scroll-container="true">
           <div className="p-3 sm:p-4 lg:p-6 w-full max-w-full">
             {loginType !== 'student' && !isTeacher && activeView === 'dashboard' && (
               <div className="space-y-4 sm:space-y-6">

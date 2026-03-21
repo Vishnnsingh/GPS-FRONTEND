@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
+import { useResultSearchOptions } from './useResultSearchOptions'
 
 function ResultsPortal() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
@@ -16,12 +17,51 @@ function ResultsPortal() {
   })
 
   const [error, setError] = useState('')
+  const {
+    classOptions,
+    sectionOptions,
+    sessionOptions,
+    recentSessionOptions,
+    olderSessionOptions,
+    loading: loadingSearchOptions,
+    error: searchOptionsError,
+  } = useResultSearchOptions(formData.classValue)
 
   const handleChange = (event) => {
     const { name, value } = event.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    setFormData((prev) => {
+      if (name === 'classValue') {
+        return {
+          ...prev,
+          classValue: value,
+          section: '',
+        }
+      }
+
+      return { ...prev, [name]: value }
+    })
     setError('')
   }
+
+  useEffect(() => {
+    if (formData.section && !sectionOptions.includes(formData.section)) {
+      setFormData((prev) => ({ ...prev, section: '' }))
+    }
+  }, [formData.section, sectionOptions])
+
+  useEffect(() => {
+    const nextDefaultSession = sessionOptions[0] || ''
+    if (!nextDefaultSession) {
+      if (formData.session) {
+        setFormData((prev) => ({ ...prev, session: '' }))
+      }
+      return
+    }
+
+    if (!formData.session || !sessionOptions.includes(formData.session)) {
+      setFormData((prev) => ({ ...prev, session: nextDefaultSession }))
+    }
+  }, [formData.session, sessionOptions])
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -97,15 +137,23 @@ function ResultsPortal() {
                         <span className="material-symbols-outlined mr-1 align-middle text-[14px] text-cyan-700">school</span>
                         Class
                       </label>
-                      <input
-                        type="text"
+                      <select
                         name="classValue"
                         value={formData.classValue}
                         onChange={handleChange}
-                        placeholder="e.g., 1 or UKG"
+                        disabled={loadingSearchOptions}
                         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
                         required
-                      />
+                      >
+                        <option value="">
+                          {loadingSearchOptions ? 'Loading classes...' : classOptions.length > 0 ? 'Select class' : 'No classes found'}
+                        </option>
+                        {classOptions.map((classValue) => (
+                          <option key={classValue} value={classValue}>
+                            {classValue}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div>
@@ -150,14 +198,28 @@ function ResultsPortal() {
                         <span className="material-symbols-outlined mr-1 align-middle text-[14px] text-cyan-700">layers</span>
                         Section <span className="text-[10px] text-slate-400 normal-case">(Optional)</span>
                       </label>
-                      <input
-                        type="text"
+                      <select
                         name="section"
                         value={formData.section}
                         onChange={handleChange}
-                        placeholder="e.g., A"
+                        disabled={!formData.classValue || loadingSearchOptions}
                         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
-                      />
+                      >
+                        <option value="">
+                          {!formData.classValue
+                            ? 'Select class first'
+                            : loadingSearchOptions
+                              ? 'Loading sections...'
+                              : sectionOptions.length > 0
+                                ? 'All sections'
+                                : 'No sections found'}
+                        </option>
+                        {sectionOptions.map((sectionValue) => (
+                          <option key={sectionValue} value={sectionValue}>
+                            {sectionValue}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div>
@@ -165,16 +227,48 @@ function ResultsPortal() {
                         <span className="material-symbols-outlined mr-1 align-middle text-[14px] text-cyan-700">calendar_month</span>
                         Session <span className="text-[10px] text-slate-400 normal-case">(Optional)</span>
                       </label>
-                      <input
-                        type="text"
+                      <select
                         name="session"
                         value={formData.session}
                         onChange={handleChange}
-                        placeholder="e.g., 2025-26"
+                        disabled={loadingSearchOptions}
                         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
-                      />
+                      >
+                        {sessionOptions.length === 0 ? (
+                          <option value="">
+                            {loadingSearchOptions ? 'Loading sessions...' : 'No sessions found'}
+                          </option>
+                        ) : (
+                          <>
+                            {recentSessionOptions.length > 0 ? (
+                              <optgroup label="Recent Sessions">
+                                {recentSessionOptions.map((sessionValue) => (
+                                  <option key={sessionValue} value={sessionValue}>
+                                    {sessionValue}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            ) : null}
+                            {olderSessionOptions.length > 0 ? (
+                              <optgroup label="Older Sessions">
+                                {olderSessionOptions.map((sessionValue) => (
+                                  <option key={sessionValue} value={sessionValue}>
+                                    {sessionValue}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            ) : null}
+                          </>
+                        )}
+                      </select>
                     </div>
                   </div>
+
+                  {searchOptionsError ? (
+                    <div className="rounded-lg border border-amber-200 bg-amber-50/90 px-3 py-2 text-[11px] text-amber-700">
+                      {searchOptionsError}
+                    </div>
+                  ) : null}
 
                   {error ? (
                     <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-2">

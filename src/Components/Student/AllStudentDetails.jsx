@@ -544,10 +544,11 @@ function AllStudentDetails() {
               <thead className="bg-slate-100">
                 <tr>
                   <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-red">S.No</th>
-                  <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white">Roll</th>
+                 
                   <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white">Name</th>
                   <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white hidden md:table-cell">Father</th>
                   <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white hidden sm:table-cell">Class</th>
+                   <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white">Roll</th>
                   <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white hidden lg:table-cell">Section</th>
                   <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white hidden lg:table-cell">Mobile</th>
                   <th className="px-2 sm:px-4 py-2.5 sm:py-3 text-left font-bold text-white hidden xl:table-cell">Address</th>
@@ -573,9 +574,7 @@ function AllStudentDetails() {
                       <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-900 dark:text-white">
                         {startIndex + index + 1}
                       </td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-900 text-slate-900">
-                        {student.Roll || '-'}
-                      </td>
+                    
                       <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-900 dark:text-white truncate">
                         {student.Name || '-'}
                       </td>
@@ -584,6 +583,9 @@ function AllStudentDetails() {
                       </td>
                       <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-900 dark:text-slate-900 hidden sm:table-cell">
                         {getStudentClass(student) || '-'}
+                      </td>
+                        <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-900 text-slate-900">
+                        {student.Roll || '-'}
                       </td>
                       <td className="px-2 sm:px-4 py-2 sm:py-3 text-slate-900 dark:text-slate-900 hidden lg:table-cell">
                         {getStudentSection(student) || '-'}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Layout from './Components/Layout'
 import StudentRegister from './Pages/Register/StudentRegister'
 import StudentLogin from './Pages/Auth/StudentLogin'
@@ -14,6 +14,7 @@ import Contact from './Pages/Website/Contact'
 import Galary from './Pages/Website/Galary'
 import Admission from './Pages/Website/Admission'
 import { getAccessToken, getUser } from './Api/auth'
+import { scrollToPageTop } from './utils/scrollToPageTop'
 
 function Unauthorized() {
   return (
@@ -88,6 +89,16 @@ function ToastContainer() {
   )
 }
 
+function RouteScrollManager() {
+  const { pathname, search } = useLocation()
+
+  useEffect(() => {
+    scrollToPageTop()
+  }, [pathname, search])
+
+  return null
+}
+
 function App() {
   useEffect(() => {
     const isCalendarInput = (element) => {
@@ -118,6 +129,7 @@ function App() {
 
   return (
     <Router>
+      <RouteScrollManager />
       <ToastContainer />
       <Routes>
         <Route path="/" element={<Home />} />
