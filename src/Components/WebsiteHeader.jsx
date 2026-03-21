@@ -6,11 +6,14 @@ function WebsiteHeader() {
   const [open, setOpen] = useState(false)
 
   const linkClass = ({ isActive }) =>
-    `rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+    `relative inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 after:pointer-events-none after:absolute after:bottom-[6px] after:left-4 after:right-4 after:h-[2px] after:origin-center after:rounded-full after:bg-[linear-gradient(90deg,#06b6d4,#0f172a)] after:transition-transform after:duration-300 after:content-[''] ${
       isActive
-        ? 'bg-slate-900 text-white shadow-[0_14px_24px_rgba(15,23,42,0.15)]'
-        : 'text-slate-600 hover:bg-white hover:text-slate-900'
+        ? 'text-slate-950 after:scale-x-100'
+        : 'text-slate-600 after:scale-x-0 hover:-translate-y-[1px] hover:bg-white/80 hover:text-slate-900 hover:shadow-[0_14px_30px_rgba(15,23,42,0.08)] hover:after:scale-x-100'
     }`
+
+  const resultLinkClass =
+    'inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition-all duration-300 hover:-translate-y-[1px] hover:border-cyan-200 hover:bg-white/85 hover:text-slate-900 hover:shadow-[0_14px_30px_rgba(15,23,42,0.08)]'
 
   return (
     <header className="fixed inset-x-0 top-0 z-[120]">
@@ -40,7 +43,7 @@ function WebsiteHeader() {
             <div className="hidden items-center gap-2 lg:flex">
               <Link
                 to="/results-portal"
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-cyan-200 hover:text-slate-900"
+                className={resultLinkClass}
               >
                 Result
               </Link>
@@ -81,7 +84,7 @@ function WebsiteHeader() {
                   <Link
                     to="/results-portal"
                     onClick={() => setOpen(false)}
-                    className="inline-flex items-center justify-center rounded-full border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700"
+                    className={`${resultLinkClass} px-3`}
                   >
                     Result
                   </Link>

@@ -79,26 +79,26 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
         } ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         <div className="h-full p-3 sm:p-4">
-          <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#d8c8a7]/70 bg-white/92 shadow-[0_14px_34px_rgba(117,94,56,0.16)] backdrop-blur-md">
-            <div className="flex items-center justify-between border-b border-[#d8c8a7]/65 px-3 py-3">
+          <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#d7e9f7]/90 bg-white/92 shadow-[0_14px_34px_rgba(14,116,144,0.12)] backdrop-blur-md">
+            <div className="flex items-center justify-between border-b border-[#d7e9f7] px-3 py-3">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                  className="hidden rounded-lg border border-[#d2bf98]/75 bg-[#fffaf0] p-1.5 text-[#8c6a33] hover:bg-[#f3e8d0] lg:inline-flex"
+                  className="hidden rounded-lg border border-[#bae6fd]/80 bg-[#f0f9ff] p-1.5 text-[#0369a1] hover:bg-[#e0f2fe] lg:inline-flex"
                   title={sidebarCollapsed ? 'Expand' : 'Collapse'}
                 >
                   <span className="material-symbols-outlined text-base">{sidebarCollapsed ? 'menu_open' : 'menu'}</span>
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="rounded-lg border border-[#d2bf98]/75 bg-[#fffaf0] p-1.5 text-[#8c6a33] lg:hidden"
+                  className="rounded-lg border border-[#bae6fd]/80 bg-[#f0f9ff] p-1.5 text-[#0369a1] lg:hidden"
                   aria-label="Close sidebar"
                 >
                   <span className="material-symbols-outlined text-base">close</span>
                 </button>
               </div>
               <p
-                className={`text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9b7a45] ${
+                className={`text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0284c7] ${
                   collapsedDesktopOnly ? 'lg:hidden' : ''
                 }`}
               >
@@ -120,8 +120,8 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
                       collapsedDesktopOnly ? 'lg:justify-center' : ''
                     } ${
                       activeView === item.id
-                        ? 'bg-gradient-to-r from-[#79d6f2] to-[#54c6e8] text-[#0f3d56] shadow-[0_8px_24px_rgba(83,184,219,0.35)]'
-                        : 'text-[#4b6182] hover:bg-[#edf7fc] hover:text-[#1f3556]'
+                        ? 'bg-gradient-to-r from-[#e0f2fe] to-[#bae6fd] text-[#0f3d56] shadow-[0_8px_24px_rgba(125,211,252,0.34)]'
+                        : 'text-[#4b6182] hover:bg-[#f0f9ff] hover:text-[#1f3556]'
                     }`}
                     title={collapsedDesktopOnly ? item.label : ''}
                   >
@@ -132,7 +132,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
               </div>
             </nav>
 
-            <div className="border-t border-[#d8c8a7]/65 p-2.5">
+            <div className="border-t border-[#d7e9f7] p-2.5">
               <button
                 onClick={handleLogout}
                 disabled={isLoggingOut}
