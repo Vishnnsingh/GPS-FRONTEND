@@ -582,12 +582,14 @@ function Bills() {
                           {bill.items && bill.items.length > 0 ? (
                             <div className="space-y-1">
                               {bill.items.map((item, idx) => (
-                                <div key={idx} className="text-xs text-slate-700 dark:text-slate-300">
-                                  {item.fee_name}: <span className="font-medium">₹{item.amount || 0}</span>
+                                <div key={idx} className="text-xs text-slate-700 dark:text-slate-300 flex justify-between items-center gap-1">
+                                  <span>{item.fee_name}:</span>
+                                  <span className="font-medium">₹{item.amount || 0}</span>
                                 </div>
                               ))}
-                              <div className="text-xs font-bold text-slate-900 dark:text-white pt-1 border-t border-slate-200 dark:border-slate-700 mt-1">
-                                Total: ₹{bill.items.reduce((sum, item) => sum + (item.amount || 0), 0)}
+                              <div className="text-xs font-bold text-slate-900 dark:text-white pt-1 border-t border-slate-200 dark:border-slate-700 mt-1 flex justify-between items-center">
+                                <span>Total:</span>
+                                <span>₹{bill.items.reduce((sum, item) => sum + (item.amount || 0), 0)}</span>
                               </div>
                             </div>
                           ) : (

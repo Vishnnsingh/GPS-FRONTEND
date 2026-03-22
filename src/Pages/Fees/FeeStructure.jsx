@@ -19,6 +19,7 @@ function FeeStructure() {
   const [editingId, setEditingId] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
   const [mode, setMode] = useState('single') // 'single' or 'bulk'
+  const [expandedClasses, setExpandedClasses] = useState({}) // Track expanded/collapsed state
   const [formData, setFormData] = useState({
     class: '',
     fee_name: '',
@@ -229,6 +230,13 @@ function FeeStructure() {
     setMode('single')
   }
 
+  const toggleClass = (classKey) => {
+    setExpandedClasses(prev => ({
+      ...prev,
+      [classKey]: !prev[classKey]
+    }))
+  }
+
   const addBulkRow = () => {
     setBulkData([...bulkData, {
       class: bulkData[0]?.class || '',
@@ -259,17 +267,20 @@ function FeeStructure() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Fee Structure Management</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full sm:w-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8 space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-2xl font-bold text-slate-900">Fee Structure Management</h3>
+          <p className="text-sm text-slate-500 mt-1">Manage and organize your school fee structures</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:w-auto">
           <button
             onClick={() => {
               resetForm()
               setMode('single')
               setIsModalOpen(true)
             }}
-            className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors flex items-center justify-center gap-2 whitespace-nowrap text-sm sm:text-base shadow-lg shadow-cyan-500/20"
+            className="w-full sm:w-auto px-4 sm:px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap text-sm sm:text-base shadow-md hover:shadow-lg"
           >
             <span className="material-symbols-outlined text-sm">add</span>
             Add Single
@@ -280,7 +291,7 @@ function FeeStructure() {
               setMode('bulk')
               setIsModalOpen(true)
             }}
-            className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 whitespace-nowrap text-sm sm:text-base"
+            className="w-full sm:w-auto px-4 sm:px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg whitespace-nowrap text-sm sm:text-base"
           >
             <span className="material-symbols-outlined text-sm">add_circle</span>
             Add Bulk
@@ -289,15 +300,15 @@ function FeeStructure() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-end">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-end bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
         <div className="w-full sm:flex-1">
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class</label>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">Filter by Class</label>
           <input
             type="text"
             value={classFilter}
             onChange={(e) => setClassFilter(e.target.value)}
-            placeholder="Filter by class"
-            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+            placeholder="Search classes..."
+            className="w-full px-4 py-2.5 border border-slate-200 rounded-lg bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
         </div>
         <button
@@ -305,7 +316,7 @@ function FeeStructure() {
             setClassFilter('')
             setSectionFilter('')
           }}
-          className="w-full sm:w-auto px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+          className="w-full sm:w-auto px-6 py-2.5 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors duration-200 font-medium"
         >
           Reset
         </button>
@@ -313,18 +324,30 @@ function FeeStructure() {
 
       {/* Messages */}
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-          <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
+          <span className="material-symbols-outlined text-red-600 mt-0.5 text-xl flex-shrink-0">error</span>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-red-900">{error}</p>
+          </div>
+          <button
+            onClick={() => setError('')}
+            className="text-red-400 hover:text-red-600 flex-shrink-0 mt-0.5"
+          >
+            <span className="material-symbols-outlined text-lg">close</span>
+          </button>
         </div>
       )}
       {success && (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 flex items-center justify-between">
-          <p className="text-sm text-green-700 dark:text-green-300">{success}</p>
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-green-600 text-xl">check_circle</span>
+            <p className="text-sm font-semibold text-green-900">{success}</p>
+          </div>
           <button
             onClick={() => setSuccess('')}
-            className="text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100"
+            className="text-green-400 hover:text-green-600"
           >
-            <span className="material-symbols-outlined text-sm">close</span>
+            <span className="material-symbols-outlined text-lg">close</span>
           </button>
         </div>
       )}
@@ -338,41 +361,46 @@ function FeeStructure() {
         const optionalCount = feeStructures.filter(f => f.is_optional).length
 
         return (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-gradient-to-br from-cyan-50/30 to-cyan-100/30 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-xl p-4 border border-cyan-200/30 dark:border-cyan-700/50 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-cyan-200 font-medium">Total Classes</p>
-                  <p className="text-2xl font-black mt-1 text-cyan-200">{totalClasses}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <span className="material-symbols-outlined text-blue-600 text-xl">class</span>
                 </div>
-                <span className="material-symbols-outlined text-3xl text-cyan-200">class</span>
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Classes</p>
+                  <p className="text-2xl font-black text-slate-900 mt-0.5">{totalClasses}</p>
+                </div>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-cyan-50/30 to-cyan-100/30 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-xl p-4 border border-cyan-200/30 dark:border-cyan-700/50 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-cyan-200 font-medium">Total Fees</p>
-                  <p className="text-2xl font-black mt-1 text-cyan-200">{totalFees}</p>
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <span className="material-symbols-outlined text-green-600 text-xl">receipt_long</span>
                 </div>
-                <span className="material-symbols-outlined text-3xl text-cyan-200">receipt_long</span>
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Fees</p>
+                  <p className="text-2xl font-black text-slate-900 mt-0.5">{totalFees}</p>
+                </div>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-cyan-50/30 to-cyan-100/30 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-xl p-4 border border-cyan-200/30 dark:border-cyan-700/50 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-cyan-200 font-medium">Total Amount</p>
-                  <p className="text-xl font-black mt-1 text-cyan-200">₹{totalAmount.toLocaleString('en-IN')}</p>
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <span className="material-symbols-outlined text-amber-600 text-xl">payments</span>
                 </div>
-                <span className="material-symbols-outlined text-3xl text-cyan-200">payments</span>
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Amount</p>
+                  <p className="text-lg font-black text-slate-899 mt-0.5">₹{totalAmount.toLocaleString('en-IN')}</p>
+                </div>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-cyan-50/30 to-cyan-100/30 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-xl p-4 border border-cyan-200/30 dark:border-cyan-700/50 shadow-sm">
-              <div className="flex items-center justify-between">
+            <div className="bg-slate-10 rounded-2xl border border-slate-50 p-5 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+              <div className="flex items-center gap-4">
                 <div>
-                  <p className="text-sm text-cyan-200 font-medium">Required / Optional</p>
-                  <p className="text-xl font-black mt-1 text-cyan-200">{requiredCount} / {optionalCount}</p>
+                  <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Req / Opt</p>
+                  <p className="text-2xl font-black text-gray-800 mt-0.5">{requiredCount} / {optionalCount}</p>
                 </div>
-                <span className="material-symbols-outlined text-3xl text-cyan-200">check_circle</span>
               </div>
             </div>
           </div>
@@ -381,11 +409,18 @@ function FeeStructure() {
 
       {/* Grouped by Class */}
       {loading ? (
-        <div className="flex items-center justify-center py-8">
-          <span className="material-symbols-outlined animate-spin text-3xl text-cyan-200">sync</span>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <span className="material-symbols-outlined animate-spin text-5xl text-blue-500 mx-auto block mb-2">sync</span>
+            <p className="text-slate-500 font-medium">Loading fee structures...</p>
+          </div>
         </div>
       ) : feeStructures.length === 0 ? (
-        <p className="text-center text-slate-500 dark:text-slate-400 py-8">No fee structures found</p>
+        <div className="text-center py-12">
+          <span className="material-symbols-outlined text-5xl text-slate-300 mx-auto block mb-3">folder_open</span>
+          <p className="text-slate-500 font-medium">No fee structures found</p>
+          <p className="text-sm text-slate-400 mt-1">Create your first fee structure to get started</p>
+        </div>
       ) : (() => {
         // Group fees by class
         const groupedByClass = feeStructures.reduce((acc, fee) => {
@@ -414,115 +449,118 @@ function FeeStructure() {
               return (
                 <div 
                   key={classKey} 
-                  className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all overflow-hidden"
+                  className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden"
                 >
                   {/* Class Header */}
-                  <div className="bg-gradient-to-r from-cyan-50/30 to-cyan-500/10 dark:from-cyan-900/30 dark:to-cyan-800/20 px-4 sm:px-6 py-4 border-b border-cyan-200/30 dark:border-cyan-700/50">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="min-w-0 flex items-start sm:items-center gap-3 sm:gap-4">
-                        <div className="bg-cyan-300/15 dark:bg-cyan-500/20 rounded-xl p-2 sm:p-2.5 shrink-0">
-                          <span className="material-symbols-outlined text-cyan-200 dark:text-cyan-200 text-xl sm:text-2xl">class</span>
+                  <div className="bg-white px-5 sm:px-6 py-5 border-b border-slate-200 hover:bg-slate-50 transition-colors duration-200">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="min-w-0 flex items-center gap-3 sm:gap-4 flex-1">
+                        <button
+                          onClick={() => toggleClass(classKey)}
+                          className="shrink-0 p-2.5 hover:bg-slate-100 rounded-lg transition-colors duration-200 text-slate-600 hover:text-slate-900"
+                          title={expandedClasses[classKey] ? 'Collapse' : 'Expand'}
+                        >
+                          <span className="material-symbols-outlined text-xl">
+                            {expandedClasses[classKey] ? 'expand_less' : 'expand_more'}
+                          </span>
+                        </button>
+                        <div className="bg-blue-50 rounded-lg p-2.5 shrink-0">
+                          <span className="material-symbols-outlined text-blue-600 text-xl">class</span>
                         </div>
                         <div className="min-w-0">
-                          <h4 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
+                          <h4 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
                             Class {classKey}
                           </h4>
-                          <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                            <span className="inline-flex items-center rounded-full bg-cyan-500/20 dark:bg-cyan-500/30 border border-cyan-400/50 dark:border-cyan-400/50 px-2 py-0.5 text-white dark:text-white font-medium">
-                              {classFees.length} {classFees.length === 1 ? 'Fee Structure' : 'Fee Structures'}
+                          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                            <span className="inline-flex items-center rounded-full bg-slate-100 border border-slate-300 px-3 py-1.5 text-slate-700 font-semibold">
+                              {classFees.length} {classFees.length === 1 ? 'Fee' : 'Fees'}
                             </span>
-                            <span className="inline-flex items-center rounded-full bg-cyan-500/20 dark:bg-cyan-500/30 border border-cyan-400/50 dark:border-cyan-400/50 px-2 py-0.5 text-white dark:text-white font-medium">
-                              Required {requiredFees.length}
+                            <span className="inline-flex items-center rounded-full bg-green-100 border border-green-300 px-3 py-1.5 text-green-700 font-semibold">
+                              {requiredFees.length} Required
                             </span>
-                            <span className="inline-flex items-center rounded-full bg-cyan-500/20 dark:bg-cyan-500/30 border border-cyan-400/50 dark:border-cyan-400/50 px-2 py-0.5 text-white dark:text-white font-medium">
-                              Optional {optionalFees.length}
+                            <span className="inline-flex items-center rounded-full bg-amber-100 border border-amber-300 px-3 py-1.5 text-amber-700 font-semibold">
+                              {optionalFees.length} Optional
                             </span>
                           </div>
                         </div>
                       </div>
-                      <div className="w-full sm:w-auto sm:min-w-[160px] rounded-xl border border-cyan-400/50 dark:border-cyan-400/50 bg-cyan-500/20 dark:bg-cyan-500/30 px-3 py-2.5 text-left sm:text-right">
-                        <p className="text-[11px] text-white dark:text-white uppercase tracking-wide font-semibold">Total Amount</p>
-                        <p className="text-2xl sm:text-3xl font-black text-white dark:text-white leading-tight">
-                          Rs. {totalAmount.toLocaleString('en-IN')}
+                      <div className="w-full sm:w-auto rounded-xl border border-slate-300 bg-slate-100 text-white px-4 py-3.5 text-left sm:text-right shadow-md">
+                        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Total Amount</p>
+                        <p className="text-2xl font-black text-slate-800 leading-tight mt-1.5">
+                          ₹{totalAmount.toLocaleString('en-IN')}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Fees Table */}
-                  <div className="overflow-x-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
+                  {/* Fees Table - Only show when expanded */}
+                  {expandedClasses[classKey] && (
+                    <div className="overflow-x-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="bg-cyan-500 dark:bg-cyan-500 border-b border-cyan-200/30 dark:border-cyan-700/50">
-                          <th className="px-4 py-3 text-left font-semibold text-white">Fee Name</th>
-                          <th className="px-4 py-3 text-right font-semibold text-white">Amount</th>
-                          <th className="px-4 py-3 text-center font-semibold text-white">Period</th>
-                          <th className="px-4 py-3 text-center font-semibold text-white">Late Fine</th>
-                          <th className="px-4 py-3 text-center font-semibold text-white">Type</th>
-                          <th className="px-4 py-3 text-center font-semibold text-white">Actions</th>
+                        <tr className="bg-slate-50 border-b border-slate-200">
+                          <th className="px-5 py-4 text-left font-bold text-slate-900 text-sm">Fee Name</th>
+                          <th className="px-5 py-4 text-right font-bold text-slate-900 text-sm">Amount</th>
+                          <th className="px-5 py-4 text-center font-bold text-slate-900 text-sm">Period</th>
+                          <th className="px-5 py-4 text-center font-bold text-slate-900 text-sm">Late Fine</th>
+                          <th className="px-5 py-4 text-center font-bold text-slate-900 text-sm">Type</th>
+                          <th className="px-5 py-4 text-center font-bold text-slate-900 text-sm">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {classFees.map((fee, index) => (
                           <tr 
                             key={fee.id} 
-                            className={`border-b border-cyan-200/30 dark:border-cyan-700/50 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 transition-colors ${
-                              index === classFees.length - 1 ? 'border-b-0' : ''
-                            }`}
+                            className="border-b border-slate-200 hover:bg-slate-50 transition-colors duration-150"
                           >
-                            <td className="px-4 py-3">
+                            <td className="px-5 py-4">
                               <div className="flex items-center gap-2">
-                                <span className="font-semibold text-slate-900 dark:text-white">{fee.fee_name}</span>
-                                {fee.is_optional && (
-                                  <span className="px-1.5 py-0.5 bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 rounded text-xs font-medium border border-cyan-400/30 dark:border-cyan-600/50">
-                                    Optional
-                                  </span>
-                                )}
+                                <span className="font-semibold text-slate-900">{fee.fee_name}</span>
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-right">
-                              <span className="font-bold text-slate-900 dark:text-white text-base">
+                            <td className="px-4 py-3.5 text-right">
+                              <span className="font-bold text-black dark:text-slate-800 text-base">
                                 ₹{fee.fee_amount?.toLocaleString('en-IN') || 0}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-center">
-                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            <td className="px-4 py-3.5 text-center">
+                              <span className={`px-3 py-1.5 rounded text-xs font-bold transition-colors hover:scale-105 ${
                                 fee.period === 'yearly' 
-                                  ? 'bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 border border-cyan-400/30 dark:border-cyan-600/50' 
-                                  : 'bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 border border-cyan-400/30 dark:border-cyan-600/50'
+                                  ? 'bg-purple-100 dark:bg-purple-900/40 text-black dark:text-purple-200 border border-purple-400 dark:border-purple-700 hover:bg-purple-200 dark:hover:bg-purple-900/60' 
+                                  : 'bg-cyan-100 dark:bg-cyan-900/40 text-black dark:text-cyan-200 border border-cyan-400 dark:border-cyan-700 hover:bg-cyan-200 dark:hover:bg-cyan-900/60'
                               }`}>
-                                {fee.period === 'yearly' ? '📅 Yearly' : '📆 Monthly'}
+                                {fee.period === 'yearly' ? '\ud83d\udcc5 Yearly' : '\ud83d\udcc6 Monthly'}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-center">
+                            <td className="px-4 py-3.5 text-center">
                               {fee.late_fine_enabled ? (
-                                <span className="px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-full text-xs font-medium flex items-center justify-center gap-1 w-fit mx-auto border border-amber-200 dark:border-amber-700/50">
-                                  <span className="material-symbols-outlined text-xs">warning</span>
+                                <span className="px-3 py-1.5 bg-red-100 dark:bg-red-900/40 text-black dark:text-red-200 rounded text-xs font-bold flex items-center justify-center gap-1.5 w-fit mx-auto border border-red-400 dark:border-red-700 hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors cursor-default">
+                                  <span className="material-symbols-outlined text-sm">warning</span>
                                   Enabled
                                 </span>
                               ) : (
-                                <span className="px-3 py-1 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 rounded-full text-xs font-medium border border-slate-200 dark:border-slate-700/50">
+                                <span className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-black dark:text-gray-300 rounded text-xs font-bold border border-gray-400 dark:border-gray-600 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors cursor-default">
                                   Disabled
                                 </span>
                               )}
                             </td>
-                            <td className="px-4 py-3 text-center">
+                            <td className="px-4 py-3.5 text-center">
                               {fee.is_optional ? (
-                                <span className="px-3 py-1 bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 rounded-full text-xs font-medium border border-cyan-400/30 dark:border-cyan-600/50">
+                                <span className="px-3 py-1.5 bg-orange-100 dark:bg-orange-900/40 text-black dark:text-orange-200 rounded text-xs font-bold border border-orange-400 dark:border-orange-700 hover:bg-orange-200 dark:hover:bg-orange-900/60 transition-colors cursor-default">
                                   Optional
                                 </span>
                               ) : (
-                                <span className="px-3 py-1 bg-cyan-300/15 dark:bg-cyan-500/20 text-cyan-200 dark:text-cyan-200 rounded-full text-xs font-medium border border-cyan-400/30 dark:border-cyan-600/50">
+                                <span className="px-3 py-1.5 bg-green-100 dark:bg-green-900/40 text-black dark:text-green-200 rounded text-xs font-bold border border-green-400 dark:border-green-700 hover:bg-green-200 dark:hover:bg-green-900/60 transition-colors cursor-default">
                                   Required
                                 </span>
                               )}
                             </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center justify-center gap-2">
+                            <td className="px-4 py-3.5">
+                              <div className="flex items-center justify-center gap-1.5">
                                 <button
                                   onClick={() => handleEdit(fee)}
                                   disabled={deletingId === fee.id || deletingId !== null}
-                                  className="p-2 text-cyan-200 hover:bg-cyan-100/30 dark:hover:bg-cyan-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium hover:scale-110 active:scale-95"
                                   title="Edit fee structure"
                                 >
                                   <span className="material-symbols-outlined text-lg">edit</span>
@@ -530,7 +568,7 @@ function FeeStructure() {
                                 <button
                                   onClick={() => handleDelete(fee.id)}
                                   disabled={deletingId === fee.id || deletingId !== null}
-                                  className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="p-2.5 text-red-600 hover:bg-red-100 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-110 active:scale-95"
                                   title="Delete fee structure"
                                 >
                                   {deletingId === fee.id ? (
@@ -546,19 +584,23 @@ function FeeStructure() {
                       </tbody>
                       {/* Class Summary Footer */}
                       <tfoot>
-                        <tr className="bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700">
-                          <td colSpan={2} className="px-4 py-3 text-right font-semibold text-slate-700 dark:text-slate-300">
-                            Class Total:
-                          </td>
-                          <td colSpan={4} className="px-4 py-3 text-right">
-                            <span className="text-xl font-bold text-cyan-200 dark:text-cyan-200">
-                              ₹{totalAmount.toLocaleString('en-IN')}
-                            </span>
-                          </td>
-                        </tr>
-                      </tfoot>
+  <tr className="bg-slate-50 border-t border-slate-200 hover:bg-slate-100 transition-colors">
+    <td colSpan={6} className="px-5 py-4">
+      <div className="flex justify-between items-center">
+        <span className="font-bold text-slate-900">
+          Class Total:
+        </span>
+
+        <span className="text-lg font-black text-slate-900">
+          ₹{totalAmount.toLocaleString('en-IN')}
+        </span>
+      </div>
+    </td>
+  </tr>
+</tfoot>
                     </table>
-                  </div>
+                    </div>
+                  )}
                 </div>
               )
             })}
@@ -578,14 +620,14 @@ function FeeStructure() {
           }}
         >
           <div 
-            className={`bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full relative z-[9999] flex flex-col ${
-              mode === 'bulk' ? 'max-w-5xl' : 'max-w-2xl'
+            className={`bg-white rounded-2xl shadow-2xl w-full relative z-[9999] flex flex-col ${
+              mode === 'bulk' ? 'max-w-3xl' : 'max-w-2xl'
             } max-h-[calc(90vh-5rem)]`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Sticky Header */}
-            <div className="flex items-center justify-between p-6 pb-4 border-b border-slate-200 dark:border-slate-700 sticky top-0 bg-white dark:bg-slate-800 rounded-t-xl z-10">
-              <h3 className="text-xl font-black text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between p-4 pb-3 border-b border-slate-200 sticky top-0 bg-white rounded-t-2xl z-10\">
+              <h3 className="text-lg font-bold text-slate-900">
                 {editingId ? 'Edit Fee Structure' : mode === 'bulk' ? 'Add Bulk Fee Structures' : 'Add Fee Structure'}
               </h3>
               <button
@@ -593,147 +635,147 @@ function FeeStructure() {
                   setIsModalOpen(false)
                   resetForm()
                 }}
-                className="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                className="p-2.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
               >
-                <span className="material-symbols-outlined">close</span>
+                <span className="material-symbols-outlined text-xl\">close</span>
               </button>
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6 pt-4 table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
+            <div className="flex-1 overflow-y-auto p-4 pt-3 table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
 
             {!editingId && (
-              <div className="mb-6 flex gap-3 bg-slate-100 dark:bg-slate-900/50 p-1 rounded-lg">
+              <div className="mb-3 flex gap-1 bg-slate-100 p-0.5 rounded-lg">
                 <button
                   type="button"
                   onClick={() => setMode('single')}
-                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                  className={`flex-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${
                     mode === 'single'
-                      ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20'
-                      : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white'
                   }`}
                 >
-                  Single Entry
+                  Single
                 </button>
                 <button
                   type="button"
                   onClick={() => setMode('bulk')}
-                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                  className={`flex-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${
                     mode === 'bulk'
-                      ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20'
-                      : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-sky-500 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white'
                   }`}
                 >
-                  Bulk Entry
+                  Bulk
                 </button>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
               {mode === 'bulk' && !editingId ? (
                 <>
                   {/* Bulk Mode */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Class (for all) *</label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Class (for all) *</label>
                     <input
                       type="text"
                       required
                       value={bulkData[0]?.class || ''}
                       onChange={(e) => updateBulkClassForAll(e.target.value)}
                       placeholder="e.g., LKG, 1, 2"
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                     />
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">This class will be applied to all fee structures below</p>
+                    <p className="text-xs text-slate-500 mt-1">This class will be applied to all fee structures</p>
                   </div>
 
-                  <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2 table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
-                    <div className="flex items-center justify-between mb-4">
-                      <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Classes & Fees:</p>
+                  <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
+                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200">
+                      <p className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Classes & Fees</p>
                       <button
                         type="button"
                         onClick={addBulkRow}
-                        className="px-4 py-2 text-sm bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors flex items-center gap-2 shadow-lg shadow-cyan-500/20"
+                        // className="px-2.5 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-1 shadow-sm font-medium"
                       >
-                        <span className="material-symbols-outlined text-base">add</span>
-                        Add Another Class
+                        {/* <span className="material-symbols-outlined text-sm">add</span>
+                        Add */}
                       </button>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {bulkData.map((item, rowIndex) => (
-                        <div key={rowIndex} className="border-2 border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900/50 hover:border-[#137fec] dark:hover:border-[#137fec] transition-all shadow-sm">
-                          <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-slate-200 dark:border-slate-700">
-                            <div className="flex items-center gap-3">
-                              <span className="text-base font-black text-slate-900 dark:text-white">Class: {item.class || 'Not Set'}</span>
+                        <div key={rowIndex} className="border-2 border-slate-200 dark:border-slate-700 rounded-lg p-3 bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900/50 hover:border-blue-500 dark:hover:border-blue-500 transition-all shadow-sm">
+                          <div className="flex items-center justify-between mb-2 pb-2 border-b border-slate-200 dark:border-slate-700">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-bold text-slate-900 dark:text-white">Class: {item.class || 'Not Set'}</span>
                             </div>
                             {bulkData.length > 1 && (
                               <button
                                 type="button"
                                 onClick={() => removeBulkRow(rowIndex)}
-                                className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                                 title="Remove this class"
                               >
-                                <span className="material-symbols-outlined text-lg">delete</span>
+                                <span className="material-symbols-outlined text-sm">delete</span>
                               </button>
                             )}
                           </div>
 
                           {/* All fees in one table/card */}
                           <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
+                            <table className="w-full text-xs">
                               <thead>
                                 <tr className="bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-                                  <th className="px-3 py-2 text-left font-bold text-slate-900 dark:text-white">Fee Name</th>
-                                  <th className="px-3 py-2 text-right font-bold text-slate-900 dark:text-white">Amount</th>
-                                  <th className="px-3 py-2 text-center font-bold text-slate-900 dark:text-white">Period</th>
-                                  <th className="px-3 py-2 text-center font-bold text-slate-900 dark:text-white">Late Fine</th>
-                                  <th className="px-3 py-2 text-center font-bold text-slate-900 dark:text-white">Optional</th>
+                                  <th className="px-2 py-1.5 text-left font-semibold text-slate-900 dark:text-white">Fee Name</th>
+                                  <th className="px-2 py-1.5 text-right font-semibold text-slate-900 dark:text-white">Amount</th>
+                                  <th className="px-2 py-1.5 text-center font-semibold text-slate-900 dark:text-white">Period</th>
+                                  <th className="px-2 py-1.5 text-center font-semibold text-slate-900 dark:text-white">Late</th>
+                                  <th className="px-2 py-1.5 text-center font-semibold text-slate-900 dark:text-white">Opt</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {item.fees.map((fee, feeIndex) => (
                                   <tr key={feeIndex} className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/30">
-                                    <td className="px-3 py-3 font-medium text-slate-900 dark:text-white">
+                                    <td className="px-2 py-2 font-medium text-slate-900 dark:text-white">
                                       {fee.fee_name}
                                     </td>
-                                    <td className="px-3 py-3">
+                                    <td className="px-2 py-2">
                                       <input
                                         type="number"
                                         step="0.01"
                                         min="0"
                                         value={fee.fee_amount}
                                         onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'fee_amount', e.target.value)}
-                                        placeholder="0.00"
-                                        className="w-full px-2 py-1.5 text-sm border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 text-right"
+                                        placeholder="0"
+                                        className="w-full px-1.5 py-1 text-xs border border-cyan-200/30 dark:border-cyan-700/50 rounded bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 text-right"
                                       />
                                     </td>
-                                    <td className="px-3 py-3">
+                                    <td className="px-2 py-2">
                                       <select
                                         value={fee.period}
                                         onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'period', e.target.value)}
-                                        className="w-full px-2 py-1.5 text-sm border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
+                                        className="w-full px-1.5 py-1 text-xs border border-cyan-200/30 dark:border-cyan-700/50 rounded bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
                                       >
-                                        <option value="monthly">Monthly</option>
-                                        <option value="yearly">Yearly</option>
+                                        <option value="monthly">M</option>
+                                        <option value="yearly">Y</option>
                                       </select>
                                     </td>
-                                    <td className="px-3 py-3 text-center">
+                                    <td className="px-2 py-2 text-center">
                                       <label className="flex items-center justify-center cursor-pointer">
                                         <input
                                           type="checkbox"
                                           checked={fee.late_fine_enabled}
                                           onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'late_fine_enabled', e.target.checked)}
-                                          className="w-5 h-5 text-cyan-500 rounded focus:ring-2 focus:ring-cyan-400"
+                                          className="w-4 h-4 text-cyan-500 rounded focus:ring-2 focus:ring-cyan-400"
                                         />
                                       </label>
                                     </td>
-                                    <td className="px-3 py-3 text-center">
+                                    <td className="px-2 py-2 text-center">
                                       <label className="flex items-center justify-center cursor-pointer">
                                         <input
                                           type="checkbox"
                                           checked={fee.is_optional}
                                           onChange={(e) => updateBulkFee(rowIndex, feeIndex, 'is_optional', e.target.checked)}
-                                          className="w-5 h-5 text-cyan-500 rounded focus:ring-2 focus:ring-cyan-400"
+                                          className="w-4 h-4 text-cyan-500 rounded focus:ring-2 focus:ring-cyan-400"
                                         />
                                       </label>
                                     </td>
@@ -750,33 +792,33 @@ function FeeStructure() {
               ) : (
                 <>
                   {/* Single Mode */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Class *</label>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Class *</label>
                       <input
                         type="text"
                         required
                         value={formData.class}
                         onChange={(e) => setFormData({ ...formData, class: e.target.value })}
                         placeholder="e.g., LKG, 1, 2"
-                        className="w-full px-4 py-2.5 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Fee Name *</label>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Fee Name *</label>
                       <input
                         type="text"
                         required
                         value={formData.fee_name}
                         onChange={(e) => setFormData({ ...formData, fee_name: e.target.value })}
                         placeholder="e.g., Tuition Fee"
-                        className="w-full px-4 py-2.5 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Fee Amount *</label>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Fee Amount *</label>
                       <input
                         type="number"
                         required
@@ -785,17 +827,17 @@ function FeeStructure() {
                         value={formData.fee_amount}
                         onChange={(e) => setFormData({ ...formData, fee_amount: e.target.value })}
                         placeholder="0.00"
-                        className="w-full px-4 py-2.5 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Period *</label>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Period *</label>
                       <select
                         required
                         value={formData.period}
                         onChange={(e) => setFormData({ ...formData, period: e.target.value })}
-                        className="w-full px-4 py-2.5 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                       >
                         <option value="monthly">Monthly</option>
                         <option value="yearly">Yearly</option>
@@ -803,42 +845,42 @@ function FeeStructure() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                    <label className="flex items-center gap-3 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
+                    <label className="flex items-center gap-2 cursor-pointer p-2 border border-slate-200 rounded hover:bg-slate-50 transition-colors">
                       <input
                         type="checkbox"
                         id="late_fine_enabled"
                         checked={formData.late_fine_enabled}
                         onChange={(e) => setFormData({ ...formData, late_fine_enabled: e.target.checked })}
-                        className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                       />
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Enable Late Fine</span>
+                      <span className="text-xs font-medium text-slate-700">Late Fine</span>
                     </label>
 
-                    <label className="flex items-center gap-3 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                    <label className="flex items-center gap-2 cursor-pointer p-2 border border-slate-200 rounded hover:bg-slate-50 transition-colors">
                       <input
                         type="checkbox"
                         id="is_optional"
                         checked={formData.is_optional}
                         onChange={(e) => setFormData({ ...formData, is_optional: e.target.checked })}
-                        className="w-5 h-5 text-[#137fec] rounded focus:ring-2 focus:ring-[#137fec]"
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                       />
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Optional Fee</span>
+                      <span className="text-xs font-medium text-slate-700">Optional</span>
                     </label>
                   </div>
                 </>
               )}
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-2 pt-4 border-t border-slate-200">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20"
+                  className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm font-medium text-sm"
                 >
                   {loading ? (
                     <>
-                      <span className="material-symbols-outlined animate-spin text-sm">sync</span>
-                      {editingId ? 'Updating...' : 'Creating...'}
+                      <span className="material-symbols-outlined animate-spin text-xs">sync</span>
+                      <span className="hidden sm:inline">{editingId ? 'Updating...' : 'Creating...'}</span>
                     </>
                   ) : (
                     editingId ? 'Update' : 'Create'
@@ -851,7 +893,7 @@ function FeeStructure() {
                     resetForm()
                   }}
                   disabled={loading}
-                  className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-3 py-2 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-sm"
                 >
                   Cancel
                 </button>
