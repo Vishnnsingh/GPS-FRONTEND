@@ -3,7 +3,7 @@ import { getFeeList } from '../../Api/fees'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
-function FeeList({ onViewInvoice }) {
+function FeeList({ onViewInvoice, onPayFee }) {
   const [feeList, setFeeList] = useState([])
   const [filteredFeeList, setFilteredFeeList] = useState([])
   const [loading, setLoading] = useState(false)
@@ -510,14 +510,40 @@ function FeeList({ onViewInvoice }) {
                       )}
                     </td>
                     <td className="px-2 sm:px-3 py-2 sm:py-3 text-center sticky right-0 bg-white dark:bg-slate-800 border-l border-cyan-200/30 dark:border-cyan-700/50 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
-                      <button
-                        onClick={() => onViewInvoice && onViewInvoice(fee.bill_id)}
-                        className="inline-flex items-center gap-1 px-2 py-1 bg-cyan-500 hover:bg-cyan-500/90 text-white rounded text-xs font-medium transition-colors shadow-sm shadow-cyan-500/20"
-                        title="View Invoice"
-                      >
-                        <span className="material-symbols-outlined text-sm">description</span>
-                        <span className="hidden sm:inline">Invoice</span>
-                      </button>
+                      <div className="flex items-center gap-1 justify-center flex-wrap">
+                        {/* Show Pay button for unpaid or partial */}
+                        {(billStatus === 'unpaid' || billStatus === 'partial' || netPayable > 0) && (
+                          <button
+                            onClick={() => onPayFee && onPayFee({
+                              class: fee.class,
+                              section: fee.section,
+                              roll_number: fee.roll_no,
+                              month: fee.month,
+                              student_name: fee.student_name,
+                              total_fee: totalFee,
+                              paid_amount: paidAmount,
+                              net_payable: netPayable
+                            })}
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-orange-500 hover:bg-orange-500/90 text-white rounded text-xs font-medium transition-colors shadow-sm shadow-orange-500/20"
+                            title="Pay Fee"
+                          >
+                            <span className="material-symbols-outlined text-sm">payments</span>
+                            <span className="hidden sm:inline">Pay</span>
+                          </button>
+                        )}
+                        
+                        {/* Show Invoice button for paid or partial */}
+                        {(billStatus === 'paid' || billStatus === 'partial' || netPayable === 0 || netPayable < 0 || paidAmount > 0) && (
+                          <button
+                            onClick={() => onViewInvoice && onViewInvoice(fee.bill_id)}
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-cyan-500 hover:bg-cyan-500/90 text-white rounded text-xs font-medium transition-colors shadow-sm shadow-cyan-500/20"
+                            title="View Invoice"
+                          >
+                            <span className="material-symbols-outlined text-sm">description</span>
+                            <span className="hidden sm:inline">Invoice</span>
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )

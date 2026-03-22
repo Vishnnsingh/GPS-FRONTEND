@@ -1,26 +1,27 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import * as XLSX from 'xlsx'
 import { getAllStudents } from '../../Api/students'
-import { getLoginType, getUser } from '../../Api/auth'
+import { getLoginType, getUser, emitToast } from '../../Api/auth'
+import { migrateFromExcel, cancelMigration } from '../../Api/fees'
 
 const STORAGE_KEY = 'fees_opening_balance_migration_v1'
 
 const REQUIRED_COLUMNS = [
-  'Class',
-  'Section',
-  'Roll No',
-  'Current Month Total',
-  'Pending Due',
-  'Advance',
+  'roll_no',
+  'current_month_total',
+  'pending_due',
+  'advance',
+  'class',
+  'section',
 ]
 
 const REQUIRED_COLUMN_MAP = {
+  rollNo: 'roll_no',
+  currentMonthTotal: 'current_month_total',
+  pendingDue: 'pending_due',
+  advance: 'advance',
   class: 'class',
   section: 'section',
-  rollNo: 'rollno',
-  currentMonthTotal: 'currentmonthtotal',
-  pendingDue: 'pendingdue',
-  advance: 'advance',
 }
 
 const normalizeText = (value) => String(value ?? '').trim()
@@ -57,11 +58,31 @@ const formatDateTime = (isoString) => {
   return date.toLocaleString('en-IN')
 }
 
+const validateYYYYMMFormat = (dateString) => {
+  const regex = /^\d{4}-\d{2}$/
+  return regex.test(dateString)
+}
+
+// Validate month format YYYY-MM
+const validateMonthFormat = (month) => {
+  if (!month) return false
+  const monthRegex = /^\d{4}-(0[1-9]|1[0-2])$/
+  return monthRegex.test(month)
+}
+
+// Format month value from input (YYYY-MM format)
+const formatMonthForAPI = (monthInput) => {
+  if (!monthInput || typeof monthInput !== 'string') return null
+  const trimmed = monthInput.trim()
+  return validateMonthFormat(trimmed) ? trimmed : null
+}
+
 function OpeningBalanceMigration() {
   const [migrationMonth, setMigrationMonth] = useState('')
   const [uploadedFileName, setUploadedFileName] = useState('')
   const [uploadedRows, setUploadedRows] = useState([])
   const [parseError, setParseError] = useState('')
+  const [selectedFile, setSelectedFile] = useState(null)
 
   const [students, setStudents] = useState([])
   const [loadingStudents, setLoadingStudents] = useState(false)
@@ -70,7 +91,7 @@ function OpeningBalanceMigration() {
   const [isMigrating, setIsMigrating] = useState(false)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [isConfirmedByAdmin, setIsConfirmedByAdmin] = useState(false)
-  const [migrationReport, setMigrationReport] = useState(null)
+  const [migrationHistory, setMigrationHistory] = useState([])
 
   const user = getUser()
   const loginType = getLoginType()
@@ -80,11 +101,11 @@ function OpeningBalanceMigration() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
-        const parsed = JSON.parse(stored)
-        setMigrationReport(parsed)
+        const parsed = Array.isArray(JSON.parse(stored)) ? JSON.parse(stored) : []
+        setMigrationHistory(parsed)
       }
     } catch {
-      setMigrationReport(null)
+      setMigrationHistory([])
     }
   }, [])
 
@@ -252,7 +273,6 @@ function OpeningBalanceMigration() {
   )
 
   const canMigrate =
-    !migrationReport &&
     migrationMonth &&
     validRows.length > 0 &&
     invalidRows.length === 0 &&
@@ -271,53 +291,65 @@ function OpeningBalanceMigration() {
     try {
       const fileBuffer = await file.arrayBuffer()
       const workbook = XLSX.read(fileBuffer, { type: 'array' })
-      const firstSheetName = workbook.SheetNames?.[0]
-
-      if (!firstSheetName) {
+      
+      if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
         setParseError('No worksheet found in uploaded file.')
         return
       }
 
-      const worksheet = workbook.Sheets[firstSheetName]
-      const rawRows = XLSX.utils.sheet_to_json(worksheet, { defval: '' })
+      // Process all sheets
+      let allRawRows = []
+      let headerLookup = null
+      
+      for (const sheetName of workbook.SheetNames) {
+        const worksheet = workbook.Sheets[sheetName]
+        const rawRows = XLSX.utils.sheet_to_json(worksheet, { defval: '' })
 
-      if (!rawRows.length) {
-        setParseError('Uploaded sheet is empty.')
+        if (rawRows.length === 0) {
+          continue // Skip empty sheets
+        }
+
+        // Get headers from first sheet with data
+        if (!headerLookup) {
+          const headers = Object.keys(rawRows[0] || {})
+          headerLookup = headers.reduce((acc, header) => {
+            acc[normalizeHeader(header)] = header
+            return acc
+          }, {})
+
+          // Check for required columns only on first sheet with data
+          const missingColumns = Object.entries(REQUIRED_COLUMN_MAP)
+            .filter(([, normalized]) => !headerLookup[normalizeHeader(normalized)])
+            .map(([field]) => field)
+
+          if (missingColumns.length > 0) {
+            setParseError(`Missing required columns: ${missingColumns.join(', ')}`)
+            return
+          }
+        }
+
+        // Add all rows from this sheet
+        allRawRows = allRawRows.concat(rawRows)
+      }
+
+      if (allRawRows.length === 0) {
+        setParseError('All sheets are empty. Please upload a valid Excel file with data.')
         return
       }
 
-      const headers = Object.keys(rawRows[0] || {})
-      const headerLookup = headers.reduce((acc, header) => {
-        acc[normalizeHeader(header)] = header
-        return acc
-      }, {})
-
-      const missingColumns = Object.entries(REQUIRED_COLUMN_MAP)
-        .filter(([, normalized]) => !headerLookup[normalized])
-        .map(([field]) => {
-          if (field === 'rollNo') return 'Roll No'
-          if (field === 'currentMonthTotal') return 'Current Month Total'
-          if (field === 'pendingDue') return 'Pending Due'
-          if (field === 'advance') return 'Advance'
-          return field.charAt(0).toUpperCase() + field.slice(1)
-        })
-
-      if (missingColumns.length > 0) {
-        setParseError(`Missing required columns: ${missingColumns.join(', ')}`)
-        return
-      }
-
-      const normalizedRows = rawRows.map((row, index) => ({
+      // Normalize all rows
+      const normalizedRows = allRawRows.map((row, index) => ({
         rowNumber: index + 2,
-        class: row[headerLookup[REQUIRED_COLUMN_MAP.class]],
-        section: row[headerLookup[REQUIRED_COLUMN_MAP.section]],
-        rollNo: row[headerLookup[REQUIRED_COLUMN_MAP.rollNo]],
-        currentMonthTotal: row[headerLookup[REQUIRED_COLUMN_MAP.currentMonthTotal]],
-        pendingDue: row[headerLookup[REQUIRED_COLUMN_MAP.pendingDue]],
-        advance: row[headerLookup[REQUIRED_COLUMN_MAP.advance]],
+        class: row[headerLookup[normalizeHeader(REQUIRED_COLUMN_MAP.class)]],
+        section: row[headerLookup[normalizeHeader(REQUIRED_COLUMN_MAP.section)]],
+        rollNo: row[headerLookup[normalizeHeader(REQUIRED_COLUMN_MAP.rollNo)]],
+        currentMonthTotal: row[headerLookup[normalizeHeader(REQUIRED_COLUMN_MAP.currentMonthTotal)]],
+        pendingDue: row[headerLookup[normalizeHeader(REQUIRED_COLUMN_MAP.pendingDue)]],
+        advance: row[headerLookup[normalizeHeader(REQUIRED_COLUMN_MAP.advance)]],
       }))
 
       setUploadedRows(normalizedRows)
+      setSelectedFile(file)
     } catch (error) {
       setParseError(error?.message || 'Failed to parse uploaded file. Please upload a valid Excel file.')
     } finally {
@@ -332,24 +364,159 @@ function OpeningBalanceMigration() {
     setParseError('')
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1800))
-
-      const report = {
-        month: migrationMonth,
-        completedAt: new Date().toISOString(),
-        uploadedFileName,
-        totalStudents: validRows.length,
-        totalPendingDue,
-        totalAdvance,
-        invalidRows: invalidRows.length,
+      // Validate month format (YYYY-MM)
+      if (!validateYYYYMMFormat(migrationMonth)) {
+        const errorMsg = 'Migration month must be in YYYY-MM format (e.g., 2026-03)'
+        setParseError(errorMsg)
+        emitToast('error', errorMsg, 'Invalid Format')
+        setIsMigrating(false)
+        return
       }
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(report))
-      setMigrationReport(report)
-      setShowConfirmModal(false)
-      setIsConfirmedByAdmin(false)
+      if (!selectedFile) {
+        const errorMsg = 'No file selected. Please upload an Excel file.'
+        setParseError(errorMsg)
+        emitToast('error', errorMsg, 'File Missing')
+        setIsMigrating(false)
+        return
+      }
+
+      // Send Excel file with FormData to batch migration endpoint
+      emitToast('info', 'Starting batch migration from Excel...', 'Processing')
+      const response = await migrateFromExcel(selectedFile, migrationMonth)
+
+      if (response.success) {
+        // Log detailed results
+        console.log('Migration Results:', response.results)
+
+        // Create migration report with batch results
+        const report = {
+          id: Date.now(),
+          month: migrationMonth,
+          completedAt: new Date().toISOString(),
+          uploadedFileName,
+          sheets_processed: response.sheets_processed,
+          class_sections_processed: response.class_sections_processed,
+          total_migrated: response.total_migrated,
+          total_errors: response.total_errors,
+          results: response.results,
+          serverResponse: response,
+        }
+
+        const updatedHistory = [...migrationHistory, report]
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedHistory))
+        setMigrationHistory(updatedHistory)
+
+        // Reset form
+        setShowConfirmModal(false)
+        setIsConfirmedByAdmin(false)
+        setUploadedRows([])
+        setUploadedFileName('')
+        setMigrationMonth('')
+        setSelectedFile(null)
+
+        // Show success with details
+        const successMsg = `Migration completed!\n\n✅ Sheets: ${response.sheets_processed}\n✅ Classes/Sections: ${response.class_sections_processed}\n✅ Total Migrated: ${response.total_migrated}`
+        emitToast('success', successMsg, 'Migration Complete')
+      } else {
+        setParseError(response.message || 'Migration failed. Please try again.')
+        emitToast('error', response.message || 'Migration failed', 'Error')
+      }
     } catch (error) {
-      setParseError(error?.message || 'Migration failed. Please try again.')
+      let errorMessage = error?.message || 'Migration failed. Please try again.'
+      let errorTitle = 'Migration Error'
+      let isConflictError = false
+
+      // Handle 409 conflict - migration already in progress
+      if (error?.response?.status === 409) {
+        isConflictError = true
+        const conflictMessage = error?.response?.data?.message || 'Migration already in progress'
+
+        if (conflictMessage.includes('already in progress')) {
+          const shouldRetry = window.confirm(
+            `${conflictMessage}\n\nDo you want to cancel the existing migration and retry?\n\n(This will clear the previous migration lock and start fresh)`
+          )
+
+          if (shouldRetry && selectedFile) {
+            try {
+              setIsMigrating(true)
+              emitToast('info', 'Cancelling existing migration...', 'Processing')
+
+              // Cancel the existing migration
+              await cancelMigration(migrationMonth)
+              emitToast('success', 'Previous migration cancelled', 'Success')
+
+              // Small delay to ensure backend state is updated
+              await new Promise((resolve) => setTimeout(resolve, 500))
+
+              // Retry the migration
+              emitToast('info', 'Retrying migration...', 'Processing')
+              const retryResponse = await migrateFromExcel(selectedFile, migrationMonth)
+
+              if (retryResponse.success) {
+                console.log('Retry Migration Results:', retryResponse.results)
+
+                const report = {
+                  id: Date.now(),
+                  month: migrationMonth,
+                  completedAt: new Date().toISOString(),
+                  uploadedFileName,
+                  sheets_processed: retryResponse.sheets_processed,
+                  class_sections_processed: retryResponse.class_sections_processed,
+                  total_migrated: retryResponse.total_migrated,
+                  total_errors: retryResponse.total_errors,
+                  results: retryResponse.results,
+                  serverResponse: retryResponse,
+                }
+
+                const updatedHistory = [...migrationHistory, report]
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedHistory))
+                setMigrationHistory(updatedHistory)
+
+                setShowConfirmModal(false)
+                setIsConfirmedByAdmin(false)
+                setUploadedRows([])
+                setUploadedFileName('')
+                setMigrationMonth('')
+                setSelectedFile(null)
+
+                const successMsg = `Migration completed after retry!\n\n✅ Sheets: ${retryResponse.sheets_processed}\n✅ Classes/Sections: ${retryResponse.class_sections_processed}\n✅ Total Migrated: ${retryResponse.total_migrated}`
+                emitToast('success', successMsg, 'Migration Complete')
+                setIsMigrating(false)
+                return
+              } else {
+                errorMessage = retryResponse.message || 'Migration failed after retry'
+                errorTitle = 'Retry Failed'
+              }
+            } catch (retryError) {
+              errorMessage =
+                retryError?.response?.data?.message ||
+                retryError?.message ||
+                'Retry failed. Please try again.'
+              errorTitle = 'Retry Error'
+              console.error('Migration retry error:', retryError)
+            }
+          } else if (shouldRetry && !selectedFile) {
+            errorMessage = 'File not available. Please re-upload and try again.'
+            errorTitle = 'File Lost'
+          } else {
+            errorMessage = `${conflictMessage}\n\nPlease wait for the previous migration to complete or contact admin to unlock.`
+            errorTitle = 'Migration In Progress'
+          }
+        } else {
+          errorMessage = conflictMessage || 'Migration conflict. Please try again later.'
+          errorTitle = 'Conflict'
+        }
+      } else if (error?.response?.status === 400) {
+        errorMessage =
+          error?.response?.data?.message ||
+          'Invalid file or format. Please check Excel file and month format.'
+        errorTitle = 'Bad Request'
+      }
+
+      console.error('Migration error:', error)
+      setParseError(errorMessage)
+      emitToast('error', errorMessage, errorTitle)
     } finally {
       setIsMigrating(false)
     }
@@ -378,56 +545,46 @@ function OpeningBalanceMigration() {
             Opening Balance Migration for Fees module
           </p>
         </div>
-        {migrationReport && (
+        {migrationHistory.length > 0 && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-3 py-1.5 text-xs font-bold">
             <span className="material-symbols-outlined text-sm">check_circle</span>
-            Migration Locked
+            {migrationHistory.length} Migration{migrationHistory.length !== 1 ? 's' : ''}
           </span>
         )}
       </div>
 
-      <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4">
+      <div className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4">
         <div className="flex items-start gap-2">
-          <span className="material-symbols-outlined text-red-600 dark:text-red-400">warning</span>
+          <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">info</span>
           <div>
-            <p className="text-sm font-bold text-red-700 dark:text-red-300">Migration can only be performed once.</p>
-            <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-              Review the uploaded data carefully. Once completed, migration setup is permanently disabled.
+            <p className="text-sm font-bold text-blue-700 dark:text-blue-300">Multiple uploads are allowed.</p>
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+              Review the uploaded data carefully. Migration history is saved for reference.
             </p>
           </div>
         </div>
       </div>
 
-      {migrationReport && (
-        <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 p-4 space-y-4">
-          <p className="text-base font-black text-emerald-700 dark:text-emerald-300">
-            Migration Completed for {migrationReport.month}
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="rounded-lg border border-emerald-200 dark:border-emerald-700 bg-white/80 dark:bg-slate-800/60 p-3">
-              <p className="text-xs text-slate-500 dark:text-slate-400">Total Students</p>
-              <p className="text-lg font-bold text-slate-900 dark:text-white">{migrationReport.totalStudents}</p>
-            </div>
-            <div className="rounded-lg border border-emerald-200 dark:border-emerald-700 bg-white/80 dark:bg-slate-800/60 p-3">
-              <p className="text-xs text-slate-500 dark:text-slate-400">Total Pending Due</p>
-              <p className="text-lg font-bold text-slate-900 dark:text-white">{formatAmount(migrationReport.totalPendingDue)}</p>
-            </div>
-            <div className="rounded-lg border border-emerald-200 dark:border-emerald-700 bg-white/80 dark:bg-slate-800/60 p-3">
-              <p className="text-xs text-slate-500 dark:text-slate-400">Total Advance</p>
-              <p className="text-lg font-bold text-slate-900 dark:text-white">{formatAmount(migrationReport.totalAdvance)}</p>
-            </div>
-          </div>
-          <div className="rounded-lg border border-emerald-200 dark:border-emerald-700 bg-white/80 dark:bg-slate-800/60 p-3">
-            <p className="text-xs text-slate-500 dark:text-slate-400">Completed At</p>
-            <p className="text-sm font-semibold text-slate-900 dark:text-white">{formatDateTime(migrationReport.completedAt)}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              File: {migrationReport.uploadedFileName || '--'}
-            </p>
+      {migrationHistory.length > 0 && (
+        <div className="space-y-3">
+          <p className="text-sm font-bold text-slate-700 dark:text-slate-300">Recent Migrations</p>
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {migrationHistory.map((report) => (
+              <div key={report.id} className="rounded-lg border border-emerald-200 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-900/20 p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">{report.month}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{formatDateTime(report.completedAt)}</p>
+                  </div>
+                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">{report.totalStudents} students</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      <div className={`${migrationReport ? 'opacity-60 pointer-events-none select-none' : ''} space-y-4`}>
+      <div className="space-y-4">
         {/* Step 1 */}
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-4">
           <div className="flex items-center gap-2 mb-3">
@@ -654,12 +811,12 @@ function OpeningBalanceMigration() {
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
           <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl p-5">
             <h4 className="text-lg font-black text-slate-900 dark:text-white">Confirm Opening Balance Migration</h4>
-            <div className="mt-4 rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-3">
-              <p className="text-sm font-semibold text-red-700 dark:text-red-300">
-                This action is irreversible.
+            <div className="mt-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-3">
+              <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                Please verify the data before confirming.
               </p>
-              <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-                Migration for {migrationMonth || '--'} will be finalized and cannot be run again.
+              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                Opening balance migration for {migrationMonth || '--'} will be sent to the server for processing. Multiple uploads are allowed.
               </p>
             </div>
 

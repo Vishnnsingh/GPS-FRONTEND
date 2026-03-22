@@ -98,6 +98,67 @@ export const closeMonth = async (month) =>
 export const getStudentDues = async (studentId) =>
   withErrorHandling(() => api.get(`/api/fees/dues/${studentId}`), 'Failed to fetch student dues')
 
+export const getStudentFeeDetails = async (classFilter, section, rollNumber, month) => {
+  try {
+    // Use existing getFeeList API and filter for the specific student
+    const feeList = await getFeeList(classFilter, section, month)
+    
+    // Find the matching student record
+    const feeData = Array.isArray(feeList) 
+      ? feeList.find(f => f.roll_no == rollNumber)
+      : feeList?.data?.find(f => f.roll_no == rollNumber)
+    
+    if (!feeData) {
+      throw new Error('Student fee details not found')
+    }
+    
+    return feeData
+  } catch (error) {
+    throw normalizeApiError(error, 'Failed to fetch student fee details')
+  }
+}
+
+// ============ Migration ============
+
+export const migrateOpeningBalance = async (migrationData) => {
+  try {
+    const response = await api.post('/api/migration/opening-balance', migrationData)
+    return response.data
+  } catch (error) {
+    console.error('Migration API error:', error.response?.data || error.message)
+    throw normalizeApiError(error, 'Failed to complete opening balance migration')
+  }
+}
+
+export const migrateFromExcel = async (file, migrationMonth) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('migration_month', migrationMonth)
+
+    // Don't let axios set Content-Type header, let the browser do it with boundary
+    const response = await api.post('/api/migration/from-excel', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return response.data
+  } catch (error) {
+    console.error('Excel migration API error:', error.response?.data || error.message)
+    throw normalizeApiError(error, 'Failed to complete Excel migration')
+  }
+}
+
+export const cancelMigration = async (migrationMonth) => {
+  try {
+    const response = await api.post('/api/migration/cancel', { migration_month: migrationMonth })
+    return response.data
+  } catch (error) {
+    console.error('Cancel migration API error:', error.response?.data || error.message)
+    throw normalizeApiError(error, 'Failed to cancel migration')
+  }
+}
+
 // ============ Legacy / Optional ============
 
 export const getBillById = async (billId) =>
@@ -147,5 +208,6 @@ export default {
   generateBillsForClass,
   generateBillsForAllClasses,
   downloadBillsData,
+  migrateOpeningBalance,
 }
 
