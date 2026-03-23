@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { getAllSubjects, getSubjectsForClass } from '../../Api/subjects'
 import { getAllClasses } from '../../Api/classes'
-import { submitMarks, getMarks, editMarks } from '../../Api/marks'
+import { submitMarks } from '../../Api/marks'
 import { getAllStudents } from '../../Api/students'
 
 function SubmitMarks() {
@@ -24,10 +24,6 @@ function SubmitMarks() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [markFieldErrors, setMarkFieldErrors] = useState({})
-  const [loadingExistingMarks, setLoadingExistingMarks] = useState(false)
-  const [existingMarksMessage, setExistingMarksMessage] = useState('')
-  const [isEditingExistingMarks, setIsEditingExistingMarks] = useState(false)
-  const lastPrefillKeyRef = useRef('')
 
   const terminals = ['First', 'Second', 'Third', 'Annual']
 
@@ -141,78 +137,6 @@ function SubmitMarks() {
     )
   }
 
-  const normalizeText = (value = '') => String(value || '').trim().toLowerCase()
-
-  const getMarksStudentList = (response) => {
-    if (Array.isArray(response?.students)) return response.students
-    if (Array.isArray(response?.data?.students)) return response.data.students
-    if (Array.isArray(response?.data)) return response.data
-    return []
-  }
-
-  const getMarksRollValue = (student) => {
-    return (
-      student?.roll_no ??
-      student?.Roll ??
-      student?.rollNumber ??
-      student?.roll ??
-      student?.roll_no_number ??
-      ''
-    )
-  }
-
-  const findExistingStudentMarks = (response, rollNo) => {
-    const targetRoll = String(rollNo || '').trim()
-    const students = getMarksStudentList(response)
-
-    return students.find((student) => {
-      const studentRoll = String(getMarksRollValue(student) || '').trim()
-      const numericMatch =
-        Number(studentRoll) > 0 &&
-        Number(targetRoll) > 0 &&
-        Number(studentRoll) === Number(targetRoll)
-
-      return studentRoll === targetRoll || numericMatch
-    })
-  }
-
-  const buildPrefilledMarks = (studentRecord) => {
-    const recordMarks = Array.isArray(studentRecord?.marks) ? studentRecord.marks : []
-    const markLookup = recordMarks.reduce((acc, mark) => {
-      ;[
-        mark?.subject_id,
-        mark?.subjectId,
-        mark?.subject_code,
-        mark?.subjectCode,
-        mark?.subject_name,
-        mark?.subjectName
-      ].forEach((key) => {
-        const normalizedKey = normalizeText(key)
-        if (normalizedKey) {
-          acc[normalizedKey] = mark
-        }
-      })
-      return acc
-    }, {})
-
-    return availableSubjects.map((subject, index) => {
-      const subjectName = subject?.subject_name || subject?.name || `Subject ${index + 1}`
-      const rules = getSubjectRules(subjectName)
-      const matchedMark =
-        markLookup[normalizeText(subject?.subject_id)] ||
-        markLookup[normalizeText(subject?.subject_code)] ||
-        markLookup[normalizeText(subjectName)]
-
-      return {
-        subject_name: subjectName,
-        subject_id: subject?.subject_id || '',
-        subject_label: `Subject ${index + 1}`,
-        external_marks: matchedMark?.external_marks ?? '',
-        internal_marks: rules.internalAllowed ? (matchedMark?.internal_marks ?? '') : ''
-      }
-    })
-  }
-
   useEffect(() => {
     fetchSubjects()
   }, [])
@@ -245,70 +169,6 @@ function SubmitMarks() {
       setStudentPreview(null)
     }
   }, [formData.class, formData.section, formData.roll_no])
-
-  useEffect(() => {
-    const prefillExistingMarks = async () => {
-      if (
-        !formData.class ||
-        !formData.section ||
-        !formData.terminal ||
-        !formData.roll_no ||
-        !studentPreview ||
-        availableSubjects.length === 0
-      ) {
-        setExistingMarksMessage('')
-        setIsEditingExistingMarks(false)
-        lastPrefillKeyRef.current = ''
-        return
-      }
-
-      const prefillKey = [
-        formData.class,
-        formData.section,
-        formData.terminal,
-        formData.roll_no
-      ].join('|')
-
-      if (lastPrefillKeyRef.current === prefillKey) return
-
-      setLoadingExistingMarks(true)
-      try {
-        const response = await getMarks(formData.class, formData.section, formData.terminal)
-        const matchedStudent = findExistingStudentMarks(response, formData.roll_no)
-
-        if (matchedStudent?.marks?.length > 0) {
-          const prefilledMarks = buildPrefilledMarks(matchedStudent)
-          setFormData(prev => ({
-            ...prev,
-            marks: prefilledMarks
-          }))
-          setMarkFieldErrors({})
-          setIsEditingExistingMarks(true)
-          setExistingMarksMessage('Existing marks found and prefilled. Save again to update them.')
-        } else {
-          setIsEditingExistingMarks(false)
-          setExistingMarksMessage('')
-        }
-
-        lastPrefillKeyRef.current = prefillKey
-      } catch {
-        setIsEditingExistingMarks(false)
-        setExistingMarksMessage('')
-        lastPrefillKeyRef.current = prefillKey
-      } finally {
-        setLoadingExistingMarks(false)
-      }
-    }
-
-    prefillExistingMarks()
-  }, [
-    formData.class,
-    formData.section,
-    formData.terminal,
-    formData.roll_no,
-    availableSubjects,
-    studentPreview
-  ])
 
   const fetchSubjects = async () => {
     setLoadingSubjects(true)
@@ -618,12 +478,6 @@ function SubmitMarks() {
         return
       }
 
-      if (!studentPreview) {
-        setError('Student not found for selected Class, Section and Roll Number. Please verify details first.')
-        setLoading(false)
-        return
-      }
-
       if (!formData.marks || formData.marks.length === 0) {
         setError('No subjects found for the selected class and section')
         setLoading(false)
@@ -648,7 +502,7 @@ function SubmitMarks() {
           markObj.internal_marks = Number(mark.internal_marks) || 0
         }
         return markObj
-      }).filter(mark => isEditingExistingMarks ? true : (mark.external_marks > 0 || mark.internal_marks > 0)) // Keep all when editing existing marks
+      }).filter(mark => mark.external_marks > 0 || mark.internal_marks > 0) // Only include marks that have values
 
       if (marksData.length === 0) {
         setError('Please enter at least one mark')
@@ -664,11 +518,9 @@ function SubmitMarks() {
         marks: marksData
       }
 
-      const response = isEditingExistingMarks
-        ? await editMarks(submitData)
-        : await submitMarks(submitData)
+      const response = await submitMarks(submitData)
 
-      if (response.success || response.message) {
+      if (response.success) {
         setSuccess(true)
         setError('')
         // Reset form
@@ -681,8 +533,6 @@ function SubmitMarks() {
         })
         setMarkFieldErrors({})
         setAvailableSubjects([])
-        setExistingMarksMessage('')
-        setIsEditingExistingMarks(false)
         setTimeout(() => {
           setSuccess(false)
         }, 3000)
@@ -895,22 +745,6 @@ function SubmitMarks() {
           </div>
         )}
 
-        {loadingExistingMarks && (
-          <div className="bg-cyan-50 dark:bg-cyan-900/20 rounded-lg p-3 border border-cyan-200 dark:border-cyan-800">
-            <p className="text-sm font-medium text-cyan-700 dark:text-cyan-300">
-              Checking existing marks...
-            </p>
-          </div>
-        )}
-
-        {existingMarksMessage && !loadingExistingMarks && (
-          <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3 border border-emerald-200 dark:border-emerald-800">
-            <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-              {existingMarksMessage}
-            </p>
-          </div>
-        )}
-
         {/* Subjects and Marks */}
         {formData.class && formData.section && availableSubjects.length > 0 && (
           <div className="space-y-4">
@@ -1058,7 +892,6 @@ function SubmitMarks() {
               !formData.section ||
               !formData.terminal ||
               !formData.roll_no ||
-              !studentPreview ||
               availableSubjects.length === 0 ||
               Object.keys(markFieldErrors).length > 0
             }
