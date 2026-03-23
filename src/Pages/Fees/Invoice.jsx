@@ -19,6 +19,13 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
     }
   }, [propBillId]);
 
+  const handleBillIdChange = (value) => {
+    setBillId(value);
+    if (typeof onBillIdChange === 'function') {
+      onBillIdChange(value);
+    }
+  };
+
   const handleFetchInvoice = async (billIdToFetch = null) => {
     const idToUse = billIdToFetch || billId;
     if (!idToUse || !idToUse.trim()) {
@@ -72,7 +79,7 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
     }
   };
 
-  const generateInvoicePDF = () => {
+  const _generateInvoicePDF = () => {
     if (!invoiceData) return;
 
     const doc = new jsPDF("p", "mm", "a4");
@@ -217,18 +224,18 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
       <h3 className="text-lg font-bold text-slate-900 dark:text-white">Invoice Details</h3>
 
       {/* Search */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <input
           type="text"
           value={billId}
           onChange={(e) => handleBillIdChange(e.target.value)}
           placeholder="Enter Bill ID"
-          className="flex-1 px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
+          className="w-full flex-1 px-3 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
         />
         <button
           onClick={() => handleFetchInvoice()}
           disabled={loading}
-          className="px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-cyan-500/20"
+          className="w-full sm:w-auto px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20"
         >
           {loading ? (
             <>
@@ -246,7 +253,7 @@ function Invoice({ billId: propBillId = '', onBillIdChange }) {
           <button
             onClick={handleDownloadPDF}
             disabled={loading}
-            className="px-4 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 text-slate-700 dark:text-slate-300 hover:text-cyan-200 dark:hover:text-cyan-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+            className="w-full sm:w-auto px-4 py-2 border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 text-slate-700 dark:text-slate-300 hover:text-cyan-200 dark:hover:text-cyan-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
           >
             <span className="material-symbols-outlined text-sm">download</span>
             Download PDF

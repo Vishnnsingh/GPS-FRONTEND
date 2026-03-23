@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { getMarks, publishResults } from '../../Api/marks'
-import { getSubjectsForClass } from '../../Api/subjects'
+import { getMarks, publishResults, editMarks } from '../../Api/marks'
 import { getAllSubjects } from '../../Api/subjects'
 import { getAllClasses } from '../../Api/classes'
-import { getAllStudents } from '../../Api/students'
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
   PieChart, Pie, Cell, AreaChart, Area, LineChart, Line, ScatterChart, Scatter
@@ -30,6 +28,18 @@ function ViewMarks() {
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false)
   const [publishData, setPublishData] = useState(null)
   const [publishing, setPublishing] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editingStudent, setEditingStudent] = useState(null)
+  const [editForm, setEditForm] = useState({
+    class: '',
+    section: '',
+    terminal: '',
+    roll_no: '',
+    marks: []
+  })
+  const [editError, setEditError] = useState('')
+  const [editSuccess, setEditSuccess] = useState('')
+  const [editLoading, setEditLoading] = useState(false)
 
   const terminals = ['First', 'Second', 'Third', 'Annual']
 
@@ -194,22 +204,7 @@ function ViewMarks() {
     return { barData, pieData, subjectWiseData: [] }
   }
 
-  const { barData, pieData, subjectWiseData } = getChartData()
-
-  // Chart types for different subjects (rotating through different types)
-  const getChartType = (index) => {
-    const types = ['area', 'bar', 'line', 'scatter']
-    return types[index % types.length]
-  }
-
-  // Chart colors
-  const chartColors = [
-    { external: '#137fec', internal: '#10b981' },
-    { external: '#8b5cf6', internal: '#f59e0b' },
-    { external: '#ef4444', internal: '#06b6d4' },
-    { external: '#ec4899', internal: '#14b8a6' },
-    { external: '#6366f1', internal: '#f97316' }
-  ]
+  const { pieData, subjectWiseData } = getChartData()
 
   const COLORS = {
     LOCKED: '#ef4444',
@@ -234,6 +229,146 @@ function ViewMarks() {
         {status}
       </span>
     )
+  }
+
+  const isDrawingSubject = (subjectName = '') => {
+    return String(subjectName).trim().toLowerCase().includes('drawing')
+  }
+
+  const getSubjectRules = (subjectName = '') => {
+    const drawing = isDrawingSubject(subjectName)
+    return {
+      isDrawing: drawing,
+      externalMax: drawing ? 50 : 80,
+      internalMax: 20,
+      internalAllowed: !drawing,
+    }
+  }
+
+  const openEditModalForStudent = (studentId = selectedStudent) => {
+    if (!marksData?.students || marksData.students.length === 0) return
+    const student = marksData.students.find(s => s.student_id === studentId)
+    if (!student) return
+
+    setEditingStudent(student)
+    setEditError('')
+    setEditSuccess('')
+    setEditForm({
+      class: filters.class || '',
+      section: filters.section || '',
+      terminal: filters.terminal || '',
+      roll_no: student.roll_no || '',
+      marks: (student.marks || []).map(mark => ({
+        subject_id: mark.subject_id || '',
+        subject_name: mark.subject_name || '',
+        subject_code: mark.subject_code || '',
+        external_marks: mark.external_marks ?? '',
+        internal_marks: mark.internal_marks ?? '',
+        status: mark.status || '',
+      }))
+    })
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditMarkChange = (index, field, value) => {
+    setEditForm(prev => {
+      const marks = [...prev.marks]
+      marks[index] = {
+        ...marks[index],
+        [field]: value
+      }
+      return {
+        ...prev,
+        marks
+      }
+    })
+  }
+
+  const validateEditMarks = () => {
+    if (!editForm.marks || editForm.marks.length === 0) {
+      setEditError('No marks available to edit')
+      return false
+    }
+
+    for (const [index, mark] of editForm.marks.entries()) {
+      const subjectName = mark.subject_name || `Subject ${index + 1}`
+      const rules = getSubjectRules(subjectName)
+      const externalValue = mark.external_marks === '' ? 0 : Number(mark.external_marks)
+      const internalValue = mark.internal_marks === '' ? 0 : Number(mark.internal_marks)
+
+      if (Number.isNaN(externalValue) || externalValue < 0 || externalValue > rules.externalMax) {
+        setEditError(`${subjectName}: external marks 0 se ${rules.externalMax} ke beech hone chahiye.`)
+        return false
+      }
+
+      if (rules.internalAllowed) {
+        if (Number.isNaN(internalValue) || internalValue < 0 || internalValue > rules.internalMax) {
+          setEditError(`${subjectName}: internal marks 0 se ${rules.internalMax} ke beech hone chahiye.`)
+          return false
+        }
+      } else if (!Number.isNaN(internalValue) && internalValue > 0) {
+        setEditError(`${subjectName}: Drawing subject me internal marks allowed nahi hain.`)
+        return false
+      }
+    }
+
+    return true
+  }
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault()
+    if (!editingStudent) return
+
+    setEditLoading(true)
+    setEditError('')
+    setEditSuccess('')
+
+    try {
+      if (!validateEditMarks()) {
+        setEditLoading(false)
+        return
+      }
+
+      const payload = {
+        class: editForm.class,
+        section: editForm.section,
+        terminal: editForm.terminal,
+        roll_no: parseInt(editForm.roll_no, 10),
+        student_id: editingStudent.student_id,
+        marks: editForm.marks.map((mark) => {
+          const subjectName = mark.subject_name || ''
+          const rules = getSubjectRules(subjectName)
+          const payloadMark = {
+            subject_id: mark.subject_id || undefined,
+            subject_name: subjectName,
+            external_marks: Number(mark.external_marks) || 0,
+          }
+
+          if (rules.internalAllowed) {
+            payloadMark.internal_marks = Number(mark.internal_marks) || 0
+          }
+
+          return payloadMark
+        })
+      }
+
+      const response = await editMarks(payload)
+      if (response.success || response.message) {
+        setEditSuccess(response.message || 'Marks updated successfully')
+        setTimeout(() => {
+          setIsEditModalOpen(false)
+          setEditingStudent(null)
+          setEditSuccess('')
+          fetchMarks()
+        }, 900)
+      } else {
+        setEditError(response.message || 'Failed to edit marks')
+      }
+    } catch (err) {
+      setEditError(err?.message || err?.data?.message || 'Failed to edit marks')
+    } finally {
+      setEditLoading(false)
+    }
   }
 
   const handlePublishResults = async () => {
@@ -423,20 +558,32 @@ function ViewMarks() {
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                   Subject-wise Marks
                 </h3>
-                {/* Student Dropdown - Small, inside card on right */}
-                  <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all w-48">
-                  <span className="material-symbols-outlined pl-2 text-slate-500 dark:text-slate-400 text-sm">person</span>
-                  <select
-                    value={selectedStudent}
-                    onChange={(e) => setSelectedStudent(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs text-slate-900 dark:text-white"
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  {/* Student Dropdown - Small, inside card on right */}
+                  <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all w-full sm:w-48">
+                    <span className="material-symbols-outlined pl-2 text-slate-500 dark:text-slate-400 text-sm">person</span>
+                    <select
+                      value={selectedStudent}
+                      onChange={(e) => setSelectedStudent(e.target.value)}
+                      className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-xs text-slate-900 dark:text-white"
+                    >
+                      {marksData.students.map((student) => (
+                        <option key={student.student_id} value={student.student_id}>
+                          {student.name} (Roll: {student.roll_no})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => openEditModalForStudent()}
+                    disabled={!selectedStudent}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-cyan-200/30 dark:border-cyan-700/50 bg-white dark:bg-slate-700 px-3 py-2 text-xs font-semibold text-cyan-700 dark:text-cyan-200 hover:bg-cyan-50/30 dark:hover:bg-cyan-900/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    {marksData.students.map((student) => (
-                      <option key={student.student_id} value={student.student_id}>
-                        {student.name} (Roll: {student.roll_no})
-                      </option>
-                    ))}
-                  </select>
+                    <span className="material-symbols-outlined text-sm">edit</span>
+                    Edit Marks
+                  </button>
                 </div>
               </div>
               <ResponsiveContainer width="100%" height={300}>
@@ -548,7 +695,7 @@ function ViewMarks() {
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                   {marksData.students
                     .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                    .map((student, studentIndex) => (
+                    .map((student) => (
                     <React.Fragment key={student.student_id}>
                       {student.marks.map((mark, markIndex) => (
                         <tr
@@ -649,6 +796,199 @@ function ViewMarks() {
         <div className="bg-white dark:bg-slate-800 rounded-xl p-12 text-center border border-slate-200 dark:border-slate-700">
           <span className="material-symbols-outlined text-5xl text-slate-400 mb-3">assessment</span>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">No marks found for the selected filters</p>
+        </div>
+      )}
+
+      {/* Edit Marks Modal */}
+      {isEditModalOpen && editingStudent && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ fontFamily: "'Lexend', sans-serif" }}
+        >
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => {
+              if (!editLoading) {
+                setIsEditModalOpen(false)
+                setEditingStudent(null)
+                setEditError('')
+                setEditSuccess('')
+              }
+            }}
+          />
+
+          <div className="relative bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+            <div className="sticky top-0 z-10 bg-gradient-to-r from-cyan-600 to-cyan-500 text-white px-6 py-4 rounded-t-xl flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-black">Edit Marks</h2>
+                <p className="text-sm text-white/80">
+                  Edit marks even after submission, publish, or lock
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!editLoading) {
+                    setIsEditModalOpen(false)
+                    setEditingStudent(null)
+                    setEditError('')
+                    setEditSuccess('')
+                  }
+                }}
+                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-5">
+              {editError && (
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-sm text-red-600 dark:text-red-400">{editError}</p>
+                </div>
+              )}
+
+              {editSuccess && (
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <p className="text-sm text-green-600 dark:text-green-400">{editSuccess}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-3">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold">Class</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">{editForm.class || '--'}</p>
+                </div>
+                <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-3">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold">Section</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">{editForm.section || '--'}</p>
+                </div>
+                <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-3">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold">Roll No</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">{editForm.roll_no || '--'}</p>
+                </div>
+                <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-3">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold">Terminal</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">{editForm.terminal || '--'}</p>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-cyan-200/30 dark:border-cyan-700/50 bg-cyan-50/30 dark:bg-cyan-900/10 p-4">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                  {editingStudent.name || '--'}
+                </p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                  {editingStudent.father_name || editingStudent.father || ''}
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {editForm.marks.map((mark, index) => {
+                  const rules = getSubjectRules(mark.subject_name)
+                  return (
+                    <div
+                      key={mark.subject_id || `${mark.subject_name}-${index}`}
+                      className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 p-4 shadow-sm"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                            {mark.subject_code || `Subject ${index + 1}`}
+                          </p>
+                          <h4 className="text-base font-bold text-slate-900 dark:text-white">
+                            {mark.subject_name || `Subject ${index + 1}`}
+                          </h4>
+                        </div>
+                        {getStatusBadge(mark.status)}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                            External Marks
+                          </label>
+                          <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
+                            <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">assessment</span>
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              autoComplete="off"
+                              value={mark.external_marks}
+                              onChange={(e) => handleEditMarkChange(index, 'external_marks', e.target.value)}
+                              className="w-full bg-transparent border-none focus:ring-0 py-2 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
+                              placeholder={`0 to ${rules.externalMax}`}
+                            />
+                          </div>
+                        </div>
+
+                        {rules.internalAllowed ? (
+                          <div>
+                            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                              Internal Marks
+                            </label>
+                            <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
+                              <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">grade</span>
+                              <input
+                                type="text"
+                                inputMode="decimal"
+                                autoComplete="off"
+                                value={mark.internal_marks}
+                                onChange={(e) => handleEditMarkChange(index, 'internal_marks', e.target.value)}
+                                className="w-full bg-transparent border-none focus:ring-0 py-2 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
+                                placeholder={`0 to ${rules.internalMax}`}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="rounded-lg border border-dashed border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 px-3 py-2.5 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-amber-600 dark:text-amber-300 text-base">info</span>
+                            <p className="text-xs sm:text-sm font-medium text-amber-700 dark:text-amber-300">
+                              Drawing subject me internal marks nahi hote.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-2 border-t border-slate-200 dark:border-slate-700">
+                <button
+                  type="submit"
+                  disabled={editLoading}
+                  className="w-full sm:flex-1 px-5 py-2.5 bg-cyan-500 hover:bg-cyan-500/90 text-white rounded-lg shadow-lg shadow-cyan-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {editLoading ? (
+                    <>
+                      <span className="material-symbols-outlined animate-spin text-base">sync</span>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-base">save</span>
+                      Save Changes
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!editLoading) {
+                      setIsEditModalOpen(false)
+                      setEditingStudent(null)
+                      setEditError('')
+                      setEditSuccess('')
+                    }
+                  }}
+                  disabled={editLoading}
+                  className="w-full sm:flex-1 px-5 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 

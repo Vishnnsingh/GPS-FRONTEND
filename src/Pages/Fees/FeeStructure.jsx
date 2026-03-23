@@ -452,153 +452,169 @@ function FeeStructure() {
                   className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden"
                 >
                   {/* Class Header */}
-                  <div className="bg-white px-5 sm:px-6 py-5 border-b border-slate-200 hover:bg-slate-50 transition-colors duration-200">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="min-w-0 flex items-center gap-3 sm:gap-4 flex-1">
-                        <button
-                          onClick={() => toggleClass(classKey)}
-                          className="shrink-0 p-2.5 hover:bg-slate-100 rounded-lg transition-colors duration-200 text-slate-600 hover:text-slate-900"
-                          title={expandedClasses[classKey] ? 'Collapse' : 'Expand'}
-                        >
-                          <span className="material-symbols-outlined text-xl">
-                            {expandedClasses[classKey] ? 'expand_less' : 'expand_more'}
-                          </span>
-                        </button>
-                        <div className="bg-blue-50 rounded-lg p-2.5 shrink-0">
-                          <span className="material-symbols-outlined text-blue-600 text-xl">class</span>
-                        </div>
-                        <div className="min-w-0">
-                          <h4 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
-                            Class {classKey}
-                          </h4>
-                          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-                            <span className="inline-flex items-center rounded-full bg-slate-100 border border-slate-300 px-3 py-1.5 text-slate-700 font-semibold">
-                              {classFees.length} {classFees.length === 1 ? 'Fee' : 'Fees'}
-                            </span>
-                            <span className="inline-flex items-center rounded-full bg-green-100 border border-green-300 px-3 py-1.5 text-green-700 font-semibold">
-                              {requiredFees.length} Required
-                            </span>
-                            <span className="inline-flex items-center rounded-full bg-amber-100 border border-amber-300 px-3 py-1.5 text-amber-700 font-semibold">
-                              {optionalFees.length} Optional
-                            </span>
-                          </div>
-                        </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleClass(classKey)}
+                    aria-expanded={!!expandedClasses[classKey]}
+                    className="w-full bg-white px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-200 hover:bg-slate-50 transition-colors duration-200 flex items-center justify-between gap-3 sm:gap-4 text-left"
+                    title={expandedClasses[classKey] ? 'Collapse' : 'Expand'}
+                  >
+                    <div className="min-w-0 flex items-center gap-3 sm:gap-4 flex-1">
+                      <div className="shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-cyan-500 text-white flex items-center justify-center font-bold">
+                        <span className="material-symbols-outlined text-base sm:text-lg">
+                          {expandedClasses[classKey] ? 'expand_less' : 'expand_more'}
+                        </span>
                       </div>
-                      <div className="w-full sm:w-auto rounded-xl border border-slate-300 bg-slate-100 text-white px-4 py-3.5 text-left sm:text-right shadow-md">
-                        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Total Amount</p>
-                        <p className="text-2xl font-black text-slate-800 leading-tight mt-1.5">
-                          ₹{totalAmount.toLocaleString('en-IN')}
+                      <div className="min-w-0">
+                        <h4 className="text-base sm:text-xl font-bold text-slate-900 leading-tight truncate">
+                          Class {classKey}
+                        </h4>
+                        <p className="text-xs sm:text-sm text-slate-600 font-medium mt-0.5">
+                          {classFees.length} {classFees.length === 1 ? 'Fee' : 'Fees'}
                         </p>
                       </div>
                     </div>
-                  </div>
+                    <div className="hidden sm:flex items-center gap-3 flex-shrink-0">
+                      <div className="text-right">
+                        <div className="mt-1 flex flex-wrap items-center justify-end gap-2 text-xs">
+                          <span className="inline-flex items-center rounded-full bg-slate-100 border border-slate-300 px-3 py-1.5 text-slate-700 font-semibold">
+                            {classFees.length} {classFees.length === 1 ? 'Fee' : 'Fees'}
+                          </span>
+                          <span className="inline-flex items-center rounded-full bg-green-100 border border-green-300 px-3 py-1.5 text-green-700 font-semibold">
+                            {requiredFees.length} Required
+                          </span>
+                          <span className="inline-flex items-center rounded-full bg-amber-100 border border-amber-300 px-3 py-1.5 text-amber-700 font-semibold">
+                            {optionalFees.length} Optional
+                          </span>
+                        </div>
+                      </div>
+                      <div className="rounded-xl border border-slate-300 bg-slate-100 px-4 py-3.5 text-right shadow-md">
+                        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Total Amount</p>
+                        <p className="text-2xl font-black text-slate-800 leading-tight mt-1.5">
+                          {'\u20B9'}{totalAmount.toLocaleString('en-IN')}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
 
                   {/* Fees Table - Only show when expanded */}
                   {expandedClasses[classKey] && (
-                    <div className="overflow-x-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200">
-                          <th className="px-5 py-4 text-left font-bold text-slate-900 text-sm">Fee Name</th>
-                          <th className="px-5 py-4 text-right font-bold text-slate-900 text-sm">Amount</th>
-                          <th className="px-5 py-4 text-center font-bold text-slate-900 text-sm">Period</th>
-                          <th className="px-5 py-4 text-center font-bold text-slate-900 text-sm">Late Fine</th>
-                          <th className="px-5 py-4 text-center font-bold text-slate-900 text-sm">Type</th>
-                          <th className="px-5 py-4 text-center font-bold text-slate-900 text-sm">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {classFees.map((fee, index) => (
-                          <tr 
-                            key={fee.id} 
-                            className="border-b border-slate-200 hover:bg-slate-50 transition-colors duration-150"
-                          >
-                            <td className="px-5 py-4">
-                              <div className="flex items-center gap-2">
-                                <span className="font-semibold text-slate-900">{fee.fee_name}</span>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3.5 text-right">
-                              <span className="font-bold text-black dark:text-slate-800 text-base">
-                                ₹{fee.fee_amount?.toLocaleString('en-IN') || 0}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3.5 text-center">
-                              <span className={`px-3 py-1.5 rounded text-xs font-bold transition-colors hover:scale-105 ${
-                                fee.period === 'yearly' 
-                                  ? 'bg-purple-100 dark:bg-purple-900/40 text-black dark:text-purple-200 border border-purple-400 dark:border-purple-700 hover:bg-purple-200 dark:hover:bg-purple-900/60' 
-                                  : 'bg-cyan-100 dark:bg-cyan-900/40 text-black dark:text-cyan-200 border border-cyan-400 dark:border-cyan-700 hover:bg-cyan-200 dark:hover:bg-cyan-900/60'
-                              }`}>
-                                {fee.period === 'yearly' ? '\ud83d\udcc5 Yearly' : '\ud83d\udcc6 Monthly'}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3.5 text-center">
-                              {fee.late_fine_enabled ? (
-                                <span className="px-3 py-1.5 bg-red-100 dark:bg-red-900/40 text-black dark:text-red-200 rounded text-xs font-bold flex items-center justify-center gap-1.5 w-fit mx-auto border border-red-400 dark:border-red-700 hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors cursor-default">
-                                  <span className="material-symbols-outlined text-sm">warning</span>
-                                  Enabled
-                                </span>
-                              ) : (
-                                <span className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-black dark:text-gray-300 rounded text-xs font-bold border border-gray-400 dark:border-gray-600 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors cursor-default">
-                                  Disabled
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3.5 text-center">
-                              {fee.is_optional ? (
-                                <span className="px-3 py-1.5 bg-orange-100 dark:bg-orange-900/40 text-black dark:text-orange-200 rounded text-xs font-bold border border-orange-400 dark:border-orange-700 hover:bg-orange-200 dark:hover:bg-orange-900/60 transition-colors cursor-default">
-                                  Optional
-                                </span>
-                              ) : (
-                                <span className="px-3 py-1.5 bg-green-100 dark:bg-green-900/40 text-black dark:text-green-200 rounded text-xs font-bold border border-green-400 dark:border-green-700 hover:bg-green-200 dark:hover:bg-green-900/60 transition-colors cursor-default">
-                                  Required
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3.5">
-                              <div className="flex items-center justify-center gap-1.5">
-                                <button
-                                  onClick={() => handleEdit(fee)}
-                                  disabled={deletingId === fee.id || deletingId !== null}
-                                  className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium hover:scale-110 active:scale-95"
-                                  title="Edit fee structure"
-                                >
-                                  <span className="material-symbols-outlined text-lg">edit</span>
-                                </button>
-                                <button
-                                  onClick={() => handleDelete(fee.id)}
-                                  disabled={deletingId === fee.id || deletingId !== null}
-                                  className="p-2.5 text-red-600 hover:bg-red-100 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-110 active:scale-95"
-                                  title="Delete fee structure"
-                                >
-                                  {deletingId === fee.id ? (
-                                    <span className="material-symbols-outlined text-lg animate-spin">sync</span>
-                                  ) : (
-                                    <span className="material-symbols-outlined text-lg">delete</span>
-                                  )}
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                      {/* Class Summary Footer */}
-                      <tfoot>
-  <tr className="bg-slate-50 border-t border-slate-200 hover:bg-slate-100 transition-colors">
-    <td colSpan={6} className="px-5 py-4">
-      <div className="flex justify-between items-center">
-        <span className="font-bold text-slate-900">
-          Class Total:
-        </span>
+                    <div className="bg-slate-50/50">
+                      <div className="grid grid-cols-2 gap-2 p-4 pb-0 sm:hidden">
+                        <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Required</p>
+                          <p className="text-base font-black text-slate-900">{requiredFees.length}</p>
+                        </div>
+                        <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Optional</p>
+                          <p className="text-base font-black text-slate-900">{optionalFees.length}</p>
+                        </div>
+                        <div className="col-span-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Total Amount</p>
+                          <p className="text-2xl font-black text-slate-900 mt-1">{'\u20B9'}{totalAmount.toLocaleString('en-IN')}</p>
+                        </div>
+                      </div>
 
-        <span className="text-lg font-black text-slate-900">
-          ₹{totalAmount.toLocaleString('en-IN')}
-        </span>
-      </div>
-    </td>
-  </tr>
-</tfoot>
-                    </table>
+                      <div className="overflow-x-auto table-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}>
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="bg-slate-50 border-b border-slate-200">
+                              <th className="px-5 py-4 text-left font-bold text-slate-900 text-sm">Fee Name</th>
+                              <th className="px-5 py-4 text-right font-bold text-slate-900 text-sm">Amount</th>
+                              <th className="hidden sm:table-cell px-5 py-4 text-center font-bold text-slate-900 text-sm">Period</th>
+                              <th className="hidden sm:table-cell px-5 py-4 text-center font-bold text-slate-900 text-sm">Late Fine</th>
+                              <th className="hidden sm:table-cell px-5 py-4 text-center font-bold text-slate-900 text-sm">Type</th>
+                              <th className="px-5 py-4 text-center font-bold text-slate-900 text-sm">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {classFees.map((fee) => (
+                              <tr 
+                                key={fee.id} 
+                                className="border-b border-slate-200 hover:bg-slate-50 transition-colors duration-150"
+                              >
+                                <td className="px-5 py-4">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-semibold text-slate-900">{fee.fee_name}</span>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3.5 text-right">
+                                  <span className="font-bold text-black dark:text-slate-800 text-base">
+                                    {'\u20B9'}{fee.fee_amount?.toLocaleString('en-IN') || 0}
+                                  </span>
+                                </td>
+                                <td className="hidden sm:table-cell px-4 py-3.5 text-center">
+                                  <span className={`px-3 py-1.5 rounded text-xs font-bold transition-colors hover:scale-105 ${
+                                    fee.period === 'yearly' 
+                                      ? 'bg-purple-100 dark:bg-purple-900/40 text-black dark:text-purple-200 border border-purple-400 dark:border-purple-700 hover:bg-purple-200 dark:hover:bg-purple-900/60' 
+                                      : 'bg-cyan-100 dark:bg-cyan-900/40 text-black dark:text-cyan-200 border border-cyan-400 dark:border-cyan-700 hover:bg-cyan-200 dark:hover:bg-cyan-900/60'
+                                  }`}>
+                                    {fee.period === 'yearly' ? '\ud83d\udcc5 Yearly' : '\ud83d\udcc6 Monthly'}
+                                  </span>
+                                </td>
+                                <td className="hidden sm:table-cell px-4 py-3.5 text-center">
+                                  {fee.late_fine_enabled ? (
+                                    <span className="px-3 py-1.5 bg-red-100 dark:bg-red-900/40 text-black dark:text-red-200 rounded text-xs font-bold flex items-center justify-center gap-1.5 w-fit mx-auto border border-red-400 dark:border-red-700 hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors cursor-default">
+                                      <span className="material-symbols-outlined text-sm">warning</span>
+                                      Enabled
+                                    </span>
+                                  ) : (
+                                    <span className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-black dark:text-gray-300 rounded text-xs font-bold border border-gray-400 dark:border-gray-600 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors cursor-default">
+                                      Disabled
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="hidden sm:table-cell px-4 py-3.5 text-center">
+                                  {fee.is_optional ? (
+                                    <span className="px-3 py-1.5 bg-orange-100 dark:bg-orange-900/40 text-black dark:text-orange-200 rounded text-xs font-bold border border-orange-400 dark:border-orange-700 hover:bg-orange-200 dark:hover:bg-orange-900/60 transition-colors cursor-default">
+                                      Optional
+                                    </span>
+                                  ) : (
+                                    <span className="px-3 py-1.5 bg-green-100 dark:bg-green-900/40 text-black dark:text-green-200 rounded text-xs font-bold border border-green-400 dark:border-green-700 hover:bg-green-200 dark:hover:bg-green-900/60 transition-colors cursor-default">
+                                      Required
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-4 py-3.5">
+                                  <div className="flex items-center justify-center gap-1.5">
+                                    <button
+                                      onClick={() => handleEdit(fee)}
+                                      disabled={deletingId === fee.id || deletingId !== null}
+                                      className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium hover:scale-110 active:scale-95"
+                                      title="Edit fee structure"
+                                    >
+                                      <span className="material-symbols-outlined text-lg">edit</span>
+                                    </button>
+                                    <button
+                                      onClick={() => handleDelete(fee.id)}
+                                      disabled={deletingId === fee.id || deletingId !== null}
+                                      className="p-2.5 text-red-600 hover:bg-red-100 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-110 active:scale-95"
+                                      title="Delete fee structure"
+                                    >
+                                      {deletingId === fee.id ? (
+                                        <span className="material-symbols-outlined text-lg animate-spin">sync</span>
+                                      ) : (
+                                        <span className="material-symbols-outlined text-lg">delete</span>
+                                      )}
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                          {/* Class Summary Footer */}
+                          <tfoot className="hidden sm:table-footer-group">
+                            <tr className="bg-slate-50 border-t border-slate-200 hover:bg-slate-100 transition-colors">
+                              <td colSpan={6} className="px-5 py-4">
+                                <div className="flex justify-between items-center">
+                                  <span className="font-bold text-slate-900">Class Total:</span>
+                                  <span className="text-lg font-black text-slate-900">{'\u20B9'}{totalAmount.toLocaleString('en-IN')}</span>
+                                </div>
+                              </td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
                     </div>
                   )}
                 </div>
