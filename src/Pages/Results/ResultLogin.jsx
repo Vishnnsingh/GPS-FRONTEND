@@ -1,8 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 import { aboutPhotos, homeFeaturePhotos } from '../../assets/websiteImages'
 import { useResultSearchOptions } from './useResultSearchOptions'
+
+const sanitizeSessionValue = (value) => String(value ?? '').replace(/[^0-9-]/g, '').replace(/-+/g, '-').slice(0, 7)
 
 function ResultField({ label, name, icon, required, children }) {
   return (
@@ -36,9 +38,6 @@ function ResultLogin() {
   const {
     classOptions,
     sectionOptions,
-    sessionOptions,
-    recentSessionOptions,
-    olderSessionOptions,
     loading: loadingSearchOptions,
     error: searchOptionsError,
   } = useResultSearchOptions(formData.classValue)
@@ -51,7 +50,12 @@ function ResultLogin() {
           ...prev,
           classValue: value,
           section: '',
+          session: '',
         }
+      }
+
+      if (name === 'session') {
+        return { ...prev, session: sanitizeSessionValue(value) }
       }
 
       return { ...prev, [name]: value }
@@ -59,31 +63,11 @@ function ResultLogin() {
     setError('')
   }
 
-  useEffect(() => {
-    if (formData.section && !sectionOptions.includes(formData.section)) {
-      setFormData((prev) => ({ ...prev, section: '' }))
-    }
-  }, [formData.section, sectionOptions])
-
-  useEffect(() => {
-    const nextDefaultSession = sessionOptions[0] || ''
-    if (!nextDefaultSession) {
-      if (formData.session) {
-        setFormData((prev) => ({ ...prev, session: '' }))
-      }
-      return
-    }
-
-    if (!formData.session || !sessionOptions.includes(formData.session)) {
-      setFormData((prev) => ({ ...prev, session: nextDefaultSession }))
-    }
-  }, [formData.session, sessionOptions])
-
   const handleSubmit = (event) => {
     event.preventDefault()
 
-    if (!formData.classValue || !formData.roll || !formData.terminal) {
-      setError('Please fill Class, Roll No and Terminal.')
+    if (!formData.classValue || !formData.section || !formData.roll || !formData.terminal) {
+      setError('Please fill Class, Section, Roll No and Terminal.')
       return
     }
 
@@ -107,8 +91,8 @@ function ResultLogin() {
                 View your result instantly with student details
               </h1>
               <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">
-                Enter class, roll number and terminal to open the published result. Optional section and session fields
-                help narrow records quickly.
+                Enter class, section, roll number and terminal to open the published result. Session still helps narrow
+                records quickly.
               </p>
 
               <div className="mt-5 grid grid-cols-2 gap-3">
@@ -197,7 +181,7 @@ function ResultLogin() {
                   )}
                 </ResultField>
 
-                <ResultField label="Section (optional)" name="section" icon="grid_view">
+                <ResultField label="Section" name="section" icon="grid_view" required>
                   {(name) => (
                     <select
                       name={name}
@@ -226,40 +210,16 @@ function ResultLogin() {
 
                 <ResultField label="Session (optional)" name="session" icon="calendar_month">
                   {(name) => (
-                    <select
+                    <input
                       name={name}
                       value={formData.session}
                       onChange={handleChange}
                       className="gps-input gps-auth-input pl-11"
-                      disabled={loadingSearchOptions}
-                    >
-                      {sessionOptions.length === 0 ? (
-                        <option value="">
-                          {loadingSearchOptions ? 'Loading sessions...' : 'No sessions found'}
-                        </option>
-                      ) : (
-                        <>
-                          {recentSessionOptions.length > 0 ? (
-                            <optgroup label="Recent Sessions">
-                              {recentSessionOptions.map((sessionValue) => (
-                                <option key={sessionValue} value={sessionValue}>
-                                  {sessionValue}
-                                </option>
-                              ))}
-                            </optgroup>
-                          ) : null}
-                          {olderSessionOptions.length > 0 ? (
-                            <optgroup label="Older Sessions">
-                              {olderSessionOptions.map((sessionValue) => (
-                                <option key={sessionValue} value={sessionValue}>
-                                  {sessionValue}
-                                </option>
-                              ))}
-                            </optgroup>
-                          ) : null}
-                        </>
-                      )}
-                    </select>
+                      placeholder="2026-27"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9-]*"
+                    />
                   )}
                 </ResultField>
 

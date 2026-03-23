@@ -237,8 +237,6 @@ function Bills() {
         theme: "grid",
       });
 
-      const summaryTableEndY = doc.lastAutoTable.finalY + 3;
-
       // Add signature line
       doc.text(
         "Signature of Receiver: __________________",
@@ -288,36 +286,6 @@ function Bills() {
       }
     } catch (err) {
       setError(err?.message || "Failed to fetch bills data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Updated the downloadAllBillsPDF function to use generateReceiptPDF
-  const downloadAllBillsPDF = async () => {
-    if (!formData.month) {
-      setError("Please enter a month to download all bills");
-      return;
-    }
-
-    setError("");
-    setSuccess("");
-    setLoading(true);
-
-    try {
-      const response = await downloadBillsData({
-        month: formData.month,
-        class: formData.class || "",
-      });
-      if (response && response.bills && Array.isArray(response.bills)) {
-        generateReceiptPDF(response.bills);
-        setSuccess("All bills downloaded successfully");
-        emitToast('success', 'All bills downloaded successfully', 'Bills');
-      } else {
-        setError(response.message || "No bills found to download");
-      }
-    } catch (err) {
-      setError(err?.message || "Failed to download all bills");
     } finally {
       setLoading(false);
     }
@@ -394,22 +362,22 @@ function Bills() {
 
           {/* Messages */}
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 flex items-center justify-between">
-              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+            <div className="rounded-lg border border-rose-200 bg-rose-50/95 p-3 flex items-center justify-between text-rose-900 shadow-sm dark:border-rose-800/70 dark:bg-rose-950/30 dark:text-rose-100">
+              <p className="text-sm font-medium">{error}</p>
               <button
                 onClick={() => setError('')}
-                className="text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-100"
+                className="text-rose-700 dark:text-rose-200 hover:text-rose-950 dark:hover:text-white"
               >
                 <span className="material-symbols-outlined text-sm">close</span>
               </button>
             </div>
           )}
           {success && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 flex items-center justify-between">
-              <p className="text-sm text-green-700 dark:text-green-300">{success}</p>
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50/95 p-3 flex items-center justify-between text-emerald-900 shadow-sm dark:border-emerald-800/70 dark:bg-emerald-950/30 dark:text-emerald-100">
+              <p className="text-sm font-medium">{success}</p>
               <button
                 onClick={() => setSuccess('')}
-                className="text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100"
+                className="text-emerald-700 dark:text-emerald-200 hover:text-emerald-950 dark:hover:text-white"
               >
                 <span className="material-symbols-outlined text-sm">close</span>
               </button>
@@ -453,7 +421,7 @@ function Bills() {
 
     <div className="space-y-2">
       
-      <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors">
+      <label className="flex items-center gap-3 cursor-pointer rounded-lg border border-transparent p-2 transition-colors hover:border-cyan-200/60 hover:bg-cyan-50/70 dark:hover:border-cyan-700/50 dark:hover:bg-cyan-900/15">
         <input
           type="checkbox"
           checked={feeOptions.include_exam_fee}
@@ -467,7 +435,7 @@ function Bills() {
         </span>
       </label>
 
-      <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors">
+      <label className="flex items-center gap-3 cursor-pointer rounded-lg border border-transparent p-2 transition-colors hover:border-cyan-200/60 hover:bg-cyan-50/70 dark:hover:border-cyan-700/50 dark:hover:bg-cyan-900/15">
         <input
           type="checkbox"
           checked={feeOptions.include_annual_fee}
@@ -481,7 +449,7 @@ function Bills() {
         </span>
       </label>
 
-      <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors">
+      <label className="flex items-center gap-3 cursor-pointer rounded-lg border border-transparent p-2 transition-colors hover:border-cyan-200/60 hover:bg-cyan-50/70 dark:hover:border-cyan-700/50 dark:hover:bg-cyan-900/15">
         <input
           type="checkbox"
           checked={feeOptions.include_computer_fee}

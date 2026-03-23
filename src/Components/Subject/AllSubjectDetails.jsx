@@ -1,9 +1,57 @@
 import React, { useState, useEffect } from 'react'
-import { getAllSubjects } from '../../Api/subjects'
+import { getAllSubjects, updateSubjectSequence, removeSubjectFromClass } from '../../Api/subjects'
 import { getAllClasses } from '../../Api/classes'
 import AddSubject from './AddSubject'
 import CreateSubject from './CreateSubject'
 import DeleteSubject from './DeleteSubject'
+
+const normalizeText = (value) => String(value ?? '').trim()
+
+const getScopedClassSubjects = (classData) => {
+  const classValue = normalizeText(classData?.class)
+  const sectionSubjects = Array.isArray(classData?.sections)
+    ? classData.sections.flatMap((sec) =>
+        Array.isArray(sec?.subjects)
+          ? sec.subjects.map((subject) => ({
+              ...subject,
+              classValue,
+              section: normalizeText(sec?.section || subject?.section).toUpperCase(),
+              scope: 'section',
+            }))
+          : []
+      )
+    : []
+
+  const classSubjects = Array.isArray(classData?.subjects)
+    ? classData.subjects.map((subject) => ({
+        ...subject,
+        classValue,
+        section: '',
+        scope: 'class',
+      }))
+    : []
+
+  const merged = [...sectionSubjects, ...classSubjects]
+  const uniqueByKey = new Map()
+
+  merged.forEach((subject, index) => {
+    const key =
+      String(subject?.id || '').trim() ||
+      `${normalizeText(subject?.subject_name).toLowerCase()}-${normalizeText(subject?.subject_code).toLowerCase()}-${normalizeText(subject?.section).toLowerCase()}-${subject?.scope}-${index}`
+    if (!uniqueByKey.has(key)) uniqueByKey.set(key, subject)
+  })
+
+  return Array.from(uniqueByKey.values()).sort((a, b) => {
+    const seqA = Number(a?.sequence)
+    const seqB = Number(b?.sequence)
+    const hasSeqA = Number.isFinite(seqA)
+    const hasSeqB = Number.isFinite(seqB)
+    if (hasSeqA && hasSeqB) return seqA - seqB
+    if (hasSeqA) return -1
+    if (hasSeqB) return 1
+    return normalizeText(a?.subject_name).localeCompare(normalizeText(b?.subject_name))
+  })
+}
 
 function AllSubjectDetails() {
   const [data, setData] = useState(null)
@@ -14,6 +62,11 @@ function AllSubjectDetails() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [editingSubject, setEditingSubject] = useState(null)
+  const [editSequence, setEditSequence] = useState('')
+  const [editError, setEditError] = useState('')
+  const [savingEdit, setSavingEdit] = useState(false)
+  const [removingSubjectId, setRemovingSubjectId] = useState(null)
 
   useEffect(() => {
     fetchSubjects()
@@ -64,31 +117,88 @@ function AllSubjectDetails() {
     setExpandedClasses(newExpanded)
   }
 
-  const getClassSubjects = (classData) => {
-    const sectionSubjects = Array.isArray(classData?.sections)
-      ? classData.sections.flatMap((sec) => (Array.isArray(sec?.subjects) ? sec.subjects : []))
-      : []
-    const classSubjects = Array.isArray(classData?.subjects) ? classData.subjects : []
-    const merged = [...sectionSubjects, ...classSubjects]
-    const uniqueByKey = new Map()
+  const closeEditModal = () => {
+    setEditingSubject(null)
+    setEditSequence('')
+    setEditError('')
+    setSavingEdit(false)
+  }
 
-    merged.forEach((subject, index) => {
-      const key =
-        String(subject?.id || '').trim() ||
-        `${String(subject?.subject_name || '').trim().toLowerCase()}-${String(subject?.subject_code || '').trim().toLowerCase()}-${index}`
-      if (!uniqueByKey.has(key)) uniqueByKey.set(key, subject)
-    })
+  const handleOpenEdit = (subject) => {
+    setEditingSubject(subject)
+    setEditSequence(String(subject?.sequence || ''))
+    setEditError('')
+  }
 
-    return Array.from(uniqueByKey.values()).sort((a, b) => {
-      const seqA = Number(a?.sequence)
-      const seqB = Number(b?.sequence)
-      const hasSeqA = Number.isFinite(seqA)
-      const hasSeqB = Number.isFinite(seqB)
-      if (hasSeqA && hasSeqB) return seqA - seqB
-      if (hasSeqA) return -1
-      if (hasSeqB) return 1
-      return String(a?.subject_name || '').localeCompare(String(b?.subject_name || ''))
-    })
+  const handleSaveEdit = async () => {
+    if (!editingSubject?.id) return
+
+    const nextSequence = Number.parseInt(String(editSequence).trim(), 10)
+    if (!Number.isInteger(nextSequence) || nextSequence < 1) {
+      setEditError('Please enter a valid sequence number.')
+      return
+    }
+
+    const classScope = normalizeText(editingSubject.classValue || editingSubject.class || '')
+    const sectionScope = normalizeText(editingSubject.section || '')
+    const duplicate = filteredClasses
+      .flatMap((cls) => getScopedClassSubjects(cls))
+      .find((subject) => {
+        if (!subject?.id || subject.id === editingSubject.id) return false
+        const sameClass = normalizeText(subject.classValue || subject.class || '') === classScope
+        const sameSection = normalizeText(subject.section || '') === sectionScope
+        const sameScope = sameClass && sameSection
+        return sameScope && Number(subject.sequence) === nextSequence
+      })
+
+    if (duplicate) {
+      setEditError(`Sequence ${nextSequence} is already used in this class${sectionScope ? ` / section ${sectionScope}` : ''}.`)
+      return
+    }
+
+    setSavingEdit(true)
+    setEditError('')
+
+    try {
+      const response = await updateSubjectSequence(editingSubject.id, nextSequence)
+      if (response?.success !== false) {
+        closeEditModal()
+        fetchSubjects()
+      } else {
+        setEditError(response?.message || 'Failed to update subject sequence')
+      }
+    } catch (err) {
+      const message =
+        err?.message ||
+        err?.error ||
+        'Failed to update subject sequence'
+      setEditError(message)
+    } finally {
+      setSavingEdit(false)
+    }
+  }
+
+  const handleRemoveFromClass = async (subject) => {
+    if (!subject?.id) return
+
+    const subjectLabel = `${subject.subject_name || 'Subject'}${subject.section ? ` (${subject.section})` : ''}`
+    if (!window.confirm(`Remove "${subjectLabel}" from Class ${subject.classValue || ''}? This will delete related marks and invalidate published results.`)) {
+      return
+    }
+
+    setRemovingSubjectId(subject.id)
+    try {
+      const response = await removeSubjectFromClass(subject.id)
+      if (response?.success !== false) {
+        fetchSubjects()
+      } else {
+        setError(response?.message || 'Failed to remove subject from class')
+      }
+    } catch (err) {
+      setError(err?.message || err?.error || 'Failed to remove subject from class')
+    } finally {
+      setRemovingSubjectId(null)
+    }
   }
 
   const filteredClasses =
@@ -206,7 +316,7 @@ function AllSubjectDetails() {
       {!loading && !error && filteredClasses.length > 0 && (
         <div className="space-y-2.5 sm:space-y-3">
           {filteredClasses.map((classData) => {
-            const classSubjects = getClassSubjects(classData)
+            const classSubjects = getScopedClassSubjects(classData)
 
             return (
               <div
@@ -254,10 +364,42 @@ function AllSubjectDetails() {
                                   <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                                     <span className="font-medium text-slate-700 dark:text-slate-300">{subject.subject_code}</span>
                                   </p>
+                                  <div className="mt-1 flex flex-wrap gap-1">
+                                    {subject.section ? (
+                                      <span className="inline-flex items-center rounded-full bg-cyan-50 px-1.5 py-0.5 text-[10px] font-semibold text-cyan-700">
+                                        Section {subject.section}
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex items-center rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">
+                                        Class Scope
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
-                                <span className="flex-shrink-0 text-xs bg-cyan-300/15 text-cyan-200 dark:bg-cyan-500/20 dark:text-cyan-200 px-1.5 py-0.5 rounded font-medium whitespace-nowrap">
-                                  #{subject.sequence}
-                                </span>
+                                <div className="flex flex-col items-end gap-1">
+                                  <span className="flex-shrink-0 text-xs bg-cyan-300/15 text-cyan-200 dark:bg-cyan-500/20 dark:text-cyan-200 px-1.5 py-0.5 rounded font-medium whitespace-nowrap">
+                                    #{subject.sequence}
+                                  </span>
+                                  {subject.id ? (
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleOpenEdit(subject)}
+                                        className="rounded-md border border-cyan-200 bg-cyan-50 px-2 py-1 text-[10px] font-semibold text-cyan-700 hover:bg-cyan-100"
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleRemoveFromClass(subject)}
+                                        disabled={removingSubjectId === subject.id}
+                                        className="rounded-md border border-rose-200 bg-rose-50 px-2 py-1 text-[10px] font-semibold text-rose-700 hover:bg-rose-100 disabled:opacity-60"
+                                      >
+                                        {removingSubjectId === subject.id ? 'Removing...' : 'Remove'}
+                                      </button>
+                                    </div>
+                                  ) : null}
+                                </div>
                               </div>
                             </div>
                           ))}
@@ -304,6 +446,82 @@ function AllSubjectDetails() {
           fetchSubjects()
         }}
       />
+
+      {editingSubject && (
+        <div className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-2xl dark:bg-slate-800">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">Edit Subject Position</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {editingSubject.subject_name}
+                  {editingSubject.section ? `, Section ${editingSubject.section}` : ''} in Class {editingSubject.classValue}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeEditModal}
+                className="rounded-lg p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:hover:bg-slate-700 dark:hover:text-white"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {editError ? (
+                <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:border-rose-800/70 dark:bg-rose-950/30 dark:text-rose-100">
+                  {editError}
+                </div>
+              ) : null}
+
+              <div>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.08em] text-slate-600 dark:text-slate-300">
+                  New Sequence
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={editSequence}
+                  onChange={(e) => setEditSequence(e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+                  placeholder="Enter sequence number"
+                />
+                <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                  Sequence must be unique within the same class and section scope.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={closeEditModal}
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveEdit}
+                disabled={savingEdit}
+                className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-bold text-white hover:bg-cyan-500 disabled:opacity-60"
+              >
+                {savingEdit ? (
+                  <>
+                    <span className="material-symbols-outlined animate-spin text-base">sync</span>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-base">save</span>
+                    Save
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,7 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 import { useResultSearchOptions } from './useResultSearchOptions'
+
+const sanitizeSessionValue = (value) => String(value ?? '').replace(/[^0-9-]/g, '').replace(/-+/g, '-').slice(0, 7)
 
 function ResultsPortal() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
@@ -20,9 +22,6 @@ function ResultsPortal() {
   const {
     classOptions,
     sectionOptions,
-    sessionOptions,
-    recentSessionOptions,
-    olderSessionOptions,
     loading: loadingSearchOptions,
     error: searchOptionsError,
   } = useResultSearchOptions(formData.classValue)
@@ -35,7 +34,12 @@ function ResultsPortal() {
           ...prev,
           classValue: value,
           section: '',
+          session: '',
         }
+      }
+
+      if (name === 'session') {
+        return { ...prev, session: sanitizeSessionValue(value) }
       }
 
       return { ...prev, [name]: value }
@@ -43,31 +47,11 @@ function ResultsPortal() {
     setError('')
   }
 
-  useEffect(() => {
-    if (formData.section && !sectionOptions.includes(formData.section)) {
-      setFormData((prev) => ({ ...prev, section: '' }))
-    }
-  }, [formData.section, sectionOptions])
-
-  useEffect(() => {
-    const nextDefaultSession = sessionOptions[0] || ''
-    if (!nextDefaultSession) {
-      if (formData.session) {
-        setFormData((prev) => ({ ...prev, session: '' }))
-      }
-      return
-    }
-
-    if (!formData.session || !sessionOptions.includes(formData.session)) {
-      setFormData((prev) => ({ ...prev, session: nextDefaultSession }))
-    }
-  }, [formData.session, sessionOptions])
-
   const handleSubmit = (event) => {
     event.preventDefault()
 
-    if (!formData.classValue || !formData.roll || !formData.terminal) {
-      setError('Please fill Class, Roll No and Terminal.')
+    if (!formData.classValue || !formData.section || !formData.roll || !formData.terminal) {
+      setError('Please fill Class, Section, Roll No and Terminal.')
       return
     }
 
@@ -196,7 +180,7 @@ function ResultsPortal() {
                     <div>
                       <label className="mb-1 block text-[11px] font-bold uppercase tracking-[0.08em] text-slate-700">
                         <span className="material-symbols-outlined mr-1 align-middle text-[14px] text-cyan-700">layers</span>
-                        Section <span className="text-[10px] text-slate-400 normal-case">(Optional)</span>
+                        Section
                       </label>
                       <select
                         name="section"
@@ -227,40 +211,15 @@ function ResultsPortal() {
                         <span className="material-symbols-outlined mr-1 align-middle text-[14px] text-cyan-700">calendar_month</span>
                         Session <span className="text-[10px] text-slate-400 normal-case">(Optional)</span>
                       </label>
-                      <select
+                      <input
                         name="session"
                         value={formData.session}
                         onChange={handleChange}
-                        disabled={loadingSearchOptions}
+                        placeholder="2026-27"
+                        inputMode="numeric"
+                        pattern="[0-9-]*"
                         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-900 placeholder-slate-400 transition-all focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
-                      >
-                        {sessionOptions.length === 0 ? (
-                          <option value="">
-                            {loadingSearchOptions ? 'Loading sessions...' : 'No sessions found'}
-                          </option>
-                        ) : (
-                          <>
-                            {recentSessionOptions.length > 0 ? (
-                              <optgroup label="Recent Sessions">
-                                {recentSessionOptions.map((sessionValue) => (
-                                  <option key={sessionValue} value={sessionValue}>
-                                    {sessionValue}
-                                  </option>
-                                ))}
-                              </optgroup>
-                            ) : null}
-                            {olderSessionOptions.length > 0 ? (
-                              <optgroup label="Older Sessions">
-                                {olderSessionOptions.map((sessionValue) => (
-                                  <option key={sessionValue} value={sessionValue}>
-                                    {sessionValue}
-                                  </option>
-                                ))}
-                              </optgroup>
-                            ) : null}
-                          </>
-                        )}
-                      </select>
+                      />
                     </div>
                   </div>
 
@@ -279,6 +238,7 @@ function ResultsPortal() {
 
                   <button
                     type="submit"
+                    disabled={!formData.classValue || !formData.section || !formData.roll || !formData.terminal}
                     className="flex w-full items-center justify-center gap-2 rounded-lg bg-[linear-gradient(135deg,#0f172a_0%,#155e75_100%)] px-4 py-2 text-[13px] font-bold text-white shadow-lg shadow-slate-900/15 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/18"
                   >
                     <span className="material-symbols-outlined text-sm">search</span>

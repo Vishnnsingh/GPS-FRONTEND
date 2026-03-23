@@ -68,10 +68,10 @@ function ToastContainer() {
   }, [])
 
   const typeStyles = {
-    success: 'bg-emerald-400/15 border-emerald-300/40 text-emerald-100',
-    error: 'bg-red-400/15 border-red-300/40 text-red-100',
-    warning: 'bg-amber-400/15 border-amber-300/40 text-amber-100',
-    info: 'bg-cyan-400/15 border-cyan-300/40 text-cyan-100',
+    success: 'bg-emerald-950/92 border-emerald-300/50 text-emerald-50 shadow-[0_20px_45px_rgba(6,95,70,0.28)]',
+    error: 'bg-rose-950/92 border-rose-300/55 text-rose-50 shadow-[0_20px_45px_rgba(136,19,55,0.28)]',
+    warning: 'bg-amber-950/92 border-amber-300/55 text-amber-50 shadow-[0_20px_45px_rgba(146,64,14,0.24)]',
+    info: 'bg-slate-950/92 border-cyan-300/45 text-slate-50 shadow-[0_20px_45px_rgba(8,47,73,0.26)]',
   }
 
   return (
@@ -79,10 +79,10 @@ function ToastContainer() {
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`border rounded-xl shadow-md px-4 py-3 backdrop-blur-md ${typeStyles[toast.type] || typeStyles.info}`}
+          className={`border rounded-xl px-4 py-3 backdrop-blur-md ${typeStyles[toast.type] || typeStyles.info}`}
         >
-          {toast.title ? <p className="text-xs font-semibold mb-0.5">{toast.title}</p> : null}
-          <p className="text-sm">{toast.message}</p>
+          {toast.title ? <p className="text-xs font-extrabold uppercase tracking-[0.12em] mb-0.5 opacity-90">{toast.title}</p> : null}
+          <p className="text-sm leading-5 text-white/95">{toast.message}</p>
         </div>
       ))}
     </div>

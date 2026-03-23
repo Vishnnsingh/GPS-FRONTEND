@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { addSubjectToClass, addMultipleSubjectsToClass, getAllSubjects } from '../../Api/subjects'
+import { addSubjectToClass, addMultipleSubjectsToClass, getAllSubjects, getSubjectsForClass } from '../../Api/subjects'
 
 function AddSubject({ isOpen, onClose, onSuccess }) {
   const [mode, setMode] = useState('single') // 'single' or 'multiple'
   const [formData, setFormData] = useState({
     class: '',
+    section: '',
     subject_id: '',
     subject_name: '',
     subject_code: '',
@@ -12,8 +13,10 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
     subject_ids: ['']
   })
   const [allSubjects, setAllSubjects] = useState([])
+  const [classSubjects, setClassSubjects] = useState([])
   const [loading, setLoading] = useState(false)
   const [loadingSubjects, setLoadingSubjects] = useState(false)
+  const [loadingClassSubjects, setLoadingClassSubjects] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
@@ -23,6 +26,29 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
       fetchAllSubjects()
     }
   }, [isOpen])
+
+  useEffect(() => {
+    const fetchClassSubjects = async () => {
+      if (!isOpen || !formData.class.trim()) {
+        setClassSubjects([])
+        return
+      }
+
+      setLoadingClassSubjects(true)
+      try {
+        const response = await getSubjectsForClass(formData.class.trim(), formData.section.trim())
+        const subjects = Array.isArray(response?.subjects) ? response.subjects : []
+        setClassSubjects(subjects)
+      } catch (err) {
+        console.error('Failed to fetch class subjects:', err)
+        setClassSubjects([])
+      } finally {
+        setLoadingClassSubjects(false)
+      }
+    }
+
+    fetchClassSubjects()
+  }, [isOpen, formData.class, formData.section])
 
   const fetchAllSubjects = async () => {
     setLoadingSubjects(true)
@@ -110,11 +136,20 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
           return
         }
 
+        const nextSequence = parseInt(formData.sequence, 10)
+        const duplicateSequence = classSubjects.some((subject) => Number(subject?.sequence) === nextSequence)
+        if (duplicateSequence) {
+          setError(`Sequence ${nextSequence} is already used for this class${formData.section ? ` / section ${formData.section}` : ''}.`)
+          setLoading(false)
+          return
+        }
+
         const submitData = {
           class: formData.class,
+          section: formData.section.trim(),
           subject_name: formData.subject_name,
           subject_code: formData.subject_code,
-          sequence: parseInt(formData.sequence) || 1
+          sequence: nextSequence || 1
         }
 
         const response = await addSubjectToClass(submitData)
@@ -140,6 +175,7 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
 
         const submitData = {
           class: formData.class,
+          section: formData.section.trim(),
           subjects: validSubjectIds.map(subjectId => ({
             subject_id: subjectId
           }))
@@ -182,6 +218,8 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
       subject_code: '',
       sequence: '',
       subject_ids: ['']
+      ,
+      section: ''
     })
   }
 
@@ -279,6 +317,27 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                 />
               </div>
             </div>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Section <span className="text-slate-400">(optional)</span>
+              </label>
+              <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
+                <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">grid_view</span>
+                <input
+                  type="text"
+                  name="section"
+                  value={formData.section}
+                  onChange={handleChange}
+                  className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 uppercase"
+                  placeholder="Enter section (e.g., A, B)"
+                  style={{ textTransform: 'uppercase' }}
+                />
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                Section is optional. If empty, the subject will be added at class scope.
+              </p>
+            </div>
           </div>
 
           {/* Single Subject Mode */}
@@ -296,11 +355,11 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                       <div className="w-full py-1.5 px-2 text-sm text-slate-500 dark:text-slate-400">
                         Loading subjects...
                       </div>
-                    ) : (
-                      <select
-                        name="subject_id"
-                        value={formData.subject_id}
-                        onChange={handleSubjectSelect}
+                        ) : (
+                          <select
+                            name="subject_id"
+                            value={formData.subject_id}
+                            onChange={handleSubjectSelect}
                         className="w-full bg-transparent border-none focus:ring-0 py-1.5 px-2 text-sm text-slate-900 dark:text-white dropdown-cyan"
                         required
                       >
@@ -371,6 +430,14 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
                       required
                     />
                   </div>
+                  {loadingClassSubjects && (
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Checking existing subject positions...</p>
+                  )}
+                  {!loadingClassSubjects && formData.sequence && classSubjects.some((subject) => Number(subject?.sequence) === parseInt(formData.sequence, 10)) && (
+                    <p className="text-[11px] text-rose-600 dark:text-rose-400 mt-1">
+                      This sequence is already used in the selected class scope.
+                    </p>
+                  )}
                 </div>
               </div>
             </>
@@ -394,7 +461,6 @@ function AddSubject({ isOpen, onClose, onSuccess }) {
               </div>
               <div className="space-y-2">
                 {formData.subject_ids.map((subjectId, index) => {
-                  const selectedSubject = allSubjects.find(sub => sub.id === subjectId)
                   return (
                     <div key={index} className="flex items-center gap-2">
                       <div className="flex-1 flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">

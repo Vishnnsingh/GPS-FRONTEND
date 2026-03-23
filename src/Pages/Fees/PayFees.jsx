@@ -132,13 +132,13 @@ function PayFees({ initialData, onPaymentComplete }) {
 
       {/* Messages */}
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-          <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+        <div className="rounded-lg border border-rose-200 bg-rose-50/95 p-3 text-rose-900 shadow-sm dark:border-rose-800/70 dark:bg-rose-950/30 dark:text-rose-100">
+          <p className="text-sm font-medium">{error}</p>
         </div>
       )}
       {success && (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
-          <p className="text-sm text-green-700 dark:text-green-300">{success}</p>
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50/95 p-3 text-emerald-900 shadow-sm dark:border-emerald-800/70 dark:bg-emerald-950/30 dark:text-emerald-100">
+          <p className="text-sm font-medium">{success}</p>
         </div>
       )}
 
@@ -242,7 +242,7 @@ function PayFees({ initialData, onPaymentComplete }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-500/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-cyan-500/20"
+                className="px-6 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-cyan-500/20"
               >
                 {loading ? (
                   <>
@@ -371,7 +371,7 @@ function PayFees({ initialData, onPaymentComplete }) {
           }}
         >
           <div 
-            className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto table-scrollbar"
+            className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto table-scrollbar border border-slate-200 dark:border-slate-700"
             style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(99, 126, 153) rgb(224, 242, 254)' }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -388,7 +388,7 @@ function PayFees({ initialData, onPaymentComplete }) {
               </div>
               <button
                 onClick={() => setShowPaymentModal(false)}
-                className="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                className="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 rounded-lg transition-colors"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
@@ -466,7 +466,7 @@ function PayFees({ initialData, onPaymentComplete }) {
             <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
               <button
                 onClick={() => setShowPaymentModal(false)}
-                className="px-6 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#137fec]/90 transition-colors flex items-center gap-2"
+                className="px-6 py-2 bg-[#137fec] text-white rounded-lg hover:bg-[#0f6fd1] transition-colors flex items-center gap-2"
               >
                 <span className="material-symbols-outlined text-sm">check</span>
                 Close
