@@ -30,6 +30,21 @@ export const submitMarks = async (marksData) => {
   }
 }
 
+// Edit marks after submission / publish / lock
+export const editMarks = async (marksData) => {
+  try {
+    const payload = {
+      ...marksData,
+      terminal: normalizeTerminal(marksData?.terminal),
+    }
+
+    const response = await api.put('/api/marks/edit', payload)
+    return response.data
+  } catch (error) {
+    throw normalizeApiError(error, 'Failed to edit marks')
+  }
+}
+
 // Get marks by class, section, and terminal
 export const getMarks = async (classValue, section, terminal) => {
   try {
@@ -84,5 +99,5 @@ export const publishResults = async (classValue, section, terminal) => {
   }
 }
 
-export default { submitMarks, getMarks, getStudentResultPublic, publishResults }
+export default { submitMarks, editMarks, getMarks, getStudentResultPublic, publishResults }
 
