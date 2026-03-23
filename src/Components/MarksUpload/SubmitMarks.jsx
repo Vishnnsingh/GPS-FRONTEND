@@ -786,12 +786,13 @@ function SubmitMarks() {
                     key={index}
                     className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-700 dark:to-slate-800 rounded-xl p-4 sm:p-5 border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-all"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                      <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <p className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                           {mark.subject_label || `Subject ${index + 1}`}
                         </p>
-                        <h4 className="text-base font-bold text-slate-900 dark:text-white">
+                        <span className="text-slate-300 dark:text-slate-600">|</span>
+                        <h4 className="truncate text-base font-bold text-slate-900 dark:text-white">
                           {subjectName}
                         </h4>
                       </div>
@@ -800,7 +801,7 @@ function SubmitMarks() {
                           Ext Max {rules.externalMax}
                         </span>
                         {rules.internalAllowed ? (
-                          <span className="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 px-2 py-0.5 text-[11px] font-bold">
+                          <span className="inline-flex items-center rounded-full bg-emerald-100 text-black dark:bg-emerald-900/30 dark:text-black px-2 py-0.5 text-[11px] font-bold">
                             Int Max {rules.internalMax}
                           </span>
                         ) : (
@@ -817,17 +818,16 @@ function SubmitMarks() {
                         <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                           External Marks
                         </label>
-                        <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
-                          <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">assessment</span>
-                          <input
-                            type="number"
+                          <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
+                            <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">assessment</span>
+                            <input
+                            type="text"
+                            inputMode="decimal"
+                            autoComplete="off"
                             value={mark.external_marks || ''}
                             onChange={(e) => handleMarksChange(index, 'external_marks', e.target.value, subjectName)}
                             className="w-full bg-transparent border-none focus:ring-0 py-2 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
                             placeholder={`0 to ${rules.externalMax}`}
-                            min="0"
-                            max={rules.externalMax}
-                            step="0.01"
                           />
                         </div>
                         {externalError && (
@@ -846,14 +846,13 @@ function SubmitMarks() {
                           <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-400/50 transition-all">
                             <span className="material-symbols-outlined pl-3 text-slate-500 dark:text-slate-400 text-base">grade</span>
                             <input
-                              type="number"
+                              type="text"
+                              inputMode="decimal"
+                              autoComplete="off"
                               value={mark.internal_marks || ''}
                               onChange={(e) => handleMarksChange(index, 'internal_marks', e.target.value, subjectName)}
                               className="w-full bg-transparent border-none focus:ring-0 py-2 px-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
                               placeholder={`0 to ${rules.internalMax}`}
-                              min="0"
-                              max={rules.internalMax}
-                              step="0.01"
                             />
                           </div>
                           {internalError && (

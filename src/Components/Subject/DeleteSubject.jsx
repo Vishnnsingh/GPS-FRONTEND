@@ -3,7 +3,6 @@ import { getAllSubjects, deleteSubjectById } from '../../Api/subjects'
 
 function DeleteSubject({ isOpen, onClose, onSuccess }) {
   const [allSubjects, setAllSubjects] = useState([])
-  const [loading, setLoading] = useState(false)
   const [loadingSubjects, setLoadingSubjects] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
