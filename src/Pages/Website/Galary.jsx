@@ -1,6 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
+import SEO from '../../Components/SEO/SEO'
+import { buildSchoolJsonLd, SCHOOL_KEYWORDS } from '../../seo/siteSeo'
 import { galleryRows, schoolProfile, siteMedia } from './siteContent'
 
 function Galary() {
@@ -18,6 +20,13 @@ function Galary() {
 
   return (
     <WebsiteLayout>
+      <SEO
+        title="School Gallery"
+        description="Browse the Gyanoday Public School gallery in Harinagar, Ramnagar (Bettiah), West Champaran, Bihar and see academics, events and campus life."
+        keywords={SCHOOL_KEYWORDS}
+        canonicalPath="/gallery"
+        jsonLd={buildSchoolJsonLd({ path: '/gallery' })}
+      />
       <section className="gps-site-section pt-6">
         <div className="gps-site-shell">
           <div className="grid gap-5 xl:grid-cols-[0.84fr_1.16fr] xl:items-stretch">
@@ -51,10 +60,10 @@ function Galary() {
               <div className="gps-site-scrollbar mt-4 w-full overflow-x-auto pb-3">
                 <div className="flex min-w-max gap-4 pr-2">
                   {previewCards.map((card) => (
-                    <article key={card.src} className="shrink-0">
-                      <div className="gps-site-photo-frame h-[300px] w-[220px] sm:h-[340px] sm:w-[250px] lg:h-[360px] lg:w-[260px]">
-                        <img src={card.src} alt={card.alt} className="h-full w-full object-cover" />
-                      </div>
+                  <article key={card.src} className="shrink-0">
+                    <div className="gps-site-photo-frame h-[300px] w-[220px] sm:h-[340px] sm:w-[250px] lg:h-[360px] lg:w-[260px]">
+                        <img src={card.src} alt={card.alt} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                    </div>
                       <p className="mt-3 text-sm font-semibold text-slate-700">{card.title}</p>
                     </article>
                   ))}
@@ -93,7 +102,7 @@ function Galary() {
                       key={`${row.title}-${photo.title}`}
                       className="flex w-[220px] shrink-0 flex-col overflow-hidden rounded-[1.45rem] border border-slate-200/80 bg-white shadow-[0_18px_34px_rgba(15,23,42,0.08)] sm:w-[250px] lg:w-[260px]"
                     >
-                      <img src={photo.src} alt={photo.title} className="h-[280px] w-full object-cover sm:h-[300px] lg:h-[320px]" />
+                      <img src={photo.src} alt={photo.title} loading="lazy" decoding="async" className="h-[280px] w-full object-cover sm:h-[300px] lg:h-[320px]" />
                       <div className="flex min-h-[120px] flex-col p-4">
                         <p className="line-clamp-2 text-sm font-bold uppercase tracking-[0.18em] text-cyan-700">{photo.title}</p>
                         <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-600">{photo.note}</p>

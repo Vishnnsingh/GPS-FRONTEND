@@ -4,14 +4,14 @@ export const schoolProfile = {
   name: import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School',
   motto: 'Learning with discipline, growth with confidence, and communication families can trust.',
   tagline:
-    'A calm, future-ready learning campus where academics, values, routines and parent communication move together.',
+    'A calm, future-ready learning campus in Harinagar, Ramnagar (Bettiah), West Champaran where academics, values, routines and parent communication move together.',
   phone: '+91 7870225302',
   phoneHref: 'tel:+917870225302',
   email: 'gpschool2025@gmail.com',
   emailHref: 'mailto:gpschool2025@gmail.com',
-  address: 'Belaspur Dainmanwa Road, Harinagar, West Champaran, Bihar 845103',
+  address: 'Belaspur Dainmanwa Road, Harinagar, Ramnagar, West Champaran, Bihar 845103',
   hours: 'Monday to Saturday, 8:00 AM to 2:00 PM',
-  mapsHref: 'https://maps.google.com/?q=Belaspur+Dainmanwa+Road+Harinagar+West+Champaran+Bihar',
+  mapsHref: 'https://maps.google.com/?q=Belaspur+Dainmanwa+Road+Harinagar+Ramnagar+West+Champaran+Bihar',
   whatsappHref: 'https://wa.me/917870225302',
 }
 

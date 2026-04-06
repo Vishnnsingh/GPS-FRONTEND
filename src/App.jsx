@@ -1,24 +1,29 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import Layout from './Components/Layout'
-import StudentRegister from './Pages/Register/StudentRegister'
-import StudentLogin from './Pages/Auth/StudentLogin'
-import AllLogin from './Pages/Auth/AllLogin'
-import Dashboard from './Pages/AllDashboard/AllDashboard'
-import ResultLogin from './Pages/Results/ResultLogin'
-import Results from './Pages/Results/Results'
-import ResultsPortal from './Pages/Results/ResultsPortal'
-import Home from './Pages/Website/Home'
-import About from './Pages/Website/About'
-import Contact from './Pages/Website/Contact'
-import Galary from './Pages/Website/Galary'
-import Admission from './Pages/Website/Admission'
 import { getAccessToken, getUser } from './Api/auth'
+import SEO from './Components/SEO/SEO'
 import { scrollToPageTop } from './utils/scrollToPageTop'
+
+const Layout = lazy(() => import('./Components/Layout'))
+const AllLogin = lazy(() => import('./Pages/Auth/AllLogin'))
+const Dashboard = lazy(() => import('./Pages/AllDashboard/AllDashboard'))
+const Results = lazy(() => import('./Pages/Results/Results'))
+const ResultsPortal = lazy(() => import('./Pages/Results/ResultsPortal'))
+const Home = lazy(() => import('./Pages/Website/Home'))
+const About = lazy(() => import('./Pages/Website/About'))
+const Contact = lazy(() => import('./Pages/Website/Contact'))
+const Galary = lazy(() => import('./Pages/Website/Galary'))
+const Admission = lazy(() => import('./Pages/Website/Admission'))
 
 function Unauthorized() {
   return (
     <div className="app-shell min-h-screen flex items-center justify-center px-4">
+      <SEO
+        title="Access denied"
+        description="This page is restricted to school staff and authorized users."
+        canonicalPath="/unauthorized"
+        noIndex
+      />
       <div className="gps-card w-full max-w-md p-6">
         <h2 className="text-xl font-bold text-white">Access denied</h2>
         <p className="mt-2 text-sm text-slate-300">Your account does not have permission to view this page.</p>
@@ -131,39 +136,47 @@ function App() {
     <Router>
       <RouteScrollManager />
       <ToastContainer />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/admission" element={<Admission />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/gallery" element={<Galary />} />
-        <Route path="/login" element={<AllLogin />} />
-        {/* <Route path="/student-login" element={<StudentLogin />} /> */}
-        {/* <Route path="/result-login" element={<ResultLogin />} /> */}
-        <Route path="/results-portal" element={<ResultsPortal />} />
-        <Route path="/result" element={<Results />} />
-        {/* <Route path="/register" element={<StudentRegister />} /> */}
-        <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route
-          element={
-            <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'accountant']}>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/admin/class-promotion" element={<Dashboard initialView="classPromotion" />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Suspense
+        fallback={
+          <div className="app-shell min-h-screen flex items-center justify-center px-4">
+            <div className="gps-card w-full max-w-sm p-6 text-center">
+              <p className="text-sm text-slate-300">Loading...</p>
+            </div>
+          </div>
+        }
+      >
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/admission" element={<Admission />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/gallery" element={<Galary />} />
+          <Route path="/login" element={<AllLogin />} />
+          <Route path="/results-portal" element={<ResultsPortal />} />
+          <Route path="/result" element={<Results />} />
+          <Route path="/results/:classSlug/roll-:rollNumber" element={<Results />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'accountant']}>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/admin/class-promotion" element={<Dashboard initialView="classPromotion" />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </Router>
   )
 }

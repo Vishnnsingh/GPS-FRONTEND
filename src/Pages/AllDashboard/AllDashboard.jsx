@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useOutletContext } from 'react-router-dom'
+import SEO from '../../Components/SEO/SEO'
 import Sidebar from '../../Components/Sidebar'
 import ResultView from '../../Components/ResultView/ResultView'
 import Student from './Student'
@@ -168,6 +169,12 @@ function Dashboard({ initialView = 'dashboard' }) {
 
   return (
     <>
+      <SEO
+        title="School Dashboard"
+        description="Internal dashboard for Gyanoday Public School staff."
+        canonicalPath="/dashboard"
+        noIndex
+      />
       <Sidebar 
         isOpen={sidebarOpen} 
         setIsOpen={setSidebarOpen}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { emitToast, getSavedCredentials, login, saveCredentials, setSession } from '../../Api/auth'
+import SEO from '../../Components/SEO/SEO'
 import WebsiteFooter from '../../Components/WebsiteFooter'
 import WebsiteHeader from '../../Components/WebsiteHeader'
 import { aboutPhotos } from '../../assets/websiteImages'
@@ -55,6 +56,12 @@ function AllLogin() {
 
   return (
     <div className="gps-auth-page min-h-screen text-slate-900">
+      <SEO
+        title="Admin Login"
+        description="Secure staff login for Gyanoday Public School."
+        canonicalPath="/login"
+        noIndex
+      />
       <WebsiteHeader />
       <main className="pb-10 pt-[104px] sm:pt-[112px]">
         <div className="gps-shell">
@@ -69,7 +76,7 @@ function AllLogin() {
               </p>
 
               <div className="mt-6 overflow-hidden rounded-2xl border border-sky-100">
-                <img src={aboutPhotos.secondary} alt="Students in class" className="h-64 w-full object-cover sm:h-72" />
+                <img src={aboutPhotos.secondary} alt="Students in class" loading="eager" fetchPriority="high" decoding="async" className="h-64 w-full object-cover sm:h-72" />
               </div>
 
               <div className="mt-5 grid grid-cols-3 gap-3">
