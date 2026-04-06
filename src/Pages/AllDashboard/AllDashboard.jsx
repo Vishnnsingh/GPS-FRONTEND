@@ -259,14 +259,14 @@ function Dashboard({ initialView = 'dashboard' }) {
                               angle={0} 
                               textAnchor="middle" 
                               height={60}
-                              tick={{ fill: '#b9cce7', fontSize: 10, dy: 8 }}
+                              tick={{ fill: '#000000', fontSize: 10, fontWeight: 700, dy: 8 }}
                               axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                               tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                             />
                             <YAxis
                               domain={[0, 'dataMax']}
                               allowDecimals={false}
-                              tick={{ fill: '#b9cce7', fontSize: 10 }}
+                              tick={{ fill: '#000000', fontSize: 10 }}
                               axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                               tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                             />
@@ -329,14 +329,14 @@ function Dashboard({ initialView = 'dashboard' }) {
                               angle={0} 
                               textAnchor="middle" 
                               height={60}
-                              tick={{ fill: '#b9cce7', fontSize: 10, dy: 8 }}
+                              tick={{ fill: '#000000', fontSize: 10, fontWeight: 700, dy: 8 }}
                               axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                               tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                             />
                             <YAxis
                               domain={[0, 'dataMax']}
                               allowDecimals={false}
-                              tick={{ fill: '#b9cce7', fontSize: 10 }}
+                              tick={{ fill: '#000000', fontSize: 10 }}
                               axisLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                               tickLine={{ stroke: 'rgba(153, 178, 209, 0.35)' }}
                             />

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { emitToast, getSavedCredentials, login, saveCredentials, setSession } from '../../Api/auth'
+import { emitToast, login, setSession } from '../../Api/auth'
 import SEO from '../../Components/SEO/SEO'
 import WebsiteFooter from '../../Components/WebsiteFooter'
 import WebsiteHeader from '../../Components/WebsiteHeader'
@@ -14,11 +14,6 @@ function AllLogin() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [savedCreds, setSavedCreds] = useState([])
-
-  useEffect(() => {
-    setSavedCreds(getSavedCredentials())
-  }, [])
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -29,10 +24,6 @@ function AllLogin() {
     setError('')
   }
 
-  const handleUseSavedCreds = (email, password) => {
-    setFormData({ email, password })
-  }
-
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
@@ -41,8 +32,6 @@ function AllLogin() {
     try {
       const response = await login(formData.email, formData.password)
       setSession(response, 'all')
-      saveCredentials(formData.email, formData.password)
-      setSavedCreds(getSavedCredentials())
       emitToast('success', 'Login successful', 'Welcome')
       navigate('/dashboard')
     } catch (err) {
@@ -102,28 +91,6 @@ function AllLogin() {
                 </div>
               ) : null}
 
-              {savedCreds.length > 0 ? (
-                <div className="gps-auth-card-soft mt-4 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-700">Saved Credentials</p>
-                  <div className="mt-2 space-y-2">
-                    {savedCreds.map((cred, index) => (
-                      <button
-                        key={`${cred.email}-${index}`}
-                        type="button"
-                        onClick={() => handleUseSavedCreds(cred.email, cred.password)}
-                        className="flex w-full items-center justify-between rounded-lg border border-sky-200/70 bg-white px-3 py-2 text-left hover:bg-sky-50"
-                      >
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-slate-900">{cred.email}</p>
-                          <p className="text-xs text-slate-600">Click to use</p>
-                        </div>
-                        <span className="material-symbols-outlined text-slate-600">arrow_forward</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
               <form onSubmit={handleSubmit} className="mt-4 space-y-3">
                 <label className="block">
                   <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-700">Email</span>
@@ -171,7 +138,7 @@ function AllLogin() {
                   </a>
                 </div> */}
 
-                <button type="submit" disabled={loading} className="gps-auth-button mt-2 w-full disabled:opacity-60">
+                <button type="submit" disabled={loading} className="gps-auth-button mt-2 mx-auto inline-flex w-full sm:w-auto sm:min-w-[220px] disabled:opacity-60">
                   {loading ? (
                     <>
                       <span className="material-symbols-outlined animate-spin text-base">sync</span>

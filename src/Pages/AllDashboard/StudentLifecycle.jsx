@@ -80,7 +80,6 @@ function StudentLifecycle() {
     setError('')
     try {
       const baseFilters = {
-        class: filters.class,
         section: filters.section,
         academic_year: filters.academic_year,
       }
@@ -164,8 +163,20 @@ function StudentLifecycle() {
     })
   }
 
-  const activeStudents = useMemo(() => filterByQuery(activeStudentsData), [filters.query, activeStudentsData])
-  const leftStudents = useMemo(() => filterByQuery(leftStudentsData), [filters.query, leftStudentsData])
+  const filterByClass = (list) => {
+    if (!filters.class.trim()) return list
+    const classQuery = normalizeField(filters.class)
+    return list.filter((student) => normalizeField(getStudentClass(student)) === classQuery)
+  }
+
+  const activeStudents = useMemo(
+    () => filterByQuery(filterByClass(activeStudentsData)),
+    [filters.class, filters.query, activeStudentsData]
+  )
+  const leftStudents = useMemo(
+    () => filterByQuery(filterByClass(leftStudentsData)),
+    [filters.class, filters.query, leftStudentsData]
+  )
   const totalStudents = activeStudentsData.length + leftStudentsData.length
 
   const handleCopyId = async (studentId) => {

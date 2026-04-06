@@ -522,10 +522,7 @@
   }
 
   .app-shell {
-    background:
-      radial-gradient(circle at 8% 2%, rgba(125, 211, 252, 0.2), transparent 30%),
-      radial-gradient(circle at 92% 8%, rgba(191, 219, 254, 0.18), transparent 35%),
-      linear-gradient(160deg, #fbfdff 0%, #f4faff 56%, #edf7ff 100%);
+    background: #ffffff;
     color: #0f172a;
   }
 
@@ -619,7 +616,7 @@
   .app-shell .bg-white,
   .app-shell .bg-slate-50,
   .app-shell .bg-slate-100 {
-    background: linear-gradient(150deg, rgba(255, 255, 255, 0.99), rgba(242, 249, 255, 0.95)) !important;
+    background: #ffffff !important;
   }
 
   .app-shell .from-white {
@@ -643,27 +640,34 @@
   }
 
   .app-shell .bg-blue-50 {
-    background: rgba(224, 242, 254, 0.82) !important;
+    background: #ffffff !important;
   }
 
   .app-shell .bg-green-50 {
-    background: rgba(236, 252, 255, 0.82) !important;
+    background: #ffffff !important;
   }
 
   .app-shell .bg-amber-50 {
-    background: rgba(240, 249, 255, 0.84) !important;
+    background: #ffffff !important;
   }
 
   .app-shell .bg-red-50 {
-    background: rgba(197, 71, 99, 0.13) !important;
+    background: #ffffff !important;
   }
 
   .app-shell .bg-purple-50 {
-    background: rgba(239, 246, 255, 0.82) !important;
+    background: #ffffff !important;
   }
 
   .app-shell .bg-orange-50 {
-    background: rgba(236, 248, 255, 0.82) !important;
+    background: #ffffff !important;
+  }
+
+  .app-shell .gps-card,
+  .app-shell .gps-card-soft,
+  .app-shell .gps-kpi-card,
+  .app-shell .gps-glass {
+    background: #ffffff !important;
   }
 
   .app-shell .border-slate-200,
@@ -705,6 +709,20 @@
   .app-shell .text-red-700,
   .app-shell .text-red-800 {
     color: #b34864 !important;
+  }
+
+  .app-shell [class*="bg-red-"] [class*="text-red-"],
+  .app-shell .text-red-100,
+  .app-shell .text-red-200,
+  .app-shell .text-red-300,
+  .app-shell .text-red-400,
+  .app-shell .text-red-500,
+  .app-shell .text-red-600,
+  .app-shell .text-red-700,
+  .app-shell .text-red-800,
+  .app-shell .text-red-900 {
+    color: #000000 !important;
+    font-weight: 700 !important;
   }
 
   .app-shell .shadow-sm,

@@ -23,7 +23,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
       { id: 'teachers', label: 'Teachers', icon: 'groups' },
       { id: 'fees', label: 'Fees', icon: 'payments' },
       { id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' },
-      { id: 'uploadPhoto', label: 'Upload Photo', icon: 'photo_camera' },
+      // { id: 'uploadPhoto', label: 'Upload Photo', icon: 'photo_camera' },
     ],
     teacher: [{ id: 'uploadMarks', label: 'Marks Upload', icon: 'upload' }],
     student: [
@@ -79,7 +79,7 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
         } ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         <div className="h-full p-3 sm:p-4">
-          <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#d7e9f7]/90 bg-white/92 shadow-[0_14px_34px_rgba(14,116,144,0.12)] backdrop-blur-md">
+          <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#d7e9f7]/90 bg-white">
             <div className="flex items-center justify-between border-b border-[#d7e9f7] px-3 py-3">
               <div className="flex items-center gap-2">
                 <button
@@ -120,8 +120,8 @@ function Sidebar({ isOpen, setIsOpen, activeView, setActiveView, sidebarCollapse
                       collapsedDesktopOnly ? 'lg:justify-center' : ''
                     } ${
                       activeView === item.id
-                        ? 'bg-gradient-to-r from-[#e0f2fe] to-[#bae6fd] text-[#0f3d56] shadow-[0_8px_24px_rgba(125,211,252,0.34)]'
-                        : 'text-[#4b6182] hover:bg-[#f0f9ff] hover:text-[#1f3556]'
+                        ? 'bg-[#0ea5e9] text-white'
+                        : 'text-[#4b6182] hover:bg-[#0ea5e9] hover:text-white'
                     }`}
                     title={collapsedDesktopOnly ? item.label : ''}
                   >

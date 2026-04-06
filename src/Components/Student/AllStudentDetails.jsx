@@ -99,14 +99,13 @@ function AllStudentDetails() {
 
   useEffect(() => {
     fetchStudents()
-  }, [classFilter, rollFilter])
+  }, [rollFilter])
 
   const fetchStudents = async () => {
     setLoading(true)
     setError('')
     try {
       const response = await getAllStudents({
-        class: classFilter,
         roll_no: rollFilter,
       })
       if (response.success) {
@@ -126,7 +125,7 @@ function AllStudentDetails() {
     }
   }
 
-  // Filter students by search term, roll, and section
+  // Filter students by search term, class, roll, and section
   const filteredStudents = students.filter(student => {
     const resolvedClass = getStudentClass(student)
     const resolvedSection = getStudentSection(student)
@@ -143,6 +142,11 @@ function AllStudentDetails() {
         student.Mobile?.includes(search)
       )
       if (!matchesSearch) return false
+    }
+
+    // Class filter (case-insensitive)
+    if (classFilter && normalizeField(resolvedClass) !== normalizeField(classFilter)) {
+      return false
     }
 
     // Roll filter

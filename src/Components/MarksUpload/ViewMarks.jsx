@@ -435,6 +435,7 @@ function ViewMarks() {
                       height={60}
                       tick={{ fontSize: 11 }}
                       interval={0}
+                      tickFormatter={(value) => String(value ?? '').slice(0, 3)}
                     />
                     <YAxis tick={{ fontSize: 11 }} />
                     <Tooltip

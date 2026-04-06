@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { getFeeList } from '../../Api/fees'
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
+import * as XLSX from 'xlsx'
 
 function FeeList({ onViewInvoice, onPayFee }) {
   const [feeList, setFeeList] = useState([])
@@ -96,68 +95,62 @@ function FeeList({ onViewInvoice, onPayFee }) {
     }
   }
 
-  const handleDownloadPDF = () => {
+  const handleDownloadExcel = () => {
     if (filteredFeeList.length === 0) {
       setError('No data available to download')
       return
     }
 
     try {
-      const doc = new jsPDF('landscape', 'mm', 'a4')
-      
-      // Title
-      doc.setFontSize(18)
-      doc.text('Fee List Report', 14, 15)
-      
-      // Filter info
-      doc.setFontSize(10)
-      let yPos = 22
       const filters = []
       if (classFilter) filters.push(`Class: ${classFilter}`)
       if (sectionFilter) filters.push(`Section: ${sectionFilter}`)
       if (monthFilter) filters.push(`Month: ${monthFilter}`)
       if (statusFilter !== 'all') filters.push(`Status: ${statusFilter}`)
-      
-      if (filters.length > 0) {
-        doc.text(`Filters: ${filters.join(', ')}`, 14, yPos)
-        yPos += 5
-      }
-      doc.text(`Total Records: ${filteredFeeList.length}`, 14, yPos)
-      yPos += 8
 
-      // Helper function to format numbers
-      const formatCurrency = (value) => {
-        const num = parseFloat(value) || 0
-        return `₹${num.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
-      }
+      const header = [
+        'Student',
+        'Roll',
+        'Class',
+        'Section',
+        'Month',
+        'Tuition',
+        'Exam',
+        'Annual',
+        'Computer',
+        'Transport',
+        'Prev Due',
+        'Total Fee',
+        'Paid',
+        'Net Payable',
+        'Status',
+      ]
 
-      // Prepare table data
-      const tableData = filteredFeeList.map((fee) => {
+      const rows = filteredFeeList.map((fee) => {
         const totalFee = parseFloat(fee.total_fee) || 0
         const paidAmount = parseFloat(fee.total_paid || fee.paid_amount) || 0
-        const netPayable = parseFloat(fee.net_payable || fee.balance) || (totalFee - paidAmount)
+        const netPayable = parseFloat(fee.net_payable || fee.balance) || totalFee - paidAmount
         const billStatus = fee.bill_status || (netPayable === 0 ? 'paid' : 'unpaid')
-        
+
         return [
           fee.student_name || '--',
-          String(fee.roll_no || '--'),
+          fee.roll_no ?? '--',
           fee.class || '--',
           fee.section || '--',
           fee.month || '--',
-          formatCurrency(fee.tuition_fee || 0),
-          formatCurrency(fee.exam_fee || 0),
-          formatCurrency(fee.annual_fee || 0),
-          formatCurrency(fee.computer_fee || 0),
-          formatCurrency(fee.transport_fee || 0),
-          formatCurrency(fee.previous_due || 0),
-          formatCurrency(totalFee),
-          formatCurrency(paidAmount),
-          formatCurrency(netPayable),
-          billStatus.charAt(0).toUpperCase() + billStatus.slice(1)
+          parseFloat(fee.tuition_fee) || 0,
+          parseFloat(fee.exam_fee) || 0,
+          parseFloat(fee.annual_fee) || 0,
+          parseFloat(fee.computer_fee) || 0,
+          parseFloat(fee.transport_fee) || 0,
+          parseFloat(fee.previous_due) || 0,
+          totalFee,
+          paidAmount,
+          netPayable,
+          String(billStatus).charAt(0).toUpperCase() + String(billStatus).slice(1),
         ]
       })
 
-      // Add summary row
       const totals = {
         tuition: filteredFeeList.reduce((sum, f) => sum + (parseFloat(f.tuition_fee) || 0), 0),
         exam: filteredFeeList.reduce((sum, f) => sum + (parseFloat(f.exam_fee) || 0), 0),
@@ -168,75 +161,49 @@ function FeeList({ onViewInvoice, onPayFee }) {
         totalFee: filteredFeeList.reduce((sum, f) => sum + (parseFloat(f.total_fee) || 0), 0),
         totalPaid: filteredFeeList.reduce((sum, f) => sum + (parseFloat(f.total_paid || f.paid_amount) || 0), 0),
         netPayable: filteredFeeList.reduce((sum, f) => {
-          const totalFee = parseFloat(f.total_fee) || 0
-          const paidAmount = parseFloat(f.total_paid || f.paid_amount) || 0
-          const netPayable = parseFloat(f.net_payable || f.balance) || (totalFee - paidAmount)
-          return sum + netPayable
-        }, 0)
+          const tf = parseFloat(f.total_fee) || 0
+          const pa = parseFloat(f.total_paid || f.paid_amount) || 0
+          const np = parseFloat(f.net_payable || f.balance) || tf - pa
+          return sum + np
+        }, 0),
       }
 
-      tableData.push([
+      rows.push([
         `Total (${filteredFeeList.length})`,
         '',
         '',
         '',
         '',
-        formatCurrency(totals.tuition),
-        formatCurrency(totals.exam),
-        formatCurrency(totals.annual),
-        formatCurrency(totals.computer),
-        formatCurrency(totals.transport),
-        formatCurrency(totals.prevDue),
-        formatCurrency(totals.totalFee),
-        formatCurrency(totals.totalPaid),
-        formatCurrency(totals.netPayable),
-        ''
+        totals.tuition,
+        totals.exam,
+        totals.annual,
+        totals.computer,
+        totals.transport,
+        totals.prevDue,
+        totals.totalFee,
+        totals.totalPaid,
+        totals.netPayable,
+        '',
       ])
 
-      // Generate table
-      autoTable(doc, {
-        startY: yPos,
-        head: [['Student', 'Roll', 'Class', 'Section', 'Month', 'Tuition', 'Exam', 'Annual', 'Computer', 'Transport', 'Prev Due', 'Total Fee', 'Paid', 'Net Payable', 'Status']],
-        body: tableData,
-        theme: 'striped',
-        headStyles: { fillColor: [19, 127, 236], textColor: 255, fontStyle: 'bold' },
-        styles: { fontSize: 7, cellPadding: 1.5, overflow: 'linebreak', cellWidth: 'wrap' },
-        columnStyles: {
-          0: { cellWidth: 30 },
-          1: { cellWidth: 12, halign: 'center' },
-          2: { cellWidth: 12, halign: 'center' },
-          3: { cellWidth: 12, halign: 'center' },
-          4: { cellWidth: 18, halign: 'center' },
-          5: { cellWidth: 15, halign: 'right' },
-          6: { cellWidth: 15, halign: 'right' },
-          7: { cellWidth: 15, halign: 'right' },
-          8: { cellWidth: 15, halign: 'right' },
-          9: { cellWidth: 15, halign: 'right' },
-          10: { cellWidth: 15, halign: 'right' },
-          11: { cellWidth: 18, halign: 'right' },
-          12: { cellWidth: 18, halign: 'right' },
-          13: { cellWidth: 18, halign: 'right' },
-          14: { cellWidth: 15, halign: 'center' }
-        },
-        margin: { top: yPos, left: 14, right: 14 },
-        didDrawPage: function (data) {
-          // Footer
-          doc.setFontSize(8)
-          doc.text(
-            `Generated on: ${new Date().toLocaleString()}`,
-            data.settings.margin.left,
-            doc.internal.pageSize.height - 10
-          )
-        }
-      })
+      const aoa = [
+        ['Fee List Report'],
+        filters.length > 0 ? [`Filters: ${filters.join(', ')}`] : ['Filters: (none)'],
+        [`Total Records: ${filteredFeeList.length}`],
+        [`Generated: ${new Date().toLocaleString()}`],
+        [],
+        header,
+        ...rows,
+      ]
 
-      // Generate filename
-      const filename = `fee-list-${classFilter || 'all'}-${sectionFilter || 'all'}-${monthFilter || 'all'}-${statusFilter}-${new Date().toISOString().split('T')[0]}.pdf`
-      
-      // Save PDF
-      doc.save(filename)
+      const ws = XLSX.utils.aoa_to_sheet(aoa)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Fee List')
+
+      const filename = `fee-list-${classFilter || 'all'}-${sectionFilter || 'all'}-${monthFilter || 'all'}-${statusFilter}-${new Date().toISOString().split('T')[0]}.xlsx`
+      XLSX.writeFile(wb, filename)
     } catch (err) {
-      setError('Failed to generate PDF: ' + (err?.message || 'Unknown error'))
+      setError('Failed to generate Excel: ' + (err?.message || 'Unknown error'))
     }
   }
 
@@ -259,12 +226,13 @@ function FeeList({ onViewInvoice, onPayFee }) {
           )}
           {filteredFeeList.length > 0 && (
             <button
-              onClick={handleDownloadPDF}
-              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap text-sm justify-center"
+              type="button"
+              onClick={handleDownloadExcel}
+              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap text-sm justify-center font-semibold"
             >
-              <span className="material-symbols-outlined text-sm">picture_as_pdf</span>
-              <span className="hidden sm:inline">Download PDF</span>
-              <span className="sm:hidden">PDF</span>
+              <span className="material-symbols-outlined text-sm">table_chart</span>
+              <span className="hidden sm:inline">Download Excel</span>
+              <span className="sm:hidden">XLSX</span>
             </button>
           )}
         </div>
