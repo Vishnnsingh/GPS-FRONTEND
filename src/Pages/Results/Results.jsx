@@ -547,7 +547,8 @@ function Results() {
 
     const { default: html2canvas } = await import('html2canvas')
     const sourceRect = sourceCard.getBoundingClientRect()
-    const initialCaptureWidth = Math.max(Math.ceil(sourceRect.width), 1)
+    const desktopCaptureWidth = 920
+    const initialCaptureWidth = Math.max(Math.ceil(sourceRect.width), desktopCaptureWidth, 1)
     const exportHost = document.createElement('div')
     exportHost.className = 'pdf-export-host'
     exportHost.style.width = `${initialCaptureWidth}px`
@@ -625,17 +626,6 @@ function Results() {
       const renderBottomPadding = 16
       const renderWidthLimit = pageWidth - (renderSidePadding * 2)
       const renderAreaHeight = pageHeight - renderY - renderBottomPadding
-      const renderWidthToFitHeight = (renderAreaHeight * canvas.width) / canvas.height
-      const shouldRenderSinglePage = renderWidthToFitHeight >= renderWidthLimit * 0.82
-
-      if (shouldRenderSinglePage) {
-        const renderWidth = Math.min(renderWidthLimit, renderWidthToFitHeight)
-        const renderHeight = (canvas.height * renderWidth) / canvas.width
-        const renderX = (pageWidth - renderWidth) / 2
-
-        doc.addImage(canvas, 'PNG', renderX, renderY, renderWidth, renderHeight, undefined, 'FAST')
-        return doc.output('blob')
-      }
 
       const renderX = renderSidePadding
       const pixelsPerPoint = canvas.width / renderWidthLimit
@@ -829,12 +819,12 @@ function Results() {
                           Academic Report
                         </p> */}
                         <h1
-                          className="result-school-title mx-auto mt-1.5 max-w-[760px] text-[20px] font-black uppercase leading-[1.02] tracking-[0.05em] text-[#12284b] sm:text-[34px]"
+                          className="result-school-title mx-auto mt-1.5 max-w-[760px] text-[20px] font-black uppercase leading-[1.1] tracking-[0.05em] text-[#12284b] sm:text-[32px]"
                           style={{ fontFamily: "'Baskerville Old Face', 'Book Antiqua', 'Palatino Linotype', 'Georgia', serif" }}
                         >
                           {SCHOOL_NAME}
                         </h1>
-                        <p className="mx-auto mt-1 max-w-[640px] text-[9px] font-semibold text-[#4c6175] sm:text-[11px]">
+                        <p className="mx-auto mt-2 max-w-[640px] text-[9px] font-semibold text-[#4c6175] sm:mt-2.5 sm:text-[11px]">
                           {SCHOOL_ADDRESS}
                         </p>
                         <div className="mt-2 space-y-1">
@@ -1013,7 +1003,7 @@ function Results() {
                       </div>
                     </div>
 
-                    <div className="mt-3 grid gap-2.5 lg:grid-cols-[minmax(0,1fr)_236px]">
+                    <div className="result-instructions-sign mt-3 grid gap-2.5 lg:grid-cols-[minmax(0,1fr)_236px]">
                       <div className="border border-[#c8d3df] bg-white px-3 py-2">
                         <p className="text-[10px] font-black uppercase tracking-[0.15em] text-[#33485e] sm:text-[11px]">Instructions</p>
                         <div className="mt-1 space-y-1 text-[10px] leading-[1.4] text-[#324455] sm:text-[11px]">

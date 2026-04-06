@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
 import SEO from '../../Components/SEO/SEO'
-import { SCHOOL_KEYWORDS, buildResultPath } from '../../seo/siteSeo'
+import { SCHOOL_KEYWORDS } from '../../seo/siteSeo'
 import { useResultSearchOptions } from './useResultSearchOptions'
 
 const sanitizeSessionValue = (value) => String(value ?? '').replace(/[^0-9-]/g, '').replace(/-+/g, '-').slice(0, 7)
@@ -58,11 +58,13 @@ function ResultsPortal() {
     }
 
     const params = new URLSearchParams()
+    params.set('class', String(formData.classValue).trim())
+    params.set('roll', String(formData.roll).trim())
     params.set('terminal', String(formData.terminal).trim())
     if (String(formData.section).trim()) params.set('section', String(formData.section).trim())
     if (String(formData.session).trim()) params.set('session', String(formData.session).trim())
 
-    navigate(`${buildResultPath({ classValue: formData.classValue, roll: formData.roll })}?${params.toString()}`)
+    navigate(`/result?${params.toString()}`)
   }
 
   return (

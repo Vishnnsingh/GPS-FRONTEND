@@ -9,7 +9,7 @@ function WebsiteLayout({ children }) {
       <div className="pointer-events-none fixed -left-16 top-24 h-60 w-60 rounded-full bg-[#0f766e]/10 blur-3xl"></div>
       <div className="pointer-events-none fixed bottom-20 right-[-60px] h-72 w-72 rounded-full bg-[#0f172a]/8 blur-3xl"></div>
       <WebsiteHeader />
-      <main className="relative z-10 pb-16 pt-[106px] sm:pt-[116px]">{children}</main>
+      <main className="relative z-10 pb-16 pt-[122px] sm:pt-[132px] lg:pt-[138px]">{children}</main>
       <WebsiteFooter />
     </div>
   )

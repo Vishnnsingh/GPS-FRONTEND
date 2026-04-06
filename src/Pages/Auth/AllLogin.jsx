@@ -62,7 +62,7 @@ function AllLogin() {
         canonicalPath="/login"
       />
       <WebsiteHeader />
-      <main className="pb-10 pt-[104px] sm:pt-[112px]">
+      <main className="pb-10 pt-[122px] sm:pt-[132px] lg:pt-[138px]">
         <div className="gps-shell">
           <div className="gps-grid lg:grid-cols-[1.02fr_0.98fr]">
             <article className="gps-auth-card p-6 sm:p-8">

@@ -153,6 +153,12 @@
   width: 100% !important;
 }
 
+.pdf-capture-mode .result-instructions-sign {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 236px !important;
+  align-items: stretch !important;
+}
+
 .pdf-capture-mode .result-watermark {
   display: none !important;
 }
