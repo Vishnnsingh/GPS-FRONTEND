@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import WebsiteLayout from "../../Components/Website/WebsiteLayout";
-
-import { siteMedia } from "./siteContent";
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import WebsiteLayout from '../../Components/Website/WebsiteLayout'
+import SEO from '../../Components/SEO/SEO'
+import { buildSchoolJsonLd, SCHOOL_KEYWORDS } from '../../seo/siteSeo'
+import { siteMedia } from './siteContent'
 import {
   homeCommunityNotes,
   homeHeroSections,
@@ -12,25 +13,31 @@ import {
   homeProgramCards,
   homePromisePoints,
   schoolProfile,
-} from "./siteContent";
+} from './siteContent'
 
 function Home() {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0)
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % homeHeroSlides.length);
-    }, 4200);
+    const interval = window.setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % homeHeroSlides.length)
+    }, 4200)
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => window.clearInterval(interval)
+  }, [])
 
-  const scrollingPoints = [...homePromisePoints, ...homePromisePoints];
+  const scrollingPoints = [...homePromisePoints, ...homePromisePoints]
 
   return (
     <WebsiteLayout>
+      <SEO
+        title="Best School in Harinagar Ramnagar West Champaran"
+        description="Gyanoday Public School is a trusted school in Harinagar, Ramnagar (Bettiah), West Champaran, Bihar focused on disciplined learning, parent communication, admissions and secure result access."
+        keywords={SCHOOL_KEYWORDS}
+        canonicalPath="/"
+        jsonLd={buildSchoolJsonLd({ path: '/' })}
+      />
 
-      {/* HERO */}
       <section className="relative overflow-hidden bg-slate-950">
         <div className="absolute inset-0">
           {homeHeroSlides.map((slide, index) => (
@@ -38,76 +45,77 @@ function Home() {
               key={slide.src}
               src={slide.src}
               alt={slide.title}
+              loading={index === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+              fetchPriority={index === 0 ? 'high' : 'auto'}
               className={`absolute inset-0 h-full w-full object-cover transition-all duration-[1500ms] ${
-                index === currentSlide ? "opacity-100 scale-100" : "opacity-0 scale-110"
+                index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-110'
               }`}
             />
           ))}
-          <div className="absolute inset-0 bg-black/50"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.46),rgba(2,6,23,0.74))]"></div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 text-white">
-          <h1 className="text-3xl font-black leading-tight sm:text-5xl lg:text-6xl">
-            Clarity for families.
-            <br />
-            Confidence for students.
-          </h1>
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-20 text-white sm:px-6 lg:px-8 lg:py-28">
+          <div className="max-w-4xl">
+            <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100 backdrop-blur-sm">
+              Harinagar | Ramnagar (Bettiah) | West Champaran
+            </span>
 
-          <p className="mt-5 max-w-xl text-sm text-slate-200 sm:text-base lg:text-lg">
-            {schoolProfile.name} helps students grow through calm routines,
-            clear communication and consistent learning.
-          </p>
+            <h1 className="mt-5 text-4xl font-black leading-[1.05] sm:text-5xl lg:text-7xl">
+              Best School in Harinagar Ramnagar West Champaran for disciplined learning and confident growth
+            </h1>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/admission" className="gps-site-button">
-              Apply for admission
-            </Link>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-100 sm:text-lg">
+              {schoolProfile.name} helps families looking for a Harinagar school, a Ramnagar Bettiah school, or a
+              West Champaran school with clear admissions guidance, strong classroom routines, attentive teaching and
+              a student journey built around trust.
+            </p>
 
-            <Link to="/results-portal" className="gps-site-button">
-              Result portal
-            </Link>
-          </div>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-cyan-100/90 sm:text-base">
+              If you want a school in Harinagar, Bihar that balances academics, discipline, communication and
+              co-curricular confidence, this campus is designed to make that choice easier for parents.
+            </p>
 
-          <div className="mt-8 flex gap-2">
-            {homeHeroSlides.map((slide, index) => (
-              <button
-                key={slide.title}
-                onClick={() => setCurrentSlide(index)}
-                className={`h-2.5 rounded-full transition-all ${
-                  index === currentSlide ? "w-8 bg-cyan-300" : "w-3 bg-white/40"
-                }`}
-              />
-            ))}
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link to="/admission" className="gps-site-button">
+                Apply for admission
+              </Link>
+              <Link to="/results-portal" className="gps-site-button-secondary">
+                Result portal
+              </Link>
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-2.5">
+              {scrollingPoints.slice(0, 4).map((point) => (
+                <span key={point} className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-slate-100 backdrop-blur-sm">
+                  {point}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CAMPUS FEEL */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 gap-10 md:grid-cols-2 items-center">
-
+      <section className="bg-white py-16">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-cyan-700">
-              What this campus feels like
-            </span>
-
-            <h2 className="mt-3 text-3xl font-bold text-slate-900">
-              A cleaner hero with supporting details below
+            <span className="text-xs font-bold uppercase tracking-widest text-cyan-700">Why families choose us</span>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">
+              A dependable school choice for Harinagar, Ramnagar and nearby West Champaran families
             </h2>
-
-            <p className="mt-4 text-slate-600 max-w-xl">
-              {schoolProfile.motto} The image now carries the mood of the
-              campus while the explanation stays readable and calm.
+            <p className="mt-4 max-w-2xl text-slate-600">
+              Families searching for the best school in Harinagar Ramnagar West Champaran usually want more than just
+              a classroom. They want a place where children are guided, routines are visible, communication stays
+              clear and parents feel supported through the session.
             </p>
 
-            <div className="mt-6 overflow-hidden rounded-full border">
+            <div className="mt-6 overflow-hidden rounded-full border border-slate-200 bg-slate-50">
               <div className="flex min-w-max gap-3 px-4 py-3">
                 {scrollingPoints.map((point, index) => (
-                  <span
-                    key={index}
-                    className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm"
-                  >
-                    ✓ {point}
+                  <span key={`${point}-${index}`} className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm">
+                    <span className="text-cyan-700">✓</span>
+                    {point}
                   </span>
                 ))}
               </div>
@@ -116,11 +124,8 @@ function Home() {
 
           <div className="grid gap-4">
             {homeHeroSections.map((item) => (
-              <div key={item.title} className="rounded-xl border p-6 bg-white shadow-sm">
-                <p className="text-xs font-bold uppercase text-cyan-700">
-                  {item.title}
-                </p>
-
+              <div key={item.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-700">{item.title}</p>
                 <p className="mt-3 text-slate-600">{item.text}</p>
               </div>
             ))}
@@ -128,49 +133,37 @@ function Home() {
         </div>
       </section>
 
-      {/* STATS */}
-      <section className="py-14 bg-slate-50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 text-center">
-
+      <section className="bg-slate-50 py-14">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 text-center sm:grid-cols-2 md:grid-cols-3 sm:px-6 lg:px-8">
           {homeHeroStats.map((item) => (
-            <div key={item.value}>
-              <p className="text-3xl font-extrabold text-slate-900">
-                {item.value}
-              </p>
-
-              <p className="mt-2 text-slate-600">{item.label}</p>
+            <div key={item.label} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-lg font-extrabold uppercase tracking-[0.12em] text-cyan-700">{item.value}</p>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{item.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* SCHOOL JOURNEY */}
       <section className="py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid gap-10 lg:grid-cols-2">
-
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-cyan-700">
-              Why families stay
-            </span>
-
-            <h2 className="mt-4 text-3xl font-bold text-slate-900">
-              Strong school culture works best when it feels clear
+            <span className="text-xs font-bold uppercase tracking-widest text-cyan-700">School journey</span>
+            <h2 className="mt-4 text-3xl font-black text-slate-900 sm:text-4xl">
+              A steady learning environment that supports results, discipline and confidence
             </h2>
-
             <p className="mt-4 text-slate-600">
-              Families want routines, communication and visible growth.
-              This website redesign helps make that easier to understand.
+              Our school website, result flow and admissions content are built to make information easy to find for
+              Harinagar, Ramnagar (Bettiah) and West Champaran families.
             </p>
 
             <div className="mt-8 space-y-4">
               {homeJourneySteps.slice(0, 2).map((step, index) => (
-                <div key={step.title} className="flex gap-4 border rounded-xl p-4">
-                  <div className="w-10 h-10 flex items-center justify-center bg-black text-white rounded-full">
+                <div key={step.title} className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white">
                     {index + 1}
                   </div>
-
                   <div>
-                    <p className="font-semibold">{step.title}</p>
+                    <p className="font-semibold text-slate-900">{step.title}</p>
                     <p className="text-sm text-slate-600">{step.text}</p>
                   </div>
                 </div>
@@ -179,22 +172,22 @@ function Home() {
           </div>
 
           <div>
-            <img
-              src={siteMedia.homeCulture}
-              alt="School culture"
-              className="rounded-xl w-full object-cover"
-            />
+            <div className="aspect-[4/3] overflow-hidden rounded-3xl bg-slate-100">
+              <img
+                src={siteMedia.homeCulture}
+                alt="School culture and classroom discipline"
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
+            </div>
 
             <div className="mt-6 space-y-4">
               {homeJourneySteps.slice(2).map((step, index) => (
-                <div key={step.title} className="border rounded-xl p-4">
-                  <p className="text-xs uppercase text-cyan-700 font-bold">
-                    Stage {index + 3}
-                  </p>
-
-                  <p className="font-semibold">{step.title}</p>
-
-                  <p className="text-sm text-slate-600">{step.text}</p>
+                <div key={step.title} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-700">Stage {index + 3}</p>
+                  <p className="mt-1 font-semibold text-slate-900">{step.title}</p>
+                  <p className="mt-2 text-sm text-slate-600">{step.text}</p>
                 </div>
               ))}
             </div>
@@ -202,54 +195,49 @@ function Home() {
         </div>
       </section>
 
-      {/* PROGRAMS */}
-      <section className="py-16 bg-slate-50">
+      <section className="bg-slate-50 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <span className="text-xs font-bold uppercase tracking-widest text-cyan-700">Local SEO focus</span>
+            <h2 className="mt-4 text-3xl font-black text-slate-900 sm:text-4xl">
+              Harinagar school, Ramnagar Bettiah school and West Champaran school searches should lead here
+            </h2>
+            <p className="mt-4 text-slate-600">
+              We intentionally speak to families in and around Harinagar, Ramnagar (Bettiah) and West Champaran so the
+              site matches the way parents actually search. That includes admissions, campus visits, result access and
+              everyday school contact.
+            </p>
+          </div>
 
-          <h2 className="text-3xl font-bold text-slate-900">
-            Three things this school does well
-          </h2>
-
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
             {homeProgramCards.map((card, index) => (
-              <div key={card.title} className="border rounded-xl p-6 bg-white">
-                <div className="w-10 h-10 flex items-center justify-center bg-black text-white rounded-full">
+              <article key={card.title} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
                   {index + 1}
                 </div>
-
-                <h3 className="mt-4 text-xl font-bold">{card.title}</h3>
-
+                <h3 className="mt-4 text-xl font-bold text-slate-900">{card.title}</h3>
                 <p className="mt-3 text-slate-600">{card.text}</p>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* COMMUNITY */}
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
-          <h2 className="text-3xl font-bold text-slate-900">
-            What families care about most
-          </h2>
-
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <h2 className="text-3xl font-black text-slate-900 sm:text-4xl">What families care about most</h2>
+          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
             {homeCommunityNotes.map((item) => (
-              <div key={item.title} className="border rounded-xl p-6 bg-white">
-                <p className="text-sm font-bold uppercase text-cyan-700">
-                  {item.title}
-                </p>
-
+              <article key={item.title} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-sm font-bold uppercase tracking-[0.16em] text-cyan-700">{item.title}</p>
                 <p className="mt-3 text-slate-600">{item.text}</p>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
-
     </WebsiteLayout>
-  );
+  )
 }
 
-export default Home;
+export default Home

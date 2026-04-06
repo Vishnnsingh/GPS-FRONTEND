@@ -4,10 +4,6 @@ import './index.css'
 import App from './App.jsx'
 import schoolLogo from './assets/logo.png'
 
-const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
-
-document.title = SCHOOL_NAME
-
 const faviconElement =
   document.querySelector("link[rel='icon']") ||
   (() => {

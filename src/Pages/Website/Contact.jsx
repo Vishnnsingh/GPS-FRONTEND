@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
+import SEO from '../../Components/SEO/SEO'
+import { buildSchoolJsonLd, SCHOOL_KEYWORDS } from '../../seo/siteSeo'
 import { contactCards, schoolProfile, siteMedia } from './siteContent'
 
 function Contact() {
@@ -19,6 +21,13 @@ function Contact() {
 
   return (
     <WebsiteLayout>
+      <SEO
+        title="Contact Gyanoday Public School"
+        description="Contact Gyanoday Public School in Harinagar, Ramnagar (Bettiah), West Champaran, Bihar for admissions, result support and campus visits."
+        keywords={SCHOOL_KEYWORDS}
+        canonicalPath="/contact"
+        jsonLd={buildSchoolJsonLd({ path: '/contact' })}
+      />
       <section className="gps-site-section pt-6">
         <div className="gps-site-shell">
           <div className="grid gap-5 lg:grid-cols-[1fr_0.92fr]">
@@ -54,7 +63,7 @@ function Contact() {
 
             <article className="gps-site-panel p-4 sm:p-5">
               <div className="gps-site-photo-frame h-[360px] sm:h-[420px]">
-                <img src={siteMedia.contactSupport} alt="Students on campus" className="h-full w-full object-cover" />
+                <img src={siteMedia.contactSupport} alt="Students on campus" loading="lazy" decoding="async" className="h-full w-full object-cover" />
               </div>
               <div className="mt-4 rounded-[1.5rem] border border-slate-200/80 bg-[linear-gradient(180deg,rgba(240,249,255,0.9),rgba(255,255,255,0.9))] p-5">
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-700">Office guidance</p>
@@ -181,8 +190,8 @@ function Contact() {
       <section className="gps-site-section pt-0">
         <div className="gps-site-shell">
           <div className="gps-site-panel overflow-hidden">
-            <div className="relative h-80 sm:h-[28rem]">
-              <img src={siteMedia.contactHero} alt="School campus location" className="h-full w-full object-cover" />
+              <div className="relative h-80 sm:h-[28rem]">
+              <img src={siteMedia.contactHero} alt="School campus location" loading="eager" fetchPriority="high" decoding="async" className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/50 to-slate-900/10"></div>
               <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7">
                 <p className="text-xs uppercase tracking-[0.18em] text-cyan-200">Visit us</p>

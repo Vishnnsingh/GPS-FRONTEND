@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import jsPDF from 'jspdf'
 import { getStudentResultPublic } from '../../Api/marks'
 import schoolLogo from '../../assets/logo.png'
+import SEO from '../../Components/SEO/SEO'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
+import { SCHOOL_KEYWORDS, buildSchoolJsonLd, parseClassSlug, parseRollSlug } from '../../seo/siteSeo'
 import '../../styles/print.css'
 
 const SUMMARY_TERMINALS = ['First', 'Second', 'Third', 'Annual']
@@ -131,19 +133,20 @@ const getOrderedTerminalKeys = (keys = []) => {
 
 function Results() {
   const SCHOOL_NAME = import.meta.env.VITE_SCHOOL_NAME || 'Gyanoday Public School'
-  const SCHOOL_ADDRESS = import.meta.env.VITE_SCHOOL_ADDRESS || 'Bilaspur Dainmarwa Road, Harinagar (W. Champaran)'
+  const SCHOOL_ADDRESS = import.meta.env.VITE_SCHOOL_ADDRESS || 'Belaspur Dainmanwa Road, Harinagar, Ramnagar, West Champaran, Bihar'
   const cardRef = useRef(null)
 
   const [searchParams] = useSearchParams()
+  const { classSlug, rollNumber } = useParams()
 
   const params = useMemo(() => {
-    const classValue = searchParams.get('class') || ''
-    const roll = searchParams.get('roll') || ''
+    const classValue = searchParams.get('class') || parseClassSlug(classSlug) || ''
+    const roll = searchParams.get('roll') || parseRollSlug(rollNumber) || ''
     const terminal = searchParams.get('terminal') || ''
     const section = searchParams.get('section') || ''
     const session = searchParams.get('session') || ''
     return { classValue, roll, terminal, section, session }
-  }, [searchParams])
+  }, [classSlug, rollNumber, searchParams])
   const { classValue, roll, terminal, section, session } = params
 
   const [loading, setLoading] = useState(false)
@@ -483,6 +486,7 @@ function Results() {
     ['Rank', currentRankLabel],
     ['Published Date', currentPublishedDate],
   ]
+  const canonicalPath = classSlug && rollNumber ? `/results/${classSlug}/roll-${rollNumber}` : '/result'
 
   const getStatusTextColor = (status) => {
     if (status === 'PASS') return 'text-[#047857]'
@@ -700,6 +704,14 @@ function Results() {
 
   return (
     <WebsiteLayout>
+      <SEO
+        title="Student Result"
+        description="Secure published result card for Gyanoday Public School students."
+        keywords={SCHOOL_KEYWORDS}
+        canonicalPath={canonicalPath}
+        noIndex
+        jsonLd={buildSchoolJsonLd({ path: canonicalPath })}
+      />
       <div className="bg-white text-[#0f172a] overflow-x-hidden" style={{ fontFamily: "'Lexend', sans-serif" }}>
         <header className="no-print relative z-30 border-b border-[#e2e8f0] bg-white">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -809,7 +821,7 @@ function Results() {
                           className="flex h-[64px] w-[64px] items-center justify-center rounded-full border-[2px] border-[#c8a15f] bg-[#f7eed7] p-1.5 shadow-[inset_0_0_0_4px_rgba(255,255,255,0.94)] sm:h-[78px] sm:w-[78px]"
                           style={{ background: 'radial-gradient(circle at top, #fffdf7 0%, #f8eed8 58%, #eed7a7 100%)' }}
                         >
-                          <img src={schoolLogo} alt="School logo" className="h-full w-full rounded-full bg-white object-contain p-1" />
+                          <img src={schoolLogo} alt="School logo" loading="lazy" decoding="async" className="h-full w-full rounded-full bg-white object-contain p-1" />
                         </div>
                       </div>
 
@@ -1022,6 +1034,8 @@ function Results() {
                               <img
                                 src={schoolLogo}
                                 alt="Temporary principal sign and stamp placeholder"
+                                loading="lazy"
+                                decoding="async"
                                 className="h-[78px] w-[78px] rounded-full border border-[#d7e0e8] bg-[#f8fbff] p-1.5 object-cover opacity-80 sm:h-[92px] sm:w-[92px]"
                               />
                             </div>

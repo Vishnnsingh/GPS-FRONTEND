@@ -34,7 +34,7 @@ function WebsiteHeader() {
                 {/* <p className="truncate text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-700 sm:text-xs">
                   School ERP Campus
                 </p> */}
-                <h1 className="truncate text-sm font-extrabold text-slate-900 sm:text-base">{schoolProfile.name}</h1>
+                <p className="truncate text-sm font-extrabold text-slate-900 sm:text-base">{schoolProfile.name}</p>
               </div>
             </Link>
 

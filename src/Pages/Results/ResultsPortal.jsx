@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
+import SEO from '../../Components/SEO/SEO'
+import { SCHOOL_KEYWORDS, buildResultPath } from '../../seo/siteSeo'
 import { useResultSearchOptions } from './useResultSearchOptions'
 
 const sanitizeSessionValue = (value) => String(value ?? '').replace(/[^0-9-]/g, '').replace(/-+/g, '-').slice(0, 7)
@@ -56,17 +58,22 @@ function ResultsPortal() {
     }
 
     const params = new URLSearchParams()
-    params.set('class', String(formData.classValue).trim())
-    params.set('roll', String(formData.roll).trim())
     params.set('terminal', String(formData.terminal).trim())
     if (String(formData.section).trim()) params.set('section', String(formData.section).trim())
     if (String(formData.session).trim()) params.set('session', String(formData.session).trim())
 
-    navigate(`/result?${params.toString()}`)
+    navigate(`${buildResultPath({ classValue: formData.classValue, roll: formData.roll })}?${params.toString()}`)
   }
 
   return (
     <WebsiteLayout>
+      <SEO
+        title={`${SCHOOL_NAME} Result Portal`}
+        description={`Secure result portal for ${SCHOOL_NAME} students in Harinagar, Ramnagar (Bettiah), West Champaran, Bihar.`}
+        keywords={SCHOOL_KEYWORDS}
+        canonicalPath="/results-portal"
+        noIndex
+      />
       <div className="min-h-screen bg-[linear-gradient(180deg,#f8fcff_0%,#eff6fb_50%,#f7fafc_100%)]">
         <section className="relative overflow-hidden py-8 md:py-10">
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(14,165,233,0.08),transparent_42%,rgba(15,118,110,0.08))]"></div>

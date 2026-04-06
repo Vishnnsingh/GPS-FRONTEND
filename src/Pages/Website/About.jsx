@@ -1,11 +1,20 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
+import SEO from '../../Components/SEO/SEO'
+import { buildSchoolJsonLd, SCHOOL_KEYWORDS } from '../../seo/siteSeo'
 import { aboutLearningBlocks, aboutMilestones, aboutValues, schoolProfile, siteMedia } from './siteContent'
 
 function About() {
   return (
     <WebsiteLayout>
+      <SEO
+        title="About Gyanoday Public School"
+        description="Learn about Gyanoday Public School in Harinagar, Ramnagar (Bettiah), West Champaran, Bihar and how the school supports disciplined learning, values and parent communication."
+        keywords={SCHOOL_KEYWORDS}
+        canonicalPath="/about"
+        jsonLd={buildSchoolJsonLd({ path: '/about' })}
+      />
       <section className="gps-site-section pt-6">
         <div className="gps-site-shell">
           <div className="grid gap-5 lg:grid-cols-[1fr_0.96fr]">
@@ -39,11 +48,11 @@ function About() {
 
             <article className="gps-site-panel p-4 sm:p-5">
               <div className="gps-site-photo-frame h-72 sm:h-80">
-                <img src={siteMedia.aboutHero} alt="School campus and students" className="h-full w-full object-cover" />
+                <img src={siteMedia.aboutHero} alt="School campus and students" loading="eager" fetchPriority="high" decoding="async" className="h-full w-full object-cover" />
               </div>
               <div className="mt-4 grid gap-4 sm:grid-cols-[0.82fr_1fr]">
                 <div className="gps-site-photo-frame h-48 sm:h-full">
-                  <img src={siteMedia.aboutSupport} alt="Students learning in class" className="h-full w-full object-cover" />
+                  <img src={siteMedia.aboutSupport} alt="Students learning in class" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                 </div>
                 <div className="rounded-[1.45rem] border border-slate-200/80 bg-[linear-gradient(180deg,rgba(240,249,255,0.9),rgba(255,255,255,0.9))] p-5">
                   <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-700">What families notice</p>
@@ -100,7 +109,7 @@ function About() {
 
             <article className="gps-site-panel-muted p-5 sm:p-6">
               <div className="gps-site-photo-frame h-72 sm:h-80">
-                <img src={siteMedia.aboutLead} alt="School achievement and celebration" className="h-full w-full object-cover" />
+                <img src={siteMedia.aboutLead} alt="School achievement and celebration" loading="lazy" decoding="async" className="h-full w-full object-cover" />
               </div>
               <div className="mt-5 rounded-[1.45rem] border border-slate-200/80 bg-white/82 p-5">
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-700">Leadership view</p>

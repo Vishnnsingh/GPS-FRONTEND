@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import WebsiteLayout from '../../Components/Website/WebsiteLayout'
+import SEO from '../../Components/SEO/SEO'
+import { buildSchoolJsonLd, SCHOOL_KEYWORDS } from '../../seo/siteSeo'
 import { admissionFaqs, admissionSteps, admissionSupportBlocks, schoolProfile, siteMedia } from './siteContent'
 
 function Admission() {
@@ -35,6 +37,13 @@ function Admission() {
 
   return (
     <WebsiteLayout>
+      <SEO
+        title="Admission at Gyanoday Public School"
+        description="Explore admissions at Gyanoday Public School in Harinagar, Ramnagar (Bettiah), West Champaran, Bihar. Clear steps, document guidance and parent support."
+        keywords={SCHOOL_KEYWORDS}
+        canonicalPath="/admission"
+        jsonLd={buildSchoolJsonLd({ path: '/admission' })}
+      />
       <section className="gps-site-section pt-6">
         <div className="gps-site-shell">
           <div className="flex flex-col gap-5">
@@ -169,7 +178,7 @@ function Admission() {
               </div>
 
               <div className="mt-5 gps-site-photo-frame h-56">
-                <img src={siteMedia.admissionSupport} alt="Values and learning atmosphere" className="h-full w-full object-cover" />
+                <img src={siteMedia.admissionSupport} alt="Values and learning atmosphere" loading="lazy" decoding="async" className="h-full w-full object-cover" />
               </div>
             </article>
 
