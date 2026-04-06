@@ -22,7 +22,6 @@ function Unauthorized() {
         title="Access denied"
         description="This page is restricted to school staff and authorized users."
         canonicalPath="/unauthorized"
-        noIndex
       />
       <div className="gps-card w-full max-w-md p-6">
         <h2 className="text-xl font-bold text-white">Access denied</h2>

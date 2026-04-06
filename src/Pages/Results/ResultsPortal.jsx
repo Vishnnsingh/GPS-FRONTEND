@@ -72,7 +72,6 @@ function ResultsPortal() {
         description={`Secure result portal for ${SCHOOL_NAME} students in Harinagar, Ramnagar (Bettiah), West Champaran, Bihar.`}
         keywords={SCHOOL_KEYWORDS}
         canonicalPath="/results-portal"
-        noIndex
       />
       <div className="min-h-screen bg-[linear-gradient(180deg,#f8fcff_0%,#eff6fb_50%,#f7fafc_100%)]">
         <section className="relative overflow-hidden py-8 md:py-10">

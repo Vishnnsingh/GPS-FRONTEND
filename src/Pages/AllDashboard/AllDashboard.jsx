@@ -173,7 +173,6 @@ function Dashboard({ initialView = 'dashboard' }) {
         title="School Dashboard"
         description="Internal dashboard for Gyanoday Public School staff."
         canonicalPath="/dashboard"
-        noIndex
       />
       <Sidebar 
         isOpen={sidebarOpen} 
