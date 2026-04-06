@@ -56,7 +56,6 @@ function SEO({
   description = DEFAULT_DESCRIPTION,
   keywords = SCHOOL_KEYWORDS,
   canonicalPath = '/',
-  noIndex = false,
   image = buildAbsoluteUrl('/logo.png'),
   type = 'website',
   twitterCard = 'summary_large_image',
@@ -73,7 +72,7 @@ function SEO({
     upsertMeta('meta[name="keywords"]', { name: 'keywords', content: keywords })
     upsertMeta('meta[name="robots"]', {
       name: 'robots',
-      content: noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+      content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
     })
 
     upsertMeta('meta[property="og:title"]', { property: 'og:title', content: formatPageTitle(title) })
@@ -108,10 +107,9 @@ function SEO({
     return () => {
       document.documentElement.lang = previousLang || 'en'
     }
-  }, [canonicalPath, description, image, jsonLd, keywords, lang, noIndex, title, twitterCard, type])
+  }, [canonicalPath, description, image, jsonLd, keywords, lang, title, twitterCard, type])
 
   return null
 }
 
 export default SEO
-

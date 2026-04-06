@@ -60,7 +60,6 @@ function AllLogin() {
         title="Admin Login"
         description="Secure staff login for Gyanoday Public School."
         canonicalPath="/login"
-        noIndex
       />
       <WebsiteHeader />
       <main className="pb-10 pt-[104px] sm:pt-[112px]">

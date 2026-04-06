@@ -709,7 +709,6 @@ function Results() {
         description="Secure published result card for Gyanoday Public School students."
         keywords={SCHOOL_KEYWORDS}
         canonicalPath={canonicalPath}
-        noIndex
         jsonLd={buildSchoolJsonLd({ path: canonicalPath })}
       />
       <div className="bg-white text-[#0f172a] overflow-x-hidden" style={{ fontFamily: "'Lexend', sans-serif" }}>
