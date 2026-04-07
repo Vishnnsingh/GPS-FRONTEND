@@ -21,6 +21,97 @@ const normalizeFilterInput = (classFilter = '', sectionFilter = '', month = '') 
   }
 }
 
+const normalizeText = (value) => (value ?? '').toString().trim().toLowerCase()
+
+const normalizeSectionValue = (value) =>
+  normalizeText(value).replace(/[^a-z0-9]/g, '').toUpperCase()
+
+const normalizeRollValue = (value) => {
+  const text = normalizeText(value)
+  const digits = text.match(/\d+/g)
+  return digits ? String(parseInt(digits.join(''), 10)) : text.replace(/[^a-z0-9]/g, '')
+}
+
+const normalizeClassValue = (value) => {
+  const text = normalizeText(value)
+  if (!text) {
+    return ''
+  }
+
+  const digits = text.match(/\d+/g)
+  if (digits && digits.length > 0) {
+    return String(parseInt(digits.join(''), 10))
+  }
+
+  return text.replace(/[^a-z0-9]/g, '')
+}
+
+const extractFeeRecords = (payload) => {
+  const candidates = [
+    payload,
+    payload?.data,
+    payload?.fees,
+    payload?.records,
+    payload?.items,
+    payload?.students,
+    payload?.data?.data,
+    payload?.data?.fees,
+    payload?.data?.records,
+    payload?.data?.items,
+    payload?.data?.students,
+  ]
+
+  return candidates.find(Array.isArray) || []
+}
+
+const buildClassVariants = (classFilter) => {
+  const value = normalizeText(classFilter)
+  if (!value) {
+    return ['']
+  }
+
+  const variants = new Set([value, normalizeClassValue(value)])
+  const digits = normalizeClassValue(value)
+
+  if (digits) {
+    const ordinalSuffix =
+      digits.endsWith('1') && digits !== '11'
+        ? 'st'
+        : digits.endsWith('2') && digits !== '12'
+          ? 'nd'
+          : digits.endsWith('3') && digits !== '13'
+            ? 'rd'
+            : 'th'
+
+    variants.add(digits)
+    variants.add(`${digits}${ordinalSuffix}`)
+    variants.add(`class${digits}`)
+    variants.add(`class ${digits}`)
+  }
+
+  return Array.from(variants).filter(Boolean)
+}
+
+const matchesStudentRecord = (record, classFilter, sectionFilter, rollNumber) => {
+  if (!record) {
+    return false
+  }
+
+  const recordClass = normalizeClassValue(record?.class ?? record?.Class ?? record?.current_class ?? record?.CurrentClass)
+  const recordSection = normalizeSectionValue(record?.section ?? record?.Section ?? record?.current_section ?? record?.CurrentSection)
+  const recordRoll = normalizeRollValue(record?.roll_no ?? record?.rollNo ?? record?.Roll ?? record?.roll)
+
+  const expectedClass = normalizeClassValue(classFilter)
+  const expectedSection = normalizeSectionValue(sectionFilter)
+  const expectedRoll = normalizeRollValue(rollNumber)
+
+  const classMatches = !expectedClass || recordClass === expectedClass
+  const sectionMatches = !expectedSection || recordSection === expectedSection
+  const rollMatches = !expectedRoll || recordRoll === expectedRoll
+
+  return classMatches && sectionMatches && rollMatches
+}
+
 // ============ Fee Structure Management ============
 
 export const createFeeStructure = async (feeData) =>
@@ -100,18 +191,32 @@ export const getStudentDues = async (studentId) =>
 
 export const getStudentFeeDetails = async (classFilter, section, rollNumber, month) => {
   try {
-    // Use existing getFeeList API and filter for the specific student
-    const feeList = await getFeeList(classFilter, section, month)
-    
-    // Find the matching student record
-    const feeData = Array.isArray(feeList) 
-      ? feeList.find(f => f.roll_no == rollNumber)
-      : feeList?.data?.find(f => f.roll_no == rollNumber)
-    
+    const classVariants = buildClassVariants(classFilter)
+    const searchStrategies = [
+      { classFilter, section },
+      ...classVariants
+        .filter((variant) => variant && variant !== normalizeText(classFilter))
+        .map((variant) => ({ classFilter: variant, section })),
+      { classFilter: '', section },
+      { classFilter: '', section: '' },
+    ]
+
+    let feeData = null
+
+    for (const strategy of searchStrategies) {
+      const feeList = await getFeeList(strategy.classFilter, strategy.section, month)
+      const feeRecords = extractFeeRecords(feeList)
+      feeData = feeRecords.find((record) => matchesStudentRecord(record, classFilter, section, rollNumber))
+
+      if (feeData) {
+        break
+      }
+    }
+
     if (!feeData) {
       throw new Error('Student fee details not found')
     }
-    
+
     return feeData
   } catch (error) {
     throw normalizeApiError(error, 'Failed to fetch student fee details')
