@@ -95,7 +95,7 @@
   }
 
   .gps-site-shell {
-    width: min(1180px, calc(100% - 2rem));
+    width: min(1320px, calc(100% - 2rem));
     margin-inline: auto;
   }
 
@@ -263,12 +263,12 @@
   }
 
   .gps-shell {
-    width: min(1220px, calc(100% - 2rem));
+    width: min(1320px, calc(100% - 2rem));
     margin-inline: auto;
   }
 
   .gps-header-shell {
-    width: min(1160px, calc(100% - 2.5rem));
+    width: min(1320px, calc(100% - 2rem));
     margin-inline: auto;
     padding-top: 0.85rem;
     padding-bottom: 1rem;
@@ -875,23 +875,31 @@
 
   @media (min-width: 640px) {
     .gps-header-shell {
-      width: min(1180px, calc(100% - 4rem));
+      width: min(1320px, calc(100% - 3rem));
       padding-top: 1rem;
       padding-bottom: 1.15rem;
     }
 
     .gps-site-shell {
-      width: min(1180px, calc(100% - 3rem));
+      width: min(1320px, calc(100% - 3rem));
+    }
+
+    .gps-shell {
+      width: min(1320px, calc(100% - 3rem));
     }
   }
 
   @media (min-width: 1024px) {
     .gps-header-shell {
-      width: min(1220px, calc(100% - 5rem));
+      width: min(1320px, calc(100% - 4rem));
     }
 
     .gps-site-shell {
-      width: min(1180px, calc(100% - 5rem));
+      width: min(1320px, calc(100% - 4rem));
+    }
+
+    .gps-shell {
+      width: min(1320px, calc(100% - 4rem));
     }
   }
 }
