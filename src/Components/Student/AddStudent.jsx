@@ -8,7 +8,7 @@ const normalizeAlphaSpaceUpper = (value) =>
     .replace(/\s{2,}/g, ' ')
     .replace(/^\s+/g, '')
 
-const normalizeClassValue = (value) => value.replace(/[^a-zA-Z0-9]/g, '')
+const normalizeClassValue = (value) => value.replace(/[^a-zA-Z0-9\s.]/g, '')
 const normalizeSectionValue = (value) => value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 1)
 const normalizeMobileValue = (value) => value.replace(/\D/g, '').slice(0, 10)
 const normalizeAddressValue = (value) => value.slice(0, 50)
@@ -43,7 +43,7 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
 
     if (fieldName === 'class') {
       if (!value) return 'Class is required.'
-      if (!/^[a-zA-Z0-9]+$/.test(value)) return 'Class must contain only letters and numbers.'
+      if (!/^[a-zA-Z0-9\s.]+$/.test(value)) return 'Class can contain letters, numbers, spaces, and dots.'
       return ''
     }
 
@@ -305,7 +305,7 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                 />
               </div>
               {fieldErrors.name ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.name}</p>
               ) : null}
             </div>
 
@@ -328,7 +328,7 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                 />
               </div>
               {fieldErrors.father_name ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.father_name}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.father_name}</p>
               ) : null}
             </div>
 
@@ -351,7 +351,7 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                 />
               </div>
               {fieldErrors.mother_name ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.mother_name}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.mother_name}</p>
               ) : null}
             </div>
 
@@ -395,7 +395,7 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                 />
               </div>
               {fieldErrors.class ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.class}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.class}</p>
               ) : null}
             </div>
 
@@ -438,7 +438,7 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                 />
               </div>
               {fieldErrors.section ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.section}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.section}</p>
               ) : null}
             </div>
 
@@ -465,7 +465,7 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
                 />
               </div>
               {fieldErrors.mobile ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.mobile}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.mobile}</p>
               ) : null}
             </div>
           </div>
@@ -490,7 +490,7 @@ function AddStudent({ isOpen, onClose, onSuccess }) {
               ></textarea>
             </div>
             {fieldErrors.address ? (
-              <p className="mt-1 text-xs text-red-500">{fieldErrors.address}</p>
+              <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.address}</p>
             ) : null}
           </div>
 

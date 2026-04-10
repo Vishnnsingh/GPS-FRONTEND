@@ -8,7 +8,7 @@ const normalizeAlphaSpaceUpper = (value) =>
     .replace(/\s{2,}/g, ' ')
     .replace(/^\s+/g, '')
 
-const normalizeClassValue = (value) => value.replace(/[^a-zA-Z0-9]/g, '')
+const normalizeClassValue = (value) => value.replace(/[^a-zA-Z0-9\s.]/g, '')
 const normalizeSectionValue = (value) => value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 1)
 const normalizeMobileValue = (value) => value.replace(/\D/g, '').slice(0, 10)
 const normalizeAddressValue = (value) => value.slice(0, 50)
@@ -43,7 +43,7 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
 
     if (fieldName === 'class') {
       if (!value) return 'Class is required.'
-      if (!/^[a-zA-Z0-9]+$/.test(value)) return 'Class must contain only letters and numbers.'
+      if (!/^[a-zA-Z0-9\s.]+$/.test(value)) return 'Class can contain letters, numbers, spaces, and dots.'
       return ''
     }
 
@@ -321,7 +321,7 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
                 />
               </div>
               {fieldErrors.name ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.name}</p>
               ) : null}
             </div>
 
@@ -344,14 +344,14 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
                 />
               </div>
               {fieldErrors.father_name ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.father_name}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.father_name}</p>
               ) : null}
             </div>
 
             {/* Mother Name */}
             <div>
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Mother Name <span className="text-red-500">*</span>
+                Mother Name <span className="text-red-900">*</span>
               </label>
               <div className="flex items-center border border-cyan-200/30 dark:border-cyan-700/50 rounded-lg bg-cyan-50/30 dark:bg-cyan-900/10 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/50 transition-all">
                 <span className="material-symbols-outlined pl-2 text-cyan-200 text-base">family_restroom</span>
@@ -367,7 +367,7 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
                 />
               </div>
               {fieldErrors.mother_name ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.mother_name}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.mother_name}</p>
               ) : null}
             </div>
 
@@ -411,7 +411,7 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
                 />
               </div>
               {fieldErrors.class ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.class}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.class}</p>
               ) : null}
             </div>
 
@@ -454,7 +454,7 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
                 />
               </div>
               {fieldErrors.section ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.section}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.section}</p>
               ) : null}
             </div>
 
@@ -481,7 +481,7 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
                 />
               </div>
               {fieldErrors.mobile ? (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.mobile}</p>
+                <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.mobile}</p>
               ) : null}
             </div>
           </div>
@@ -506,7 +506,7 @@ function EditStudent({ isOpen, onClose, onSuccess, studentData }) {
               ></textarea>
             </div>
             {fieldErrors.address ? (
-              <p className="mt-1 text-xs text-red-500">{fieldErrors.address}</p>
+              <p className="mt-1 text-xs font-bold text-red-600">{fieldErrors.address}</p>
             ) : null}
           </div>
 
